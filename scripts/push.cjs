@@ -37,7 +37,7 @@ const main = () => {
     packageJson.version = tag
     fs.writeFileSync('package.json', JSON.stringify(packageJson, undefined, 2))
     execSync(`git add .`);
-    execSync(`git commit -m "release latest version: ${tag}"`);
+    execSync(`git commit -m "release latest version"`);
     try {
       execSync(`tag ${tag}`)
     } catch(err) {
