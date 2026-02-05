@@ -22,6 +22,7 @@
     "test:browser": "vitest",
     "demo:build": "pnpm run build && node ./samples/express/main.js",
     "demo:run": "ts-node  samples/express/main.ts",
+    "demo:precompile": "ts-node  samples/express/premain.ts",
     "demo:dev": "nodemon",
     "demo:local": "node ./samples/express/main.js",
     "update-package": "pnpm build && pnpm pack && pnpm version patch && pnpm publish --access public"

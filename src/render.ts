@@ -2,7 +2,7 @@
 import type { GlobalOpts, LexerType, LexerCurr } from "./types";
 import { spanInner, p, unquote } from "./lib";
 import { _eval } from "./eval";
-import { matchSetInner, splitKwRest, matchForIn, matchExtends, matchIncludes, TAG_RE, INCLUDE_RE } from "./regex";
+import { matchSetInner, splitKwRest, matchForIn, matchExtends, ignorePrecompile, stripIgnorePrecompile ,matchIncludes, TAG_RE, INCLUDE_RE } from "./regex";
 
 type Replacement = { start: number; end: number; value: string };
 
@@ -188,9 +188,15 @@ export const compileTemplate = (entryName: string, ctx: any, opts: GlobalOpts) =
 
   opts.ctx = ctx ?? {};
   opts.vars = opts.vars ?? {};
-
+  let compiledSrc: string = res.res
+  // Only useful in precompile
+  if(ignorePrecompile(compiledSrc)) {
+    if(opts.mode === 'precompile')  return ''
+    compiledSrc = stripIgnorePrecompile(compiledSrc);
+  }
+   
   // compile-time structure:
-  let compiledSrc = resolveExtendsAndIncludes(res.res, entryName, opts);
+  compiledSrc = resolveExtendsAndIncludes(compiledSrc, entryName, opts);
 
   compiledSrc = stripControlTagLines(compiledSrc);
 
@@ -520,13 +526,13 @@ const apply_replacements = (src: string, reps: Replacement[]) => {
 export const renderString = (src: string, opts: GlobalOpts) => {
   opts.lexer = opts.lex(src, src.length);
   let out = applySets(src, opts);
-  p.debug(out)
+  // p.debug(out)
   opts.lexer = opts.lex(src, src.length);
   out = applyForLoops(src, opts);
-  p.debug(out)
+  // p.debug(out)
   opts.lexer = opts.lex(out, out.length);
   out = applyIfElse(out, opts);
-  p.debug(out)
+  // p.debug(out)
   opts.lexer = opts.lex(out, out.length);
   const spans = readByChar(out, opts);
   const reps = build_replacements(out, spans, opts);

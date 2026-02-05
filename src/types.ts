@@ -51,6 +51,7 @@ export interface GlobalOpts {
 	files: Record<string, string>
 	ctx: Record<string, any>
 	vars: Record<string, any>
+	mode?: string | 'precompile'
 }
 
 export type LexerCurr = {

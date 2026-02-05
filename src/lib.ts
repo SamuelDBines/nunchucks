@@ -102,7 +102,7 @@ export const parse_var = (src: unknown) => {
 
   const json = maybe_json(src);
   if (json.ok) return json.value;
-	console.log('Now',src)
+	// console.log('Now',src)
 	if (is_string(src)) {
     const s = (src as string).trim();
     if (s === "null") return null;
@@ -119,7 +119,7 @@ export const randomId = (length: number = 12) => Math.random().toString().substr
 export const spanInner = (src: string, it: LexerCurr) => {
   const raw = src.slice(it.start.i, it.end!.i);
   const inner = raw.replace(it.start.symbol, "").replace(it.end!.symbol, "").trim();
-	if(inner.includes('user'))console.log('user:', inner, ' raw:', raw)
+	// if(inner.includes('user'))console.log('user:', inner, ' raw:', raw)
   return { raw, inner };
 };
 

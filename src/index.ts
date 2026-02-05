@@ -1,10 +1,13 @@
 import path from "node:path";
+import EventEmitter from 'node:events';
+import fsp from "node:fs/promises";
 import fs from 'node:fs'
 import type { Callback, GlobalOpts, LexResponse, Lexer } from "./types";
 import { FileSystemLoader, type Loader } from "./loader";
 import { lex_init } from "./lexer";
 import { _eval, fns } from "./eval";
 import { p, randomId, spanInner } from "./lib";
+import { ignorePrecompile } from "./regex";
 import { compileTemplate } from "./render";
 
 interface IConfigureOptions {
@@ -24,8 +27,6 @@ const initConfigureOptions: IConfigureOptions = {
   loader: FileSystemLoader,
   ext: ".njk",
 };
-
-
 
 const importDevscript = (options: IConfigureOptions): string => 
   options.dev && options.devRefresh
@@ -67,6 +68,8 @@ const applyHeadersForTemplate = (res: any, filename: string) => {
   return { isText: !!rule.isText };
 };
 
+const devEvents = new EventEmitter();
+
 export function configure(opts: Partial<IConfigureOptions> = {}) {
   const options: IConfigureOptions = { ...initConfigureOptions, ...opts };
 	const id = randomId()
@@ -74,6 +77,7 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
 
 	const bump = () => {
 		devVersion++;
+    devEvents.emit('refresh')
 		p.debug("dev refresh bump", devVersion);
 	};
 
@@ -97,7 +101,6 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
 		try {
 			fs.watch(watchDir, { recursive: true }, (_event, filename) => {
 				if (!filename) return;
-				// if (/\.(njk|html|nunjucks)$/i.test(filename)) 
         bump();
 			});
 			p.debug("watching", watchDir);
@@ -169,7 +172,42 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
     app.set("nunjucksEnv", () => {});
   }
 
-  return { express, id };
+  function precompile(out: string, ctx: any ={}) {
+    _opts.mode = 'precompile'
+    fs.rmSync(out, { recursive: true, force: true });
+    fs.mkdirSync(out, { recursive: true });
+    const isTemplate = (p: string) => !p.includes("/node_modules/") && /\.(njk|html|txt|yaml|yml|json|xml|css|js)$/i.test(p);
+
+    async function walk(dir: string): Promise<string[]> {
+      const out: string[] = [];
+      for (const ent of await fsp.readdir(dir, { withFileTypes: true })) {
+        const full = path.join(dir, ent.name);
+        if (ent.isDirectory()) out.push(...await walk(full));
+        else out.push(full);
+      }
+      return out;
+    }
+    async function compile() {
+      const viewsRoot = path.resolve(options.path ?? "views");
+      const files = (await walk(opts.path)).filter(isTemplate);
+
+      for (const abs of files) {
+        const rel = path.relative(viewsRoot, abs).replaceAll(path.sep, "/");
+  
+        const outName = path.join(out,rel)
+        try {
+          const outdata = compileTemplate(rel, ctx, _opts); 
+          if(outdata.trim()) fs.writeFileSync(outName, outdata);
+        } catch (e: any) {
+          p.err(e?.message ?? String(e));
+        }
+      }
+    }
+    devEvents.on('refresh', compile)
+    compile()
+  }
+
+  return { express, id, precompile };
 }
 
 export const reset = configure;

@@ -5,6 +5,9 @@ export const TAG_RE = /{%\s*([\s\S]*?)\s*%}/g;
 
 export const EXTENDS_RE = /{%\s*extends\s+["']([^"']+)["']\s*%}/;
 
+const IGNORE_PRECOMPILE_RE =
+  /^\s*(?:\{#([\s\S]*?)#\}\s*)*(?:\{%\s*ignore\s+precompile\s*%\}\s*)/i;
+
 export const INCLUDE_RE = /{%\s*include\s+["']([^"']+)["']\s*%}/g;
 
 // --- statement inners (after spanInner / inside "{% %}") ---
@@ -21,6 +24,9 @@ export const FOR_IN_RE = /^([A-Za-z_$][\w$]*)\s+in\s+([\s\S]+)$/;
 
 // --- helpers (tiny, testable) ---
 export const matchExtends = (src: string) => src.match(EXTENDS_RE)?.[1] ?? null;
+
+export const ignorePrecompile = (src: string): boolean => IGNORE_PRECOMPILE_RE.test(src);
+export const stripIgnorePrecompile = (src: string): string => src.replace(IGNORE_PRECOMPILE_RE, "");
 
 export const matchIncludes = (src: string) => {
   const out: string[] = [];
