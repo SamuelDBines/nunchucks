@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint --flag unstable_config_lookup_from_file nunjucks scripts tests",
-    "push": "node ./scripts/push.cjs",
+    "push": "node ./scripts/push.cjs && pnpm publish --access=public",
     "prepare": "npm run build",
     "test:instrument": "cross-env NODE_ENV=test scripts/bundle.js",
     "test:runner": "cross-env NODE_ENV=test NODE_PATH=tests/test-node-pkgs scripts/testrunner.js",
