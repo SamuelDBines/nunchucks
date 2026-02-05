@@ -41,7 +41,7 @@ const main = () => {
     try {
       execSync(`tag ${tag}`)
     } catch(err) {
-      console.log('Error tagging: ', tag)
+      console.log('Error tagging: ', err)
       execSync(`git push`);
     }
     execSync(`git push`);
