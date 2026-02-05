@@ -12,8 +12,9 @@ const main = () => {
     let versionStr = ''
     let tag = packageJson.version;
     const packageJsonVersion = packageJson.version.split('.')
-    const dateStr = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0,14);
+    packageJsonVersion[3] = undefined
     if(versionArg) {
+      
       if(versionArg.toLocaleLowerCase() == 'patch') {
         versionStr = 'patch'
         packageJsonVersion[2] = Number(packageJsonVersion[2]) + 1 
@@ -29,13 +30,9 @@ const main = () => {
         packageJsonVersion[0] = Number(packageJsonVersion[0]) + 1 
         packageJsonVersion[1] = '0'
         packageJsonVersion[2] = '0'
-        packageJsonVersion[3] = undefined
+        
       }
     }
-    if(!versionStr) {
-      packageJsonVersion[3] = dateStr
-    }
-    // ensure undefined removed
     tag = packageJsonVersion.filter(Boolean).join('.') 
     packageJson.version = tag
     fs.writeFileSync('package.json', JSON.stringify(packageJson, undefined, 2))
