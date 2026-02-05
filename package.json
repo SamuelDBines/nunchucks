@@ -1,7 +1,7 @@
 {
   "name": "@samuelbines/nunchucks",
   "description": "A powerful templating engine with inheritance, asynchronous control, and more (jinja2 inspired)",
-  "version": "0.0.1",
+  "version": "0.0.2.20260205224503",
   "author": "Samuel Bines <samuelbines@gmail.com>",
   "browser": "./browser/nunjucks.js",
   "main": "dist/src/index.js",
@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint --flag unstable_config_lookup_from_file nunjucks scripts tests",
+    "push": "node ./scripts/push.cjs",
     "prepare": "npm run build",
     "test:instrument": "cross-env NODE_ENV=test scripts/bundle.js",
     "test:runner": "cross-env NODE_ENV=test NODE_PATH=tests/test-node-pkgs scripts/testrunner.js",
