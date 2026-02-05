@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": "js,ts,html,njk",
+  "ignore": [
+    "dist",
+    "node_modules"
+  ],
+  "exec": "pnpm demo:run"
+}

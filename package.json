@@ -1,0 +1,68 @@
+{
+  "name": "@samuelbines/nunjucks",
+  "description": "A powerful templating engine with inheritance, asynchronous control, and more (jinja2 inspired)",
+  "version": "0.0.6",
+  "author": "Samuel Bines <samuelbines@gmail.com>",
+  "browser": "./browser/nunjucks.js",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --flag unstable_config_lookup_from_file nunjucks scripts tests",
+    "prepare": "npm run build",
+    "test:instrument": "cross-env NODE_ENV=test scripts/bundle.js",
+    "test:runner": "cross-env NODE_ENV=test NODE_PATH=tests/test-node-pkgs scripts/testrunner.js",
+    "vitest:browser": "vitest init browser",
+    "test": "vitest",
+    "test:ts": "ts-node scripts/test.ts",
+    "test:smoke": "npx ts-node scripts/smoke.ts",
+    "prepare:input": "npx ts-node scripts/build-input.ts",
+    "test:verbose": "vitest --reporter=verbose",
+    "test:browser": "vitest",
+    "demo:build": "pnpm run build && node ./samples/express/main.js",
+    "demo:run": "ts-node  samples/express/main.ts",
+    "demo:dev": "nodemon",
+    "demo:local": "node ./samples/express/main.js",
+    "update-package": "pnpm build && pnpm pack && pnpm version patch && pnpm publish --access public"
+  },
+  "bin": {
+    "nunjucks-precompile": "./bin/precompile"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "nyc": {
+    "require": [
+      "babel-register"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mozilla/nunjucks.git"
+  },
+  "keywords": [
+    "template",
+    "templating"
+  ],
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/mozilla/nunjucks/issues"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@types/node": "^25.0.3",
+    "@vitest/browser-playwright": "^4.0.16",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
