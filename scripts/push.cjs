@@ -39,7 +39,7 @@ const main = () => {
     execSync(`git add .`);
     execSync(`git commit -m "release latest version"`);
     try {
-      execSync(`tag ${tag}`)
+      execSync(`~/scripts/shared/tag ${tag}`)
     } catch(err) {
       console.log('Error tagging: ', err)
       execSync(`git push`);
