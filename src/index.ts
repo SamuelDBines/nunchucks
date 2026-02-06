@@ -7,7 +7,6 @@ import { FileSystemLoader, type Loader } from "./loader";
 import { lex_init } from "./lexer";
 import { _eval, fns } from "./eval";
 import { p, randomId, spanInner } from "./lib";
-import { ignorePrecompile } from "./regex";
 import { compileTemplate } from "./render";
 
 interface IConfigureOptions {
@@ -174,8 +173,7 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
 
   function precompile(out: string, ctx: any ={}) {
     _opts.mode = 'precompile'
-    fs.rmSync(out, { recursive: true, force: true });
-    fs.mkdirSync(out, { recursive: true });
+
     const isTemplate = (p: string) => !p.includes("/node_modules/") && /\.(njk|html|txt|yaml|yml|json|xml|css|js)$/i.test(p);
 
     async function walk(dir: string): Promise<string[]> {
@@ -188,6 +186,8 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
       return out;
     }
     async function compile() {
+      fs.rmSync(out, { recursive: true, force: true });
+      fs.mkdirSync(out, { recursive: true });
       const viewsRoot = path.resolve(options.path ?? "views");
       const files = (await walk(opts.path)).filter(isTemplate);
 
