@@ -197,7 +197,10 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
         const outName = path.join(out,rel)
         try {
           const outdata = compileTemplate(rel, ctx, _opts); 
-          if(outdata.trim()) fs.writeFileSync(outName, outdata);
+          if(outdata.trim()) {
+            fs.mkdirSync(outName, { recursive: true })
+            fs.writeFileSync(outName, outdata, );
+          }
           else fs.rmSync(outName, { force: true }) //Remove file if empty
         } catch (e: any) {
           p.err(e?.message ?? String(e));
