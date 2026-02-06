@@ -186,7 +186,7 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
       return out;
     }
     async function compile() {
-      fs.rmSync(out, { recursive: true, force: true });
+      // fs.rmSync(out, { recursive: true, force: true });
       fs.mkdirSync(out, { recursive: true });
       const viewsRoot = path.resolve(options.path ?? "views");
       const files = (await walk(opts.path)).filter(isTemplate);
@@ -198,6 +198,7 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
         try {
           const outdata = compileTemplate(rel, ctx, _opts); 
           if(outdata.trim()) fs.writeFileSync(outName, outdata);
+          else fs.rmSync(outName) //Remove file if empty
         } catch (e: any) {
           p.err(e?.message ?? String(e));
         }
