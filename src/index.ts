@@ -192,13 +192,16 @@ export function configure(opts: Partial<IConfigureOptions> = {}) {
       const files = (await walk(opts.path)).filter(isTemplate);
 
       for (const abs of files) {
+
         const rel = path.relative(viewsRoot, abs).replaceAll(path.sep, "/");
   
         const outName = path.join(out,rel)
         try {
+        
           const outdata = compileTemplate(rel, ctx, _opts); 
           if(outdata.trim()) {
-            fs.mkdirSync(outName, { recursive: true })
+            const folder = outName.split('/').slice(0, -1).join('/'); 
+            if(!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true })
             fs.writeFileSync(outName, outdata, );
           }
           else fs.rmSync(outName, { force: true }) //Remove file if empty
