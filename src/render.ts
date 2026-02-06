@@ -199,7 +199,7 @@ export const compileTemplate = (entryName: string, ctx: any, opts: GlobalOpts) =
   compiledSrc = resolveExtendsAndIncludes(compiledSrc, entryName, opts);
 
   compiledSrc = stripControlTagLines(compiledSrc);
-
+  compiledSrc = stripIgnorePrecompile(compiledSrc);
   // runtime render:
   return renderString(compiledSrc, opts);
 };
