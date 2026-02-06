@@ -22,13 +22,10 @@
     "test:browser": "vitest",
     "demo:build": "pnpm run build && node ./samples/express/main.js",
     "demo:run": "ts-node  samples/express/main.ts",
-    "demo:precompile": "ts-node  samples/express/premain.ts",
+    "demo:precompile": "ts-node samples/express/premain.ts",
     "demo:dev": "nodemon",
     "demo:local": "node ./samples/express/main.js",
     "update-package": "pnpm build && pnpm pack && pnpm version patch && pnpm publish --access public"
-  },
-  "bin": {
-    "nunjucks-precompile": "./bin/precompile"
   },
   "files": [
     "dist",
@@ -45,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mozilla/nunjucks.git"
+    "url": "https://github.com/SamuelDBines/nunchucks.git"
   },
   "keywords": [
     "template",
@@ -53,7 +50,7 @@
   ],
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/mozilla/nunjucks/issues"
+    "url": "https://github.com/SamuelDBines/nunchucks/issues"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
