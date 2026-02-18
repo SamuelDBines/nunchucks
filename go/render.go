@@ -9,8 +9,21 @@ import (
 var exprRe = regexp.MustCompile(`\{\{\s*([\s\S]*?)\s*\}\}`)
 var stmtRe = regexp.MustCompile(`\{%\s*([A-Za-z_][A-Za-z0-9_]*)\b([\s\S]*?)%\}`)
 
+type MacroDef struct {
+	Args []string
+	Body string
+}
+
 func cloneMap(in map[string]any) map[string]any {
 	out := make(map[string]any, len(in))
+	for k, v := range in {
+		out[k] = v
+	}
+	return out
+}
+
+func cloneMacros(in map[string]MacroDef) map[string]MacroDef {
+	out := make(map[string]MacroDef, len(in))
 	for k, v := range in {
 		out[k] = v
 	}
@@ -21,21 +34,49 @@ func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
 	if ctx == nil {
 		ctx = map[string]any{}
 	}
-	vars := map[string]any{}
-	out := src
+	return e.renderWithState(src, ctx, map[string]any{}, map[string]MacroDef{})
+}
 
+func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[string]MacroDef) (string, error) {
+	out := src
 	var err error
+
+	out, raws, err := extractRawBlocks(out)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = e.applyImports(out, ctx, vars, macros)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = e.applyMacroDefs(out, ctx, vars, macros)
+	if err != nil {
+		return "", err
+	}
+
 	out, err = applySets(out, vars, ctx)
 	if err != nil {
 		return "", err
 	}
 
-	out, err = applyForLoops(out, vars, ctx)
+	out, err = e.applyForLoops(out, vars, ctx, macros)
 	if err != nil {
 		return "", err
 	}
 
-	out, err = applyIfElse(out, vars, ctx)
+	out, err = e.applyIfElse(out, vars, ctx, macros)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = e.applyFilterBlocks(out, vars, ctx, macros)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = e.applyCallBlocks(out, vars, ctx, macros)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +90,149 @@ func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
 	})
 
 	out = stmtRe.ReplaceAllString(out, "")
+	out = restoreRawBlocks(out, raws)
 	return out, nil
+}
+
+func extractRawBlocks(src string) (string, map[string]string, error) {
+	out := src
+	store := map[string]string{}
+	index := 0
+
+	handle := func(tag string) error {
+		openRe := regexp.MustCompile(`\{%\s*` + tag + `\s*%\}`)
+		closeRe := regexp.MustCompile(`\{%\s*end` + tag + `\s*%\}`)
+		for {
+			open := openRe.FindStringIndex(out)
+			if open == nil {
+				return nil
+			}
+			close := closeRe.FindStringIndex(out[open[1]:])
+			if close == nil {
+				return fmt.Errorf("missing end%s", tag)
+			}
+			bodyStart := open[1]
+			bodyEnd := open[1] + close[0]
+			closeEnd := open[1] + close[1]
+			key := fmt.Sprintf("@@NUNCHUCKS_RAW_%d@@", index)
+			index++
+			store[key] = out[bodyStart:bodyEnd]
+			out = out[:open[0]] + key + out[closeEnd:]
+		}
+	}
+
+	if err := handle("raw"); err != nil {
+		return "", nil, err
+	}
+	if err := handle("verbatim"); err != nil {
+		return "", nil, err
+	}
+
+	return out, store, nil
+}
+
+func restoreRawBlocks(src string, store map[string]string) string {
+	out := src
+	for k, v := range store {
+		out = strings.ReplaceAll(out, k, v)
+	}
+	return out
+}
+
+func parseArgsList(s string) []string {
+	parts := splitArgs(strings.TrimSpace(s))
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		t := strings.TrimSpace(p)
+		if t != "" {
+			out = append(out, t)
+		}
+	}
+	return out
+}
+
+func (e *Env) registerMacro(name string, def MacroDef, ctx, vars map[string]any, macros map[string]MacroDef) {
+	macros[name] = def
+	vars[name] = TemplateFunc(func(args []any, caller string) (any, error) {
+		localVars := cloneMap(vars)
+		for i, argName := range def.Args {
+			if i < len(args) {
+				localVars[argName] = args[i]
+			} else {
+				localVars[argName] = nil
+			}
+		}
+		localVars["caller"] = TemplateFunc(func(_ []any, _ string) (any, error) {
+			return caller, nil
+		})
+		return e.renderWithState(def.Body, ctx, localVars, cloneMacros(macros))
+	})
+}
+
+func (e *Env) applyMacroDefs(src string, ctx, vars map[string]any, macros map[string]MacroDef) (string, error) {
+	openRe := regexp.MustCompile(`\{%\s*macro\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*?)\)\s*%\}`)
+	closeRe := regexp.MustCompile(`\{%\s*endmacro\s*%\}`)
+	out := src
+
+	for {
+		open := openRe.FindStringSubmatchIndex(out)
+		if open == nil {
+			return out, nil
+		}
+		close := closeRe.FindStringIndex(out[open[1]:])
+		if close == nil {
+			return "", fmt.Errorf("missing endmacro")
+		}
+
+		name := strings.TrimSpace(out[open[2]:open[3]])
+		argsRaw := strings.TrimSpace(out[open[4]:open[5]])
+		bodyStart := open[1]
+		bodyEnd := open[1] + close[0]
+		closeEnd := open[1] + close[1]
+
+		def := MacroDef{Args: parseArgsList(argsRaw), Body: out[bodyStart:bodyEnd]}
+		e.registerMacro(name, def, ctx, vars, macros)
+		out = out[:open[0]] + out[closeEnd:]
+	}
+}
+
+func (e *Env) applyImports(src string, ctx, vars map[string]any, macros map[string]MacroDef) (string, error) {
+	importRe := regexp.MustCompile(`\{%\s*import\s+(["'][^"']+["'])\s+as\s+([A-Za-z_][A-Za-z0-9_]*)\s*%\}`)
+	out := src
+
+	for {
+		m := importRe.FindStringSubmatchIndex(out)
+		if m == nil {
+			return out, nil
+		}
+
+		fileTok := out[m[2]:m[3]]
+		alias := strings.TrimSpace(out[m[4]:m[5]])
+		name := unquote(fileTok)
+
+		importSrc, err := e.readTemplate(name)
+		if err != nil {
+			return "", err
+		}
+		resolved, err := e.resolveIncludes(importSrc, map[string]bool{name: true})
+		if err != nil {
+			return "", err
+		}
+
+		localMacros := map[string]MacroDef{}
+		namespace := map[string]any{}
+		_, err = e.applyMacroDefs(resolved, ctx, namespace, localMacros)
+		if err != nil {
+			return "", err
+		}
+		vars[alias] = namespace
+
+		for k, v := range localMacros {
+			macros[alias+"."+k] = v
+		}
+
+		out = out[:m[0]] + out[m[1]:]
+	}
 }
 
 func applySets(src string, vars, ctx map[string]any) (string, error) {
@@ -61,7 +244,7 @@ func applySets(src string, vars, ctx map[string]any) (string, error) {
 			return out, nil
 		}
 		body := strings.TrimSpace(out[m[2]:m[3]])
-		parts := strings.Split(body, ",")
+		parts := splitArgs(body)
 		for _, part := range parts {
 			kv := strings.SplitN(part, "=", 2)
 			if len(kv) != 2 {
@@ -75,7 +258,7 @@ func applySets(src string, vars, ctx map[string]any) (string, error) {
 	}
 }
 
-func applyForLoops(src string, vars, ctx map[string]any) (string, error) {
+func (e *Env) applyForLoops(src string, vars, ctx map[string]any, macros map[string]MacroDef) (string, error) {
 	forOpenRe := regexp.MustCompile(`\{%\s*for\s+([A-Za-z_][A-Za-z0-9_]*)\s+in\s+([\s\S]*?)%\}`)
 	endForRe := regexp.MustCompile(`\{%\s*endfor\s*%\}`)
 	out := src
@@ -103,25 +286,10 @@ func applyForLoops(src string, vars, ctx map[string]any) (string, error) {
 		renderItem := func(item any) error {
 			nextVars := cloneMap(vars)
 			nextVars[varName] = item
-			chunk, err := applySets(body, nextVars, ctx)
+			chunk, err := e.renderWithState(body, ctx, nextVars, cloneMacros(macros))
 			if err != nil {
 				return err
 			}
-			chunk, err = applyForLoops(chunk, nextVars, ctx)
-			if err != nil {
-				return err
-			}
-			chunk, err = applyIfElse(chunk, nextVars, ctx)
-			if err != nil {
-				return err
-			}
-			chunk = exprRe.ReplaceAllStringFunc(chunk, func(m string) string {
-				mm := exprRe.FindStringSubmatch(m)
-				if len(mm) < 2 {
-					return ""
-				}
-				return fmt.Sprint(evalExpr(mm[1], nextVars, ctx))
-			})
 			tmp += chunk
 			return nil
 		}
@@ -151,7 +319,7 @@ func applyForLoops(src string, vars, ctx map[string]any) (string, error) {
 	}
 }
 
-func applyIfElse(src string, vars, ctx map[string]any) (string, error) {
+func (e *Env) applyIfElse(src string, vars, ctx map[string]any, macros map[string]MacroDef) (string, error) {
 	ifOpenRe := regexp.MustCompile(`\{%\s*if\s+([\s\S]*?)%\}`)
 	elifRe := regexp.MustCompile(`\{%\s*elif\s+([\s\S]*?)%\}`)
 	elseRe := regexp.MustCompile(`\{%\s*else\s*%\}`)
@@ -186,9 +354,7 @@ func applyIfElse(src string, vars, ctx map[string]any) (string, error) {
 			idx  int
 			isE  bool
 			cond string
-		}{
-			{idx: len(middle), isE: true, cond: ""},
-		}
+		}{{idx: len(middle), isE: true, cond: ""}}
 		for _, m := range elifRe.FindAllStringSubmatchIndex(middle, -1) {
 			firstCuts = append(firstCuts, struct {
 				idx  int
@@ -266,11 +432,85 @@ func applyIfElse(src string, vars, ctx map[string]any) (string, error) {
 			}
 		}
 
-		chosenOut, err := applyIfElse(chosen, vars, ctx)
+		chosenOut, err := e.renderWithState(chosen, ctx, cloneMap(vars), cloneMacros(macros))
 		if err != nil {
 			return "", err
 		}
 
 		out = out[:open[0]] + chosenOut + out[endAbsEnd:]
+	}
+}
+
+func (e *Env) applyFilterBlocks(src string, vars, ctx map[string]any, macros map[string]MacroDef) (string, error) {
+	openRe := regexp.MustCompile(`\{%\s*filter\s+([\s\S]*?)%\}`)
+	closeRe := regexp.MustCompile(`\{%\s*endfilter\s*%\}`)
+	out := src
+
+	for {
+		open := openRe.FindStringSubmatchIndex(out)
+		if open == nil {
+			return out, nil
+		}
+		close := closeRe.FindStringIndex(out[open[1]:])
+		if close == nil {
+			return "", fmt.Errorf("missing endfilter")
+		}
+
+		filterExpr := strings.TrimSpace(out[open[2]:open[3]])
+		bodyStart := open[1]
+		bodyEnd := open[1] + close[0]
+		closeEnd := open[1] + close[1]
+		body := out[bodyStart:bodyEnd]
+
+		rendered, err := e.renderWithState(body, ctx, cloneMap(vars), cloneMacros(macros))
+		if err != nil {
+			return "", err
+		}
+
+		filtered := any(rendered)
+		for _, part := range strings.Split(filterExpr, "|") {
+			filtered = applyFilter(strings.TrimSpace(part), filtered)
+		}
+
+		out = out[:open[0]] + fmt.Sprint(filtered) + out[closeEnd:]
+	}
+}
+
+func (e *Env) applyCallBlocks(src string, vars, ctx map[string]any, macros map[string]MacroDef) (string, error) {
+	openRe := regexp.MustCompile(`\{%\s*call\s+([\s\S]*?)%\}`)
+	closeRe := regexp.MustCompile(`\{%\s*endcall\s*%\}`)
+	out := src
+
+	for {
+		open := openRe.FindStringSubmatchIndex(out)
+		if open == nil {
+			return out, nil
+		}
+		close := closeRe.FindStringIndex(out[open[1]:])
+		if close == nil {
+			return "", fmt.Errorf("missing endcall")
+		}
+
+		callExpr := strings.TrimSpace(out[open[2]:open[3]])
+		bodyStart := open[1]
+		bodyEnd := open[1] + close[0]
+		closeEnd := open[1] + close[1]
+		body := out[bodyStart:bodyEnd]
+
+		name, args, ok := parseCallableExpr(callExpr)
+		if !ok {
+			return "", fmt.Errorf("invalid call expression: %s", callExpr)
+		}
+
+		callerBody, err := e.renderWithState(body, ctx, cloneMap(vars), cloneMacros(macros))
+		if err != nil {
+			return "", err
+		}
+		called, err := invokeCallable(name, args, callerBody, vars, ctx)
+		if err != nil {
+			return "", err
+		}
+
+		out = out[:open[0]] + fmt.Sprint(called) + out[closeEnd:]
 	}
 }

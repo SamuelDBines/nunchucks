@@ -1,6 +1,10 @@
 package nunchucks
 
-import "testing"
+import (
+	"regexp"
+	"strings"
+	"testing"
+)
 
 type testLoader struct {
 	files map[string]string
@@ -59,5 +63,60 @@ func TestRenderExtendsAndInclude(t *testing.T) {
 	want := "<h1>Child</h1> Body loud"
 	if out != want {
 		t.Fatalf("unexpected output\nwant: %q\n got: %q", want, out)
+	}
+}
+
+func compactWhitespace(s string) string {
+	re := regexp.MustCompile(`\s+`)
+	return strings.TrimSpace(re.ReplaceAllString(s, " "))
+}
+
+func TestMacroAndCall(t *testing.T) {
+	src := `{% macro wrap(cls) %}<div class="{{ cls }}">{{ caller() }}</div>{% endmacro %}
+{% call wrap("box") %}inside {{ name }}{% endcall %}`
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	out, err := env.RenderString(src, map[string]any{"name": "sam"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	want := `<div class="box">inside sam</div>`
+	if compactWhitespace(out) != compactWhitespace(want) {
+		t.Fatalf("unexpected output\nwant: %q\n got: %q", want, out)
+	}
+}
+
+func TestImportAndMacroCall(t *testing.T) {
+	files := map[string]string{
+		"main.njk":   `{% import "macros.njk" as ui %}{{ ui.badge(name) }}`,
+		"macros.njk": `{% macro badge(label) %}<b>{{ label | upper }}</b>{% endmacro %}`,
+	}
+	env := Configure(ConfigOptions{Loader: &testLoader{files: files}})
+	out, err := env.Render("main.njk", map[string]any{"name": "ok"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	want := `<b>OK</b>`
+	if compactWhitespace(out) != compactWhitespace(want) {
+		t.Fatalf("unexpected output\nwant: %q\n got: %q", want, out)
+	}
+}
+
+func TestRawVerbatimAndFilterBlock(t *testing.T) {
+	src := `{% raw %}{{ untouched }}{% endraw %}
+{% verbatim %}{% if nope %}x{% endif %}{% endverbatim %}
+{% filter upper %}hello {{ name }}{% endfilter %}`
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	out, err := env.RenderString(src, map[string]any{"name": "sam"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !strings.Contains(out, "{{ untouched }}") {
+		t.Fatalf("raw block was not preserved: %q", out)
+	}
+	if !strings.Contains(out, "{% if nope %}x{% endif %}") {
+		t.Fatalf("verbatim block was not preserved: %q", out)
+	}
+	if !strings.Contains(out, "HELLO SAM") {
+		t.Fatalf("filter block not applied: %q", out)
 	}
 }

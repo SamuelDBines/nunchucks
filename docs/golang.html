@@ -38,6 +38,13 @@ go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title"
 go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'</code></pre>
     </section>
 
+    <section class="card" style="margin-top:1rem;">
+      <h2>Examples</h2>
+<pre><code class="language-bash">cd go
+go run ./examples/basic
+go run ./examples/advanced</code></pre>
+    </section>
+
     <section class="grid">
       <article class="card">
         <h3>Implemented</h3>
@@ -47,6 +54,8 @@ go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"
           <li><code>RenderString(src, ctx)</code></li>
           <li><code>include</code>, <code>extends</code>, blocks, <code>super()</code></li>
           <li><code>set</code>, <code>if</code>, <code>for</code>, <code>{{ expr }}</code></li>
+          <li><code>macro</code>, <code>import ... as</code>, <code>call</code></li>
+          <li><code>raw</code>, <code>verbatim</code>, <code>filter ... endfilter</code></li>
         </ul>
       </article>
       <article class="card">
