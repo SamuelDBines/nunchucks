@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nunchucks</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <main class="wrapper">
+    <nav>
+      <a href="./index.html">Overview</a>
+      <a href="./golang.html">Go Library</a>
+    </nav>
+
+    <section class="hero">
+      <h1>Nunchucks</h1>
+      <p>A modern rewrite of Nunjucks focused on composable templates and multi-language support.</p>
+      <small>Project status: active rewrite, TypeScript-first with Go runtime in progress.</small>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>TypeScript Engine</h2>
+        <p>Current engine in <code>src/</code> with rendering, includes/extends, filters, and precompile flow.</p>
+      </article>
+      <article class="card">
+        <h2>Go Engine</h2>
+        <p>New Go package in <code>go/</code> with core rendering support for files and strings.</p>
+      </article>
+      <article class="card">
+        <h2>WASM Bridge</h2>
+        <p>Go core compiles to WebAssembly with a JS loader for cross-runtime embedding.</p>
+      </article>
+      <article class="card">
+        <h2>Docs + Pages</h2>
+        <p>Static docs in <code>docs/</code> deployed through GitHub Pages workflow.</p>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:1rem;">
+      <h2>Feature Snapshot</h2>
+      <ul>
+        <li><code>{{ expression }}</code> variable rendering</li>
+        <li><code>{% set %}</code>, <code>{% if/elif/else %}</code>, <code>{% for %}</code></li>
+        <li><code>{% include %}</code> and <code>{% extends %}</code> with blocks</li>
+        <li>String filters: <code>lower</code>, <code>upper</code></li>
+      </ul>
+    </section>
+
+    <section class="card" style="margin-top:1rem;">
+      <h2>Pages Output</h2>
+      <p>GitHub Pages deploys this repository’s <code>docs/</code> directory via <code>.github/workflows/pages.yaml</code>.</p>
+      <p>After deploy, check your site at: <code>https://samueldbines.github.io/nunjucks/</code></p>
+    </section>
+  </main>
+</body>
+</html>

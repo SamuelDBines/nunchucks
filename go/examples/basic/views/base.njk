@@ -1,0 +1,9 @@
+<!doctype html>
+<html>
+<head><title>{% block title %}Base{% endblock %}</title></head>
+<body>
+<header>{% include "partials/header.njk" %}</header>
+<main>{% block body %}{% endblock %}</main>
+<footer>{{ footer | lower }}</footer>
+</body>
+</html>

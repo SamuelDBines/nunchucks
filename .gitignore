@@ -15,3 +15,5 @@ docs/files
 *.tgz
 tmp/*
 chatgpt.input.*
+go/wasm/*.wasm
+go/wasm/wasm_exec.js

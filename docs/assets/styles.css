@@ -1,0 +1,68 @@
+:root {
+  --bg: #f4f6f1;
+  --ink: #162018;
+  --muted: #53604f;
+  --card: #ffffff;
+  --line: #d4ddcf;
+  --brand: #1f6f43;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at top right, #dde9d9 0, var(--bg) 40%);
+}
+
+.wrapper {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+h1, h2, h3 {
+  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  margin: 0 0 0.75rem;
+}
+
+p, li { line-height: 1.6; }
+
+a { color: var(--brand); }
+
+.hero {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+pre {
+  background: #0f1711;
+  color: #e8f5e9;
+  border-radius: 12px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+small { color: var(--muted); }
+
+nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
