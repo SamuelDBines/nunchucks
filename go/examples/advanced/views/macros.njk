@@ -1,2 +1,2 @@
-{% macro badge(text) %}<span class="badge">{{ text | upper }}</span>{% endmacro %}
+{% macro badge(text="unknown") %}<span class="badge">{{ text | upper }}</span>{% endmacro %}
 {% macro panel(kind) %}<section class="panel {{ kind }}">{{ caller() }}</section>{% endmacro %}

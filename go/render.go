@@ -10,8 +10,14 @@ var exprRe = regexp.MustCompile(`\{\{\s*([\s\S]*?)\s*\}\}`)
 var stmtRe = regexp.MustCompile(`\{%\s*([A-Za-z_][A-Za-z0-9_]*)\b([\s\S]*?)%\}`)
 
 type MacroDef struct {
-	Args []string
-	Body string
+	Params []MacroParam
+	Body   string
+}
+
+type MacroParam struct {
+	Name       string
+	Default    string
+	HasDefault bool
 }
 
 func cloneMap(in map[string]any) map[string]any {
@@ -42,6 +48,16 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 	var err error
 
 	out, raws, err := extractRawBlocks(out)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = e.applyIncludes(out, ctx, vars, macros)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = e.applyFromImports(out, ctx, vars, macros)
 	if err != nil {
 		return "", err
 	}
@@ -94,6 +110,95 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 	return out, nil
 }
 
+type includeSpec struct {
+	Name          string
+	IgnoreMissing bool
+	WithContext   bool
+}
+
+func parseIncludeSpec(inner string) (includeSpec, bool) {
+	s := strings.TrimSpace(inner)
+	if !strings.HasPrefix(s, "include ") {
+		return includeSpec{}, false
+	}
+	rest := strings.TrimSpace(strings.TrimPrefix(s, "include "))
+	quote := byte(0)
+	if strings.HasPrefix(rest, "\"") {
+		quote = '"'
+	} else if strings.HasPrefix(rest, "'") {
+		quote = '\''
+	} else {
+		return includeSpec{}, false
+	}
+	end := 1
+	for end < len(rest) && rest[end] != quote {
+		if rest[end] == '\\' {
+			end += 2
+			continue
+		}
+		end++
+	}
+	if end >= len(rest) {
+		return includeSpec{}, false
+	}
+	name := rest[1:end]
+	flags := strings.ToLower(strings.TrimSpace(rest[end+1:]))
+
+	spec := includeSpec{Name: name, WithContext: true}
+	if strings.Contains(flags, "ignore missing") {
+		spec.IgnoreMissing = true
+	}
+	if strings.Contains(flags, "without context") {
+		spec.WithContext = false
+	}
+	if strings.Contains(flags, "with context") {
+		spec.WithContext = true
+	}
+	return spec, true
+}
+
+func (e *Env) applyIncludes(src string, ctx, vars map[string]any, macros map[string]MacroDef) (string, error) {
+	re := regexp.MustCompile(`\{%\s*include\s+[\s\S]*?%\}`)
+	out := src
+	for {
+		m := re.FindStringIndex(out)
+		if m == nil {
+			return out, nil
+		}
+		raw := out[m[0]:m[1]]
+		inner := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(raw, "{%"), "%}"))
+		spec, ok := parseIncludeSpec(inner)
+		if !ok {
+			return "", fmt.Errorf("invalid include statement: %s", raw)
+		}
+
+		includeSrc, err := e.readTemplate(spec.Name)
+		if err != nil {
+			if spec.IgnoreMissing {
+				out = out[:m[0]] + out[m[1]:]
+				continue
+			}
+			return "", err
+		}
+
+		var incCtx map[string]any
+		var incVars map[string]any
+		if spec.WithContext {
+			incCtx = ctx
+			incVars = cloneMap(vars)
+		} else {
+			incCtx = map[string]any{}
+			incVars = map[string]any{}
+		}
+
+		rendered, err := e.renderWithState(includeSrc, incCtx, incVars, cloneMacros(macros))
+		if err != nil {
+			return "", err
+		}
+		out = out[:m[0]] + rendered + out[m[1]:]
+	}
+}
+
 func extractRawBlocks(src string) (string, map[string]string, error) {
 	out := src
 	store := map[string]string{}
@@ -139,30 +244,43 @@ func restoreRawBlocks(src string, store map[string]string) string {
 	return out
 }
 
-func parseArgsList(s string) []string {
+func parseMacroParams(s string) []MacroParam {
 	parts := splitArgs(strings.TrimSpace(s))
-	out := make([]string, 0, len(parts))
-	for _, p := range parts {
-		t := strings.TrimSpace(p)
-		if t != "" {
-			out = append(out, t)
+	out := make([]MacroParam, 0, len(parts))
+	for _, part := range parts {
+		t := strings.TrimSpace(part)
+		if t == "" {
+			continue
 		}
+		if k, v, ok := splitTopLevelAssign(t); ok {
+			out = append(out, MacroParam{Name: k, Default: v, HasDefault: true})
+			continue
+		}
+		out = append(out, MacroParam{Name: t})
 	}
 	return out
 }
 
 func (e *Env) registerMacro(name string, def MacroDef, ctx, vars map[string]any, macros map[string]MacroDef) {
 	macros[name] = def
-	vars[name] = TemplateFunc(func(args []any, caller string) (any, error) {
+	vars[name] = TemplateFunc(func(args []any, kwargs map[string]any, caller string) (any, error) {
 		localVars := cloneMap(vars)
-		for i, argName := range def.Args {
+		for i, p := range def.Params {
 			if i < len(args) {
-				localVars[argName] = args[i]
+				localVars[p.Name] = args[i]
+				continue
+			}
+			if v, ok := kwargs[p.Name]; ok {
+				localVars[p.Name] = v
+				continue
+			}
+			if p.HasDefault {
+				localVars[p.Name] = evalExpr(p.Default, localVars, ctx)
 			} else {
-				localVars[argName] = nil
+				localVars[p.Name] = nil
 			}
 		}
-		localVars["caller"] = TemplateFunc(func(_ []any, _ string) (any, error) {
+		localVars["caller"] = TemplateFunc(func(_ []any, _ map[string]any, _ string) (any, error) {
 			return caller, nil
 		})
 		return e.renderWithState(def.Body, ctx, localVars, cloneMacros(macros))
@@ -190,14 +308,87 @@ func (e *Env) applyMacroDefs(src string, ctx, vars map[string]any, macros map[st
 		bodyEnd := open[1] + close[0]
 		closeEnd := open[1] + close[1]
 
-		def := MacroDef{Args: parseArgsList(argsRaw), Body: out[bodyStart:bodyEnd]}
+		def := MacroDef{Params: parseMacroParams(argsRaw), Body: out[bodyStart:bodyEnd]}
 		e.registerMacro(name, def, ctx, vars, macros)
 		out = out[:open[0]] + out[closeEnd:]
 	}
 }
 
+func parseImportedNames(s string) [][2]string {
+	out := [][2]string{}
+	for _, p := range splitArgs(s) {
+		t := strings.TrimSpace(p)
+		if t == "" {
+			continue
+		}
+		re := regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)(?:\s+as\s+([A-Za-z_][A-Za-z0-9_]*))?$`)
+		m := re.FindStringSubmatch(t)
+		if m == nil {
+			continue
+		}
+		local := m[1]
+		if strings.TrimSpace(m[2]) != "" {
+			local = m[2]
+		}
+		out = append(out, [2]string{m[1], local})
+	}
+	return out
+}
+
+func parseImportStmt(inner string) (file string, alias string, flags string, ok bool) {
+	re := regexp.MustCompile(`^import\s+(".*?"|'.*?')\s+as\s+([A-Za-z_][A-Za-z0-9_]*)([\s\S]*)$`)
+	m := re.FindStringSubmatch(strings.TrimSpace(inner))
+	if m == nil {
+		return "", "", "", false
+	}
+	return unquote(strings.TrimSpace(m[1])), strings.TrimSpace(m[2]), strings.TrimSpace(m[3]), true
+}
+
+func parseFromImportStmt(inner string) (file string, imports string, flags string, ok bool) {
+	re := regexp.MustCompile(`^from\s+(".*?"|'.*?')\s+import\s+([\s\S]+?)(?:\s+(with\s+context|without\s+context))?$`)
+	m := re.FindStringSubmatch(strings.TrimSpace(inner))
+	if m == nil {
+		return "", "", "", false
+	}
+	return unquote(strings.TrimSpace(m[1])), strings.TrimSpace(m[2]), strings.TrimSpace(m[3]), true
+}
+
+func parseContextModeFlags(flags string, defaultWithContext bool) bool {
+	f := strings.ToLower(strings.TrimSpace(flags))
+	withContext := defaultWithContext
+	if strings.Contains(f, "without context") {
+		withContext = false
+	}
+	if strings.Contains(f, "with context") {
+		withContext = true
+	}
+	return withContext
+}
+
+func (e *Env) loadMacrosFromTemplate(name string, ctx map[string]any, withContext bool) (map[string]any, map[string]MacroDef, error) {
+	importSrc, err := e.readTemplate(name)
+	if err != nil {
+		return nil, nil, err
+	}
+	resolved, err := e.resolveIncludes(importSrc, map[string]bool{name: true})
+	if err != nil {
+		return nil, nil, err
+	}
+	localMacros := map[string]MacroDef{}
+	namespace := map[string]any{}
+	macroCtx := map[string]any{}
+	if withContext {
+		macroCtx = ctx
+	}
+	_, err = e.applyMacroDefs(resolved, macroCtx, namespace, localMacros)
+	if err != nil {
+		return nil, nil, err
+	}
+	return namespace, localMacros, nil
+}
+
 func (e *Env) applyImports(src string, ctx, vars map[string]any, macros map[string]MacroDef) (string, error) {
-	importRe := regexp.MustCompile(`\{%\s*import\s+(["'][^"']+["'])\s+as\s+([A-Za-z_][A-Za-z0-9_]*)\s*%\}`)
+	importRe := regexp.MustCompile(`\{%\s*import\s+[\s\S]*?%\}`)
 	out := src
 
 	for {
@@ -205,23 +396,15 @@ func (e *Env) applyImports(src string, ctx, vars map[string]any, macros map[stri
 		if m == nil {
 			return out, nil
 		}
-
-		fileTok := out[m[2]:m[3]]
-		alias := strings.TrimSpace(out[m[4]:m[5]])
-		name := unquote(fileTok)
-
-		importSrc, err := e.readTemplate(name)
-		if err != nil {
-			return "", err
+		raw := out[m[0]:m[1]]
+		inner := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(raw, "{%"), "%}"))
+		name, alias, flags, ok := parseImportStmt(inner)
+		if !ok {
+			return "", fmt.Errorf("invalid import statement: %s", raw)
 		}
-		resolved, err := e.resolveIncludes(importSrc, map[string]bool{name: true})
-		if err != nil {
-			return "", err
-		}
+		withContext := parseContextModeFlags(flags, false)
 
-		localMacros := map[string]MacroDef{}
-		namespace := map[string]any{}
-		_, err = e.applyMacroDefs(resolved, ctx, namespace, localMacros)
+		namespace, localMacros, err := e.loadMacrosFromTemplate(name, ctx, withContext)
 		if err != nil {
 			return "", err
 		}
@@ -231,6 +414,40 @@ func (e *Env) applyImports(src string, ctx, vars map[string]any, macros map[stri
 			macros[alias+"."+k] = v
 		}
 
+		out = out[:m[0]] + out[m[1]:]
+	}
+}
+
+func (e *Env) applyFromImports(src string, ctx, vars map[string]any, macros map[string]MacroDef) (string, error) {
+	fromRe := regexp.MustCompile(`\{%\s*from\s+[\s\S]*?%\}`)
+	out := src
+	for {
+		m := fromRe.FindStringSubmatchIndex(out)
+		if m == nil {
+			return out, nil
+		}
+		raw := out[m[0]:m[1]]
+		inner := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(raw, "{%"), "%}"))
+		name, importSpec, flags, ok := parseFromImportStmt(inner)
+		if !ok {
+			return "", fmt.Errorf("invalid from-import statement: %s", raw)
+		}
+		withContext := parseContextModeFlags(flags, false)
+
+		namespace, localMacros, err := e.loadMacrosFromTemplate(name, ctx, withContext)
+		if err != nil {
+			return "", err
+		}
+		for _, pair := range parseImportedNames(importSpec) {
+			remote := pair[0]
+			local := pair[1]
+			if fn, ok := namespace[remote]; ok {
+				vars[local] = fn
+			}
+			if def, ok := localMacros[remote]; ok {
+				macros[local] = def
+			}
+		}
 		out = out[:m[0]] + out[m[1]:]
 	}
 }
@@ -283,9 +500,18 @@ func (e *Env) applyForLoops(src string, vars, ctx map[string]any, macros map[str
 		iter := evalExpr(expr, vars, ctx)
 		tmp := ""
 
-		renderItem := func(item any) error {
+		renderItem := func(item any, idx int, length int) error {
 			nextVars := cloneMap(vars)
 			nextVars[varName] = item
+			nextVars["loop"] = map[string]any{
+				"index":     idx + 1,
+				"index0":    idx,
+				"revindex":  length - idx,
+				"revindex0": length - idx - 1,
+				"first":     idx == 0,
+				"last":      idx == length-1,
+				"length":    length,
+			}
 			chunk, err := e.renderWithState(body, ctx, nextVars, cloneMacros(macros))
 			if err != nil {
 				return err
@@ -296,21 +522,25 @@ func (e *Env) applyForLoops(src string, vars, ctx map[string]any, macros map[str
 
 		switch vv := iter.(type) {
 		case []any:
-			for _, item := range vv {
-				if err := renderItem(item); err != nil {
+			for i, item := range vv {
+				if err := renderItem(item, i, len(vv)); err != nil {
 					return "", err
 				}
 			}
 		case map[string]any:
+			arr := make([]any, 0, len(vv))
 			for _, item := range vv {
-				if err := renderItem(item); err != nil {
+				arr = append(arr, item)
+			}
+			for i, item := range arr {
+				if err := renderItem(item, i, len(arr)); err != nil {
 					return "", err
 				}
 			}
 		case nil:
 			// no-op
 		default:
-			if err := renderItem(vv); err != nil {
+			if err := renderItem(vv, 0, 1); err != nil {
 				return "", err
 			}
 		}
@@ -469,7 +699,12 @@ func (e *Env) applyFilterBlocks(src string, vars, ctx map[string]any, macros map
 
 		filtered := any(rendered)
 		for _, part := range strings.Split(filterExpr, "|") {
-			filtered = applyFilter(strings.TrimSpace(part), filtered)
+			name, argExprs := parseFilterSpec(strings.TrimSpace(part))
+			args := make([]any, 0, len(argExprs))
+			for _, expr := range argExprs {
+				args = append(args, evalExpr(expr, vars, ctx))
+			}
+			filtered = applyFilter(name, filtered, args)
 		}
 
 		out = out[:open[0]] + fmt.Sprint(filtered) + out[closeEnd:]

@@ -1,0 +1,21 @@
+{% extends "base.njk" %}
+
+{% block title %}Advanced Sample{% endblock %}
+
+{% block body %}
+{% from "macros.njk" import card, whoami with context %}
+
+<p>Math: {{ (1 + 2) * 3 }}</p>
+<p>Ternary: {{ "admin" if user.isAdmin else "member" }}</p>
+<p>Import context: {{ whoami() }}</p>
+
+{{ card("Features") }}
+
+<ul>
+  {% for item in items %}
+    <li>#{{ loop.index }} {{ item | upper }}</li>
+  {% endfor %}
+</ul>
+
+{% include "optional.njk" ignore missing %}
+{% endblock %}

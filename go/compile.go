@@ -164,10 +164,7 @@ func (e *Env) compileTemplate(name string) (string, error) {
 		return "", err
 	}
 
-	child, err := e.resolveIncludes(entry, map[string]bool{name: true})
-	if err != nil {
-		return "", err
-	}
+	child := entry
 
 	seen := map[string]bool{name: true}
 	for {
@@ -186,10 +183,7 @@ func (e *Env) compileTemplate(name string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		base, err := e.resolveIncludes(baseRaw, map[string]bool{baseName: true})
-		if err != nil {
-			return "", err
-		}
+		base := baseRaw
 
 		child = mergeExtends(base, child)
 		child = removeExtendsTag(child)

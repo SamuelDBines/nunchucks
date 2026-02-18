@@ -1,0 +1,2 @@
+{% macro whoami() %}{{ user.name | default("guest", true) }}{% endmacro %}
+{% macro card(title="Card") %}<article><h3>{{ title }}</h3></article>{% endmacro %}

@@ -1,10 +1,12 @@
 {% import "macros.njk" as ui %}
+{% from "macros.njk" import badge %}
 
 {% raw %}{{ this_will_not_render }}{% endraw %}
 
 {% filter upper %}hello {{ user.name }}{% endfilter %}
 
 {{ ui.badge("go-wasm") }}
+{{ badge() }}
 
 {% call ui.panel("success") %}
   build ok for {{ user.name }}
