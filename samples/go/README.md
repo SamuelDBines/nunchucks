@@ -18,6 +18,6 @@ Additional demos:
 
 ```bash
 cd go
-go run ./cmd/nunchucks render -views ../samples/go/views -template is-in-demo.njk -data '{"role":"admin","nums":[1,2,3]}'
-go run ./cmd/nunchucks render -views ../samples/go/views -template filter-parity-demo.njk -data '{"users":[{"name":"Zed","active":true,"role":"dev"},{"name":"Amy","active":false,"role":"ops"},{"name":"Bob","active":true,"role":"dev"}]}'
+go run ./cmd/nunchucks render -views ../samples/go/views -template is-in-demo.njk -data '{"role":"admin","nums":[1,2,3],"cfg":{"a":1}}'
+go run ./cmd/nunchucks render -views ../samples/go/views -template filter-parity-demo.njk -data '{"nums":[1,2,3,4],"data":{"b":2,"a":1},"users":[{"name":"Zed","active":true,"role":"dev","age":30},{"name":"Amy","active":false,"role":"ops","age":22},{"name":"Bob","active":true,"role":"dev","age":25}]}'
 ```

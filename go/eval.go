@@ -435,7 +435,37 @@ func isNumber(v any) bool {
 	return false
 }
 
-func isTestKeyword(v any, kw string) bool {
+func isSequence(v any) bool {
+	if isMissing(v) || v == nil {
+		return false
+	}
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Array, reflect.Slice, reflect.String:
+		return true
+	default:
+		return false
+	}
+}
+
+func isMapping(v any) bool {
+	if isMissing(v) || v == nil {
+		return false
+	}
+	rv := reflect.ValueOf(v)
+	return rv.Kind() == reflect.Map
+}
+
+func isKnownTestName(name string) bool {
+	switch strings.ToLower(strings.TrimSpace(name)) {
+	case "defined", "undefined", "none", "null", "string", "number", "boolean", "bool", "iterable", "callable", "odd", "even", "divisibleby", "lower", "upper", "equalto", "sameas", "sequence", "mapping":
+		return true
+	default:
+		return false
+	}
+}
+
+func evalTestKeyword(v any, kw string, args []any) bool {
 	k := strings.ToLower(strings.TrimSpace(kw))
 	switch k {
 	case "defined":
@@ -461,9 +491,46 @@ func isTestKeyword(v any, kw string) bool {
 		default:
 			return false
 		}
+	case "odd":
+		return toInt(v, 0)%2 != 0
+	case "even":
+		return toInt(v, 0)%2 == 0
+	case "divisibleby":
+		if len(args) == 0 {
+			return false
+		}
+		d := toInt(args[0], 0)
+		if d == 0 {
+			return false
+		}
+		return toInt(v, 0)%d == 0
+	case "lower":
+		s := fmt.Sprint(v)
+		return s == strings.ToLower(s)
+	case "upper":
+		s := fmt.Sprint(v)
+		return s == strings.ToUpper(s)
+	case "equalto":
+		if len(args) == 0 {
+			return false
+		}
+		return equalOp(v, args[0])
+	case "sameas":
+		if len(args) == 0 {
+			return false
+		}
+		return reflect.DeepEqual(v, args[0])
+	case "sequence":
+		return isSequence(v)
+	case "mapping":
+		return isMapping(v)
 	default:
 		return false
 	}
+}
+
+func isTestKeyword(v any, kw string) bool {
+	return evalTestKeyword(v, kw, nil)
 }
 
 func applyFilter(name string, v any, args []any) any {
@@ -777,6 +844,14 @@ func applyFilter(name string, v any, args []any) any {
 				a = valueByPath(a, attr)
 				b = valueByPath(b, attr)
 			}
+			if isNumber(a) && isNumber(b) {
+				af := toFloat(a, 0)
+				bf := toFloat(b, 0)
+				if reverse {
+					return af > bf
+				}
+				return af < bf
+			}
 			as := fmt.Sprint(a)
 			bs := fmt.Sprint(b)
 			if !caseSens {
@@ -796,11 +871,25 @@ func applyFilter(name string, v any, args []any) any {
 		}
 		by := "key"
 		caseSens := false
+		reverse := false
 		if len(args) > 0 {
-			by = strings.ToLower(fmt.Sprint(args[0]))
-		}
-		if len(args) > 1 {
-			caseSens = toBool(args[1], false)
+			if _, ok := args[0].(bool); ok {
+				caseSens = toBool(args[0], false)
+				if len(args) > 1 {
+					by = strings.ToLower(fmt.Sprint(args[1]))
+				}
+				if len(args) > 2 {
+					reverse = toBool(args[2], false)
+				}
+			} else {
+				by = strings.ToLower(fmt.Sprint(args[0]))
+				if len(args) > 1 {
+					caseSens = toBool(args[1], false)
+				}
+				if len(args) > 2 {
+					reverse = toBool(args[2], false)
+				}
+			}
 		}
 		pairs := make([][]any, 0, len(m))
 		for k, val := range m {
@@ -821,6 +910,9 @@ func applyFilter(name string, v any, args []any) any {
 				ls = strings.ToLower(ls)
 				rs = strings.ToLower(rs)
 			}
+			if reverse {
+				return ls > rs
+			}
 			return ls < rs
 		})
 		out := make([]any, 0, len(pairs))
@@ -835,12 +927,14 @@ func applyFilter(name string, v any, args []any) any {
 		}
 		arr := toSlice(v)
 		groups := map[string][]any{}
+		groupVals := map[string]any{}
 		order := []string{}
 		for _, it := range arr {
 			keyVal := valueByPath(it, attr)
 			key := fmt.Sprint(keyVal)
 			if _, ok := groups[key]; !ok {
 				groups[key] = []any{}
+				groupVals[key] = keyVal
 				order = append(order, key)
 			}
 			groups[key] = append(groups[key], it)
@@ -848,7 +942,7 @@ func applyFilter(name string, v any, args []any) any {
 		out := make([]any, 0, len(order))
 		for _, k := range order {
 			out = append(out, map[string]any{
-				"grouper": k,
+				"grouper": groupVals[k],
 				"list":    groups[k],
 			})
 		}
@@ -858,12 +952,23 @@ func applyFilter(name string, v any, args []any) any {
 		out := []any{}
 		hasNeedle := len(args) > 0
 		var needle any
+		testName := ""
+		testArgs := []any{}
 		if hasNeedle {
-			needle = args[0]
+			if name, ok := args[0].(string); ok && isKnownTestName(name) {
+				testName = name
+				testArgs = args[1:]
+			} else {
+				needle = args[0]
+			}
 		}
 		for _, it := range arr {
-			if hasNeedle {
-				if reflect.DeepEqual(it, needle) {
+			if testName != "" {
+				if evalTestKeyword(it, testName, testArgs) {
+					out = append(out, it)
+				}
+			} else if hasNeedle {
+				if equalOp(it, needle) {
 					out = append(out, it)
 				}
 			} else if truthy(it) {
@@ -876,12 +981,23 @@ func applyFilter(name string, v any, args []any) any {
 		out := []any{}
 		hasNeedle := len(args) > 0
 		var needle any
+		testName := ""
+		testArgs := []any{}
 		if hasNeedle {
-			needle = args[0]
+			if name, ok := args[0].(string); ok && isKnownTestName(name) {
+				testName = name
+				testArgs = args[1:]
+			} else {
+				needle = args[0]
+			}
 		}
 		for _, it := range arr {
-			if hasNeedle {
-				if !reflect.DeepEqual(it, needle) {
+			if testName != "" {
+				if !evalTestKeyword(it, testName, testArgs) {
+					out = append(out, it)
+				}
+			} else if hasNeedle {
+				if !equalOp(it, needle) {
 					out = append(out, it)
 				}
 			} else if !truthy(it) {
@@ -898,13 +1014,24 @@ func applyFilter(name string, v any, args []any) any {
 		out := []any{}
 		hasNeedle := len(args) > 1
 		var needle any
+		testName := ""
+		testArgs := []any{}
 		if hasNeedle {
-			needle = args[1]
+			if name, ok := args[1].(string); ok && isKnownTestName(name) {
+				testName = name
+				testArgs = args[2:]
+			} else {
+				needle = args[1]
+			}
 		}
 		for _, it := range arr {
 			av := valueByPath(it, attr)
-			if hasNeedle {
-				if reflect.DeepEqual(av, needle) {
+			if testName != "" {
+				if evalTestKeyword(av, testName, testArgs) {
+					out = append(out, it)
+				}
+			} else if hasNeedle {
+				if equalOp(av, needle) {
 					out = append(out, it)
 				}
 			} else if truthy(av) {
@@ -921,13 +1048,24 @@ func applyFilter(name string, v any, args []any) any {
 		out := []any{}
 		hasNeedle := len(args) > 1
 		var needle any
+		testName := ""
+		testArgs := []any{}
 		if hasNeedle {
-			needle = args[1]
+			if name, ok := args[1].(string); ok && isKnownTestName(name) {
+				testName = name
+				testArgs = args[2:]
+			} else {
+				needle = args[1]
+			}
 		}
 		for _, it := range arr {
 			av := valueByPath(it, attr)
-			if hasNeedle {
-				if !reflect.DeepEqual(av, needle) {
+			if testName != "" {
+				if !evalTestKeyword(av, testName, testArgs) {
+					out = append(out, it)
+				}
+			} else if hasNeedle {
+				if !equalOp(av, needle) {
 					out = append(out, it)
 				}
 			} else if !truthy(av) {
@@ -1394,9 +1532,24 @@ func (p *exprParser) parseCompare() (any, error) {
 			}
 			if p.cur().kind == tokIdent {
 				testKw := p.cur().lit
-				if isTestKeyword(prev, testKw) || strings.EqualFold(testKw, "defined") || strings.EqualFold(testKw, "undefined") || strings.EqualFold(testKw, "none") || strings.EqualFold(testKw, "null") || strings.EqualFold(testKw, "string") || strings.EqualFold(testKw, "number") || strings.EqualFold(testKw, "boolean") || strings.EqualFold(testKw, "bool") || strings.EqualFold(testKw, "iterable") || strings.EqualFold(testKw, "callable") {
+				if isKnownTestName(testKw) {
 					p.advance()
-					ok := isTestKeyword(prev, testKw)
+					testArgs := []any{}
+					if p.cur().kind == tokLParen {
+						p.advance()
+						args, kwargs, err := p.parseCallArgs()
+						if err != nil {
+							return nil, err
+						}
+						if len(kwargs) > 0 {
+							return nil, fmt.Errorf("named args in tests not supported")
+						}
+						if err := p.expect(tokRParen); err != nil {
+							return nil, err
+						}
+						testArgs = args
+					}
+					ok := evalTestKeyword(prev, testKw, testArgs)
 					if isNot {
 						ok = !ok
 					}

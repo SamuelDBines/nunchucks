@@ -1,4 +1,9 @@
 active count => {{ users | selectattr("active") | length }}
 inactive count => {{ users | rejectattr("active") | length }}
+odd nums count => {{ nums | select("odd") | length }}
+even nums count => {{ nums | reject("odd") | length }}
+age divisible by 2 => {{ users | selectattr("age", "divisibleby", 2) | length }}
 by-name first => {{ users | sort(false, false, "name") | first | dump }}
+by-age first => {{ users | sort(false, false, "age") | first | dump }}
+dictsort value reverse first key => {{ data | dictsort("value", false, true) | first | first }}
 groupby role count => {{ users | groupby("role") | length }}
