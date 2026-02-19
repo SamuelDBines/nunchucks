@@ -17,6 +17,12 @@ import (
 
 type TemplateFunc func(args []any, kwargs map[string]any, caller string) (any, error)
 
+type missingValue struct{}
+
+func (missingValue) String() string { return "" }
+
+var missing = missingValue{}
+
 var callableExprRe = regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*\((.*)\)$`)
 var stripTagsRe = regexp.MustCompile(`(?s)<[^>]*>`)
 var urlizeRe = regexp.MustCompile(`https?://[^\s<]+`)
@@ -198,29 +204,42 @@ func parseCallableArgs(argExprs []string) ([]string, map[string]string) {
 	return pos, kw
 }
 
-func resolveIdent(name string, vars, ctx map[string]any) any {
+func resolveIdentEx(name string, vars, ctx map[string]any) (any, bool) {
 	key := strings.TrimSpace(name)
 	if key == "" {
-		return ""
+		return missing, false
 	}
 
 	if v, ok := vars[key]; ok {
-		return v
+		return v, true
 	}
 	if v, ok := ctx[key]; ok {
-		return v
+		return v, true
 	}
 
 	if strings.Contains(key, ".") {
 		if v, ok := getPath(vars, key); ok {
-			return v
+			return v, true
 		}
 		if v, ok := getPath(ctx, key); ok {
-			return v
+			return v, true
 		}
 	}
 
-	return ""
+	return missing, false
+}
+
+func resolveIdent(name string, vars, ctx map[string]any) any {
+	v, ok := resolveIdentEx(name, vars, ctx)
+	if !ok {
+		return missing
+	}
+	return v
+}
+
+func isMissing(v any) bool {
+	_, ok := v.(missingValue)
+	return ok
 }
 
 func toBool(v any, dflt bool) bool {
@@ -302,6 +321,9 @@ func isEmpty(v any) bool {
 	if v == nil {
 		return true
 	}
+	if isMissing(v) {
+		return true
+	}
 	switch t := v.(type) {
 	case string:
 		return t == ""
@@ -329,6 +351,119 @@ func parseFilterSpec(raw string) (string, []string) {
 		return strings.TrimSpace(name), args
 	}
 	return strings.TrimSpace(raw), nil
+}
+
+func valueByPath(v any, path string) any {
+	if strings.TrimSpace(path) == "" {
+		return v
+	}
+	parts := strings.Split(path, ".")
+	cur := v
+	for _, part := range parts {
+		switch t := cur.(type) {
+		case map[string]any:
+			cur = t[part]
+		default:
+			rv := reflect.ValueOf(cur)
+			if !rv.IsValid() {
+				return nil
+			}
+			if rv.Kind() == reflect.Map {
+				mv := rv.MapIndex(reflect.ValueOf(part))
+				if mv.IsValid() {
+					cur = mv.Interface()
+				} else {
+					return nil
+				}
+			} else {
+				return nil
+			}
+		}
+	}
+	return cur
+}
+
+func containsOp(container any, item any) bool {
+	switch t := container.(type) {
+	case string:
+		return strings.Contains(t, fmt.Sprint(item))
+	case []any:
+		for _, v := range t {
+			if equalOp(v, item) {
+				return true
+			}
+		}
+		return false
+	case map[string]any:
+		_, ok := t[fmt.Sprint(item)]
+		return ok
+	default:
+		rv := reflect.ValueOf(container)
+		if !rv.IsValid() {
+			return false
+		}
+		if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+			for i := 0; i < rv.Len(); i++ {
+				if equalOp(rv.Index(i).Interface(), item) {
+					return true
+				}
+			}
+			return false
+		}
+	}
+	return false
+}
+
+func isIterable(v any) bool {
+	if isMissing(v) || v == nil {
+		return false
+	}
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Array, reflect.Slice, reflect.Map, reflect.String:
+		return true
+	default:
+		return false
+	}
+}
+
+func isNumber(v any) bool {
+	switch v.(type) {
+	case int, int8, int16, int32, int64, float32, float64, uint, uint8, uint16, uint32, uint64:
+		return true
+	}
+	return false
+}
+
+func isTestKeyword(v any, kw string) bool {
+	k := strings.ToLower(strings.TrimSpace(kw))
+	switch k {
+	case "defined":
+		return !isMissing(v)
+	case "undefined":
+		return isMissing(v)
+	case "none", "null":
+		return v == nil || isMissing(v)
+	case "string":
+		_, ok := v.(string)
+		return ok
+	case "number":
+		return isNumber(v)
+	case "boolean", "bool":
+		_, ok := v.(bool)
+		return ok
+	case "iterable":
+		return isIterable(v)
+	case "callable":
+		switch v.(type) {
+		case TemplateFunc, func(...any) any:
+			return true
+		default:
+			return false
+		}
+	default:
+		return false
+	}
 }
 
 func applyFilter(name string, v any, args []any) any {
@@ -624,16 +759,24 @@ func applyFilter(name string, v any, args []any) any {
 	case "sort":
 		reverse := false
 		caseSens := false
+		attr := ""
 		if len(args) > 0 {
 			reverse = toBool(args[0], false)
 		}
 		if len(args) > 1 {
 			caseSens = toBool(args[1], false)
 		}
+		if len(args) > 2 {
+			attr = fmt.Sprint(args[2])
+		}
 		arr := append([]any{}, toSlice(v)...)
 		sort.SliceStable(arr, func(i, j int) bool {
 			a := arr[i]
 			b := arr[j]
+			if attr != "" {
+				a = valueByPath(a, attr)
+				b = valueByPath(b, attr)
+			}
 			as := fmt.Sprint(a)
 			bs := fmt.Sprint(b)
 			if !caseSens {
@@ -646,6 +789,152 @@ func applyFilter(name string, v any, args []any) any {
 			return as < bs
 		})
 		return arr
+	case "dictsort":
+		m, ok := v.(map[string]any)
+		if !ok {
+			return []any{}
+		}
+		by := "key"
+		caseSens := false
+		if len(args) > 0 {
+			by = strings.ToLower(fmt.Sprint(args[0]))
+		}
+		if len(args) > 1 {
+			caseSens = toBool(args[1], false)
+		}
+		pairs := make([][]any, 0, len(m))
+		for k, val := range m {
+			pairs = append(pairs, []any{k, val})
+		}
+		sort.SliceStable(pairs, func(i, j int) bool {
+			l := pairs[i]
+			r := pairs[j]
+			li := 0
+			ri := 0
+			if by == "value" {
+				li = 1
+				ri = 1
+			}
+			ls := fmt.Sprint(l[li])
+			rs := fmt.Sprint(r[ri])
+			if !caseSens {
+				ls = strings.ToLower(ls)
+				rs = strings.ToLower(rs)
+			}
+			return ls < rs
+		})
+		out := make([]any, 0, len(pairs))
+		for _, p := range pairs {
+			out = append(out, []any{p[0], p[1]})
+		}
+		return out
+	case "groupby":
+		attr := ""
+		if len(args) > 0 {
+			attr = fmt.Sprint(args[0])
+		}
+		arr := toSlice(v)
+		groups := map[string][]any{}
+		order := []string{}
+		for _, it := range arr {
+			keyVal := valueByPath(it, attr)
+			key := fmt.Sprint(keyVal)
+			if _, ok := groups[key]; !ok {
+				groups[key] = []any{}
+				order = append(order, key)
+			}
+			groups[key] = append(groups[key], it)
+		}
+		out := make([]any, 0, len(order))
+		for _, k := range order {
+			out = append(out, map[string]any{
+				"grouper": k,
+				"list":    groups[k],
+			})
+		}
+		return out
+	case "select":
+		arr := toSlice(v)
+		out := []any{}
+		hasNeedle := len(args) > 0
+		var needle any
+		if hasNeedle {
+			needle = args[0]
+		}
+		for _, it := range arr {
+			if hasNeedle {
+				if reflect.DeepEqual(it, needle) {
+					out = append(out, it)
+				}
+			} else if truthy(it) {
+				out = append(out, it)
+			}
+		}
+		return out
+	case "reject":
+		arr := toSlice(v)
+		out := []any{}
+		hasNeedle := len(args) > 0
+		var needle any
+		if hasNeedle {
+			needle = args[0]
+		}
+		for _, it := range arr {
+			if hasNeedle {
+				if !reflect.DeepEqual(it, needle) {
+					out = append(out, it)
+				}
+			} else if !truthy(it) {
+				out = append(out, it)
+			}
+		}
+		return out
+	case "selectattr":
+		attr := ""
+		if len(args) > 0 {
+			attr = fmt.Sprint(args[0])
+		}
+		arr := toSlice(v)
+		out := []any{}
+		hasNeedle := len(args) > 1
+		var needle any
+		if hasNeedle {
+			needle = args[1]
+		}
+		for _, it := range arr {
+			av := valueByPath(it, attr)
+			if hasNeedle {
+				if reflect.DeepEqual(av, needle) {
+					out = append(out, it)
+				}
+			} else if truthy(av) {
+				out = append(out, it)
+			}
+		}
+		return out
+	case "rejectattr":
+		attr := ""
+		if len(args) > 0 {
+			attr = fmt.Sprint(args[0])
+		}
+		arr := toSlice(v)
+		out := []any{}
+		hasNeedle := len(args) > 1
+		var needle any
+		if hasNeedle {
+			needle = args[1]
+		}
+		for _, it := range arr {
+			av := valueByPath(it, attr)
+			if hasNeedle {
+				if !reflect.DeepEqual(av, needle) {
+					out = append(out, it)
+				}
+			} else if !truthy(av) {
+				out = append(out, it)
+			}
+		}
+		return out
 	default:
 		return v
 	}
@@ -733,9 +1022,9 @@ func numericOp(a any, b any, op string) any {
 func compareOp(a any, b any, op string) bool {
 	switch op {
 	case "==":
-		return reflect.DeepEqual(a, b)
+		return equalOp(a, b)
 	case "!=":
-		return !reflect.DeepEqual(a, b)
+		return !equalOp(a, b)
 	case "<", "<=", ">", ">=":
 		fa := toFloat(a, math.NaN())
 		fb := toFloat(b, math.NaN())
@@ -767,6 +1056,16 @@ func compareOp(a any, b any, op string) bool {
 	return false
 }
 
+func equalOp(a any, b any) bool {
+	if isMissing(a) && isMissing(b) {
+		return true
+	}
+	if isNumber(a) && isNumber(b) {
+		return toFloat(a, 0) == toFloat(b, 0)
+	}
+	return reflect.DeepEqual(a, b)
+}
+
 type exprTokenKind int
 
 const (
@@ -796,6 +1095,8 @@ const (
 	tokAssign
 	tokIf
 	tokElse
+	tokIs
+	tokIn
 )
 
 type exprToken struct {
@@ -877,6 +1178,10 @@ func lexExpr(src string) ([]exprToken, error) {
 				tokens = append(tokens, exprToken{kind: tokOr, lit: lit})
 			case "not":
 				tokens = append(tokens, exprToken{kind: tokNot, lit: lit})
+			case "is":
+				tokens = append(tokens, exprToken{kind: tokIs, lit: lit})
+			case "in":
+				tokens = append(tokens, exprToken{kind: tokIn, lit: lit})
 			case "if":
 				tokens = append(tokens, exprToken{kind: tokIf, lit: lit})
 			case "else":
@@ -1065,18 +1370,75 @@ func (p *exprParser) parseCompare() (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	prev := left
+	hasCmp := false
+	result := true
+
 	for {
 		op := p.cur().kind
-		if op != tokEq && op != tokNe && op != tokLt && op != tokLte && op != tokGt && op != tokGte {
+		if op != tokEq && op != tokNe && op != tokLt && op != tokLte && op != tokGt && op != tokGte && op != tokIs && op != tokIn && !(op == tokNot && p.next().kind == tokIn) {
 			break
 		}
+		hasCmp = true
 		opLit := p.cur().lit
-		p.advance()
+		isNot := false
+		if op == tokNot && p.next().kind == tokIn {
+			p.advance()
+			p.advance()
+			opLit = "not in"
+		} else if op == tokIs {
+			p.advance()
+			if p.cur().kind == tokNot {
+				isNot = true
+				p.advance()
+			}
+			if p.cur().kind == tokIdent {
+				testKw := p.cur().lit
+				if isTestKeyword(prev, testKw) || strings.EqualFold(testKw, "defined") || strings.EqualFold(testKw, "undefined") || strings.EqualFold(testKw, "none") || strings.EqualFold(testKw, "null") || strings.EqualFold(testKw, "string") || strings.EqualFold(testKw, "number") || strings.EqualFold(testKw, "boolean") || strings.EqualFold(testKw, "bool") || strings.EqualFold(testKw, "iterable") || strings.EqualFold(testKw, "callable") {
+					p.advance()
+					ok := isTestKeyword(prev, testKw)
+					if isNot {
+						ok = !ok
+					}
+					result = result && ok
+					// preserve chain semantics: a is defined is true compares bool->right next
+					prev = ok
+					continue
+				}
+			}
+			// fallback: "a is b"
+			right, err := p.parseAdd()
+			if err != nil {
+				return nil, err
+			}
+			ok := compareOp(prev, right, "==")
+			if isNot {
+				ok = !ok
+			}
+			result = result && ok
+			prev = right
+			continue
+		} else {
+			p.advance()
+		}
 		right, err := p.parseAdd()
 		if err != nil {
 			return nil, err
 		}
-		left = compareOp(left, right, opLit)
+		var ok bool
+		switch opLit {
+		case "in":
+			ok = containsOp(right, prev)
+		case "not in":
+			ok = !containsOp(right, prev)
+		default:
+			ok = compareOp(prev, right, opLit)
+		}
+		result = result && ok
+		prev = right
+	}
+	if hasCmp {
+		return result, nil
 	}
 	return left, nil
 }

@@ -1,0 +1,4 @@
+active count => {{ users | selectattr("active") | length }}
+inactive count => {{ users | rejectattr("active") | length }}
+by-name first => {{ users | sort(false, false, "name") | first | dump }}
+groupby role count => {{ users | groupby("role") | length }}

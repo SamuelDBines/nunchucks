@@ -51,3 +51,61 @@ func TestFilterBuiltinsAndArgs(t *testing.T) {
 		}
 	}
 }
+
+func TestFilterCollectionParitySet(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `
+{{ users | selectattr("active") | length }}
+{{ users | rejectattr("active") | length }}
+{{ nums | select(2) | length }}
+{{ nums | reject(2) | length }}
+{{ data | dictsort("key") | length }}
+{{ users | groupby("role") | length }}
+{{ users | sort(false, false, "name") | first | dump }}
+`
+	ctx := map[string]any{
+		"nums": []any{1, 2, 2, 3},
+		"data": map[string]any{"b": 2, "a": 1},
+		"users": []any{
+			map[string]any{"name": "Zed", "active": true, "role": "dev"},
+			map[string]any{"name": "Amy", "active": false, "role": "ops"},
+			map[string]any{"name": "Bob", "active": true, "role": "dev"},
+		},
+	}
+	out, err := env.RenderString(src, ctx)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	for _, must := range []string{"2", "1", "\"name\":\"Amy\""} {
+		if !strings.Contains(out, must) {
+			t.Fatalf("expected output to contain %q, got:\n%s", must, out)
+		}
+	}
+}
+
+func TestExpressionIsAndIn(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `
+{{ 2 in nums }}
+{{ 5 not in nums }}
+{{ role is "admin" }}
+{{ role is not "member" }}
+{{ role is string }}
+{{ missing is undefined }}
+{{ role is defined }}
+{{ missing is not defined }}
+{{ nums is iterable }}
+{{ 2 < 3 < 4 }}
+`
+	out, err := env.RenderString(src, map[string]any{
+		"nums": []any{1, 2, 3},
+		"role": "admin",
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	s := compactWhitespace(out)
+	if !strings.Contains(s, "true true true true true true true true true") {
+		t.Fatalf("unexpected output: %q", out)
+	}
+}
