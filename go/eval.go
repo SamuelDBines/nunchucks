@@ -353,34 +353,46 @@ func parseFilterSpec(raw string) (string, []string) {
 	return strings.TrimSpace(raw), nil
 }
 
-func valueByPath(v any, path string) any {
+func valueByPathEx(v any, path string) (any, bool) {
 	if strings.TrimSpace(path) == "" {
-		return v
+		return v, true
 	}
 	parts := strings.Split(path, ".")
 	cur := v
 	for _, part := range parts {
 		switch t := cur.(type) {
 		case map[string]any:
-			cur = t[part]
+			next, ok := t[part]
+			if !ok {
+				return missing, false
+			}
+			cur = next
 		default:
 			rv := reflect.ValueOf(cur)
 			if !rv.IsValid() {
-				return nil
+				return missing, false
 			}
 			if rv.Kind() == reflect.Map {
 				mv := rv.MapIndex(reflect.ValueOf(part))
 				if mv.IsValid() {
 					cur = mv.Interface()
 				} else {
-					return nil
+					return missing, false
 				}
 			} else {
-				return nil
+				return missing, false
 			}
 		}
 	}
-	return cur
+	return cur, true
+}
+
+func valueByPath(v any, path string) any {
+	out, ok := valueByPathEx(v, path)
+	if !ok {
+		return missing
+	}
+	return out
 }
 
 func containsOp(container any, item any) bool {
@@ -458,7 +470,7 @@ func isMapping(v any) bool {
 
 func isKnownTestName(name string) bool {
 	switch strings.ToLower(strings.TrimSpace(name)) {
-	case "defined", "undefined", "none", "null", "string", "number", "boolean", "bool", "iterable", "callable", "odd", "even", "divisibleby", "lower", "upper", "equalto", "sameas", "sequence", "mapping":
+	case "defined", "undefined", "none", "null", "string", "number", "boolean", "bool", "iterable", "callable", "odd", "even", "divisibleby", "lower", "upper", "equalto", "sameas", "sequence", "mapping", "true", "false":
 		return true
 	default:
 		return false
@@ -524,6 +536,10 @@ func evalTestKeyword(v any, kw string, args []any) bool {
 		return isSequence(v)
 	case "mapping":
 		return isMapping(v)
+	case "true":
+		return v == true
+	case "false":
+		return v == false
 	default:
 		return false
 	}
@@ -531,6 +547,42 @@ func evalTestKeyword(v any, kw string, args []any) bool {
 
 func isTestKeyword(v any, kw string) bool {
 	return evalTestKeyword(v, kw, nil)
+}
+
+func compareAny(a any, b any, caseSens bool) int {
+	if isMissing(a) && isMissing(b) {
+		return 0
+	}
+	if isMissing(a) {
+		return -1
+	}
+	if isMissing(b) {
+		return 1
+	}
+	if isNumber(a) && isNumber(b) {
+		af := toFloat(a, 0)
+		bf := toFloat(b, 0)
+		if af < bf {
+			return -1
+		}
+		if af > bf {
+			return 1
+		}
+		return 0
+	}
+	as := fmt.Sprint(a)
+	bs := fmt.Sprint(b)
+	if !caseSens {
+		as = strings.ToLower(as)
+		bs = strings.ToLower(bs)
+	}
+	if as < bs {
+		return -1
+	}
+	if as > bs {
+		return 1
+	}
+	return 0
 }
 
 func applyFilter(name string, v any, args []any) any {
@@ -844,29 +896,16 @@ func applyFilter(name string, v any, args []any) any {
 				a = valueByPath(a, attr)
 				b = valueByPath(b, attr)
 			}
-			if isNumber(a) && isNumber(b) {
-				af := toFloat(a, 0)
-				bf := toFloat(b, 0)
-				if reverse {
-					return af > bf
-				}
-				return af < bf
-			}
-			as := fmt.Sprint(a)
-			bs := fmt.Sprint(b)
-			if !caseSens {
-				as = strings.ToLower(as)
-				bs = strings.ToLower(bs)
-			}
+			cmp := compareAny(a, b, caseSens)
 			if reverse {
-				return as > bs
+				return cmp > 0
 			}
-			return as < bs
+			return cmp < 0
 		})
 		return arr
 	case "dictsort":
-		m, ok := v.(map[string]any)
-		if !ok {
+		rv := reflect.ValueOf(v)
+		if !rv.IsValid() || rv.Kind() != reflect.Map {
 			return []any{}
 		}
 		by := "key"
@@ -891,33 +930,31 @@ func applyFilter(name string, v any, args []any) any {
 				}
 			}
 		}
-		pairs := make([][]any, 0, len(m))
-		for k, val := range m {
-			pairs = append(pairs, []any{k, val})
+		type pair struct {
+			k any
+			v any
+		}
+		pairs := make([]pair, 0, rv.Len())
+		iter := rv.MapRange()
+		for iter.Next() {
+			pairs = append(pairs, pair{k: iter.Key().Interface(), v: iter.Value().Interface()})
 		}
 		sort.SliceStable(pairs, func(i, j int) bool {
-			l := pairs[i]
-			r := pairs[j]
-			li := 0
-			ri := 0
+			var lv any = pairs[i].k
+			var rv any = pairs[j].k
 			if by == "value" {
-				li = 1
-				ri = 1
+				lv = pairs[i].v
+				rv = pairs[j].v
 			}
-			ls := fmt.Sprint(l[li])
-			rs := fmt.Sprint(r[ri])
-			if !caseSens {
-				ls = strings.ToLower(ls)
-				rs = strings.ToLower(rs)
-			}
+			cmp := compareAny(lv, rv, caseSens)
 			if reverse {
-				return ls > rs
+				return cmp > 0
 			}
-			return ls < rs
+			return cmp < 0
 		})
 		out := make([]any, 0, len(pairs))
 		for _, p := range pairs {
-			out = append(out, []any{p[0], p[1]})
+			out = append(out, []any{p.k, p.v})
 		}
 		return out
 	case "groupby":
@@ -925,25 +962,60 @@ func applyFilter(name string, v any, args []any) any {
 		if len(args) > 0 {
 			attr = fmt.Sprint(args[0])
 		}
-		arr := toSlice(v)
-		groups := map[string][]any{}
-		groupVals := map[string]any{}
-		order := []string{}
-		for _, it := range arr {
-			keyVal := valueByPath(it, attr)
-			key := fmt.Sprint(keyVal)
-			if _, ok := groups[key]; !ok {
-				groups[key] = []any{}
-				groupVals[key] = keyVal
-				order = append(order, key)
-			}
-			groups[key] = append(groups[key], it)
+		var defaultVal any = missing
+		hasDefault := false
+		caseSens := false
+		if len(args) > 1 {
+			defaultVal = args[1]
+			hasDefault = true
 		}
-		out := make([]any, 0, len(order))
-		for _, k := range order {
+		if len(args) > 2 {
+			caseSens = toBool(args[2], false)
+		}
+
+		type grouped struct {
+			grouper any
+			norm    any
+			list    []any
+		}
+
+		arr := toSlice(v)
+		groups := map[string]*grouped{}
+		for _, it := range arr {
+			keyVal, ok := valueByPathEx(it, attr)
+			if !ok {
+				if hasDefault {
+					keyVal = defaultVal
+				} else {
+					keyVal = missing
+				}
+			}
+			normVal := keyVal
+			if s, ok := keyVal.(string); ok && !caseSens {
+				normVal = strings.ToLower(s)
+			}
+			mapKey := fmt.Sprintf("%T|%v", normVal, normVal)
+			g, ok := groups[mapKey]
+			if !ok {
+				g = &grouped{grouper: keyVal, norm: normVal, list: []any{}}
+				groups[mapKey] = g
+			}
+			g.list = append(g.list, it)
+		}
+
+		entries := make([]*grouped, 0, len(groups))
+		for _, g := range groups {
+			entries = append(entries, g)
+		}
+		sort.SliceStable(entries, func(i, j int) bool {
+			return compareAny(entries[i].norm, entries[j].norm, true) < 0
+		})
+
+		out := make([]any, 0, len(entries))
+		for _, g := range entries {
 			out = append(out, map[string]any{
-				"grouper": groupVals[k],
-				"list":    groups[k],
+				"grouper": g.grouper,
+				"list":    g.list,
 			})
 		}
 		return out

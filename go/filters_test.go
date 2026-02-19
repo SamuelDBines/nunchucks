@@ -63,17 +63,21 @@ func TestFilterCollectionParitySet(t *testing.T) {
 {{ nums | reject("odd") | length }}
 {{ users | selectattr("age", "divisibleby", 2) | length }}
 {{ users | rejectattr("age", "divisibleby", 2) | length }}
+{{ users | selectattr("missing", "undefined") | length }}
 {{ data | dictsort("key") | length }}
 {{ data | dictsort("value", false, true) | first | first }}
+{{ data | dictsort(false, "value", true) | first | first }}
 {{ users | groupby("role") | length }}
+{{ users | groupby("role") | first | dump }}
+{{ users | groupby("team", "none") | first | dump }}
 {{ users | sort(false, false, "name") | first | dump }}
 {{ users | sort(false, false, "age") | first | dump }}
 `
 	ctx := map[string]any{
 		"nums": []any{1, 2, 2, 3},
-		"data": map[string]any{"b": 2, "a": 1},
+		"data": map[string]any{"b": 2, "a": 1, "C": 3},
 		"users": []any{
-			map[string]any{"name": "Zed", "active": true, "role": "dev", "age": 30},
+			map[string]any{"name": "Zed", "active": true, "role": "Dev", "age": 30},
 			map[string]any{"name": "Amy", "active": false, "role": "ops", "age": 22},
 			map[string]any{"name": "Bob", "active": true, "role": "dev", "age": 25},
 		},
@@ -82,7 +86,15 @@ func TestFilterCollectionParitySet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	for _, must := range []string{"2", "1", "\"name\":\"Amy\"", "\"age\":22"} {
+	for _, must := range []string{
+		"2",
+		"1",
+		"3",
+		"\"name\":\"Amy\"",
+		"\"age\":22",
+		"\"grouper\":\"Dev\"",
+		"\"grouper\":\"none\"",
+	} {
 		if !strings.Contains(out, must) {
 			t.Fatalf("expected output to contain %q, got:\n%s", must, out)
 		}
@@ -110,6 +122,8 @@ func TestExpressionIsAndIn(t *testing.T) {
 {{ role is equalto("admin") }}
 {{ nums is sequence }}
 {{ cfg is mapping }}
+{{ true is true }}
+{{ false is false }}
 `
 	out, err := env.RenderString(src, map[string]any{
 		"nums": []any{1, 2, 3},
@@ -120,7 +134,7 @@ func TestExpressionIsAndIn(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	s := compactWhitespace(out)
-	if !strings.Contains(s, "true true true true true true true true true true true true true true true true true") {
+	if !strings.Contains(s, "true true true true true true true true true true true true true true true true true true true") {
 		t.Fatalf("unexpected output: %q", out)
 	}
 }

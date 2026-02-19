@@ -6,4 +6,7 @@ age divisible by 2 => {{ users | selectattr("age", "divisibleby", 2) | length }}
 by-name first => {{ users | sort(false, false, "name") | first | dump }}
 by-age first => {{ users | sort(false, false, "age") | first | dump }}
 dictsort value reverse first key => {{ data | dictsort("value", false, true) | first | first }}
+dictsort bool-first first key => {{ data | dictsort(false, "value", true) | first | first }}
 groupby role count => {{ users | groupby("role") | length }}
+groupby role first => {{ users | groupby("role") | first | dump }}
+groupby missing with default => {{ users | groupby("team", "none") | first | dump }}
