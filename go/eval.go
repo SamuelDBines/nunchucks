@@ -659,6 +659,18 @@ func applyFilter(name string, v any, args []any) any {
 		if arr := toSlice(v); arr != nil {
 			return arr
 		}
+		rv := reflect.ValueOf(v)
+		if rv.IsValid() && rv.Kind() == reflect.Map {
+			keys := rv.MapKeys()
+			out := make([]any, 0, len(keys))
+			for _, k := range keys {
+				out = append(out, k.Interface())
+			}
+			sort.SliceStable(out, func(i, j int) bool {
+				return compareAny(out[i], out[j], false) < 0
+			})
+			return out
+		}
 		s := fmt.Sprint(v)
 		r := []rune(s)
 		out := make([]any, 0, len(r))
@@ -930,6 +942,9 @@ func applyFilter(name string, v any, args []any) any {
 				}
 			}
 		}
+		if by != "key" && by != "value" {
+			by = "key"
+		}
 		type pair struct {
 			k any
 			v any
@@ -978,9 +993,14 @@ func applyFilter(name string, v any, args []any) any {
 			norm    any
 			list    []any
 		}
+		type groupItem struct {
+			item any
+			key  any
+			norm any
+		}
 
 		arr := toSlice(v)
-		groups := map[string]*grouped{}
+		items := make([]groupItem, 0, len(arr))
 		for _, it := range arr {
 			keyVal, ok := valueByPathEx(it, attr)
 			if !ok {
@@ -994,13 +1014,22 @@ func applyFilter(name string, v any, args []any) any {
 			if s, ok := keyVal.(string); ok && !caseSens {
 				normVal = strings.ToLower(s)
 			}
-			mapKey := fmt.Sprintf("%T|%v", normVal, normVal)
+			items = append(items, groupItem{item: it, key: keyVal, norm: normVal})
+		}
+
+		sort.SliceStable(items, func(i, j int) bool {
+			return compareAny(items[i].norm, items[j].norm, true) < 0
+		})
+
+		groups := map[string]*grouped{}
+		for _, gi := range items {
+			mapKey := fmt.Sprintf("%T|%v", gi.norm, gi.norm)
 			g, ok := groups[mapKey]
 			if !ok {
-				g = &grouped{grouper: keyVal, norm: normVal, list: []any{}}
+				g = &grouped{grouper: gi.key, norm: gi.norm, list: []any{}}
 				groups[mapKey] = g
 			}
-			g.list = append(g.list, it)
+			g.list = append(g.list, gi.item)
 		}
 
 		entries := make([]*grouped, 0, len(groups))

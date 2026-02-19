@@ -138,3 +138,60 @@ func TestExpressionIsAndIn(t *testing.T) {
 		t.Fatalf("unexpected output: %q", out)
 	}
 }
+
+func TestGroupByAndDictsortCompatibilityNuances(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `
+{{ users | groupby("role") | length }}
+{{ users | groupby("role") | first | dump }}
+{{ users | groupby("role", "none", true) | length }}
+{{ users | groupby("team", "none") | first | dump }}
+{{ data | dictsort(false, "key", false) | first | first }}
+{{ data | dictsort("value", false, true) | first | first }}
+`
+	out, err := env.RenderString(src, map[string]any{
+		"users": []any{
+			map[string]any{"name": "sam", "role": "Dev"},
+			map[string]any{"name": "kai", "role": "dev"},
+			map[string]any{"name": "eli", "role": "Ops"},
+		},
+		"data": map[string]any{"b": 2, "a": 1, "C": 3},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	s := compactWhitespace(out)
+	for _, must := range []string{
+		`2`,
+		`"grouper":"Dev"`,
+		`"grouper":"none"`,
+		`a`,
+		`C`,
+	} {
+		if !strings.Contains(s, must) {
+			t.Fatalf("expected output to contain %q, got:\n%s", must, out)
+		}
+	}
+}
+
+func TestBuiltinRangeFunctionAndListMap(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `
+{{ range(5) | join(",") }}
+{{ range(1, 6, 2) | join(",") }}
+{{ range(5, 0, -2) | join(",") }}
+{{ cfg | list | first }}
+`
+	out, err := env.RenderString(src, map[string]any{
+		"cfg": map[string]any{"b": 2, "a": 1},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	s := compactWhitespace(out)
+	for _, must := range []string{"0,1,2,3,4", "1,3,5", "5,3,1", "a"} {
+		if !strings.Contains(s, must) {
+			t.Fatalf("expected output to contain %q, got:\n%s", must, out)
+		}
+	}
+}

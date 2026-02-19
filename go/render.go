@@ -40,6 +40,12 @@ func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
 	if ctx == nil {
 		ctx = map[string]any{}
 	}
+	ctx = cloneMap(ctx)
+	for k, v := range builtinGlobals() {
+		if _, ok := ctx[k]; !ok {
+			ctx[k] = v
+		}
+	}
 	return e.renderWithState(src, ctx, map[string]any{}, map[string]MacroDef{})
 }
 
