@@ -7,6 +7,8 @@
   const projectOpen = document.querySelector('[data-open-project]');
   const projectClose = document.querySelector('[data-close-project]');
   const projectBackdrop = document.querySelector('[data-project-backdrop]');
+  const paneTabs = Array.from(document.querySelectorAll('[data-pane-tab]'));
+  const panes = Array.from(document.querySelectorAll('[data-pane]'));
 
   function activate(lang) {
     tabs.forEach((tab) => {
@@ -48,6 +50,18 @@
     projectBackdrop.hidden = false;
   }
 
+  function activatePane(pane) {
+    paneTabs.forEach((tab) => {
+      const on = tab.dataset.paneTab === pane;
+      tab.classList.toggle('is-active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panes.forEach((section) => {
+      const on = section.dataset.pane === pane;
+      section.classList.toggle('is-active', on);
+    });
+  }
+
   tabs.forEach((tab) => {
     tab.addEventListener('click', function () {
       activate(tab.dataset.lang);
@@ -69,6 +83,12 @@
   if (projectBackdrop) {
     projectBackdrop.addEventListener('click', closeProjectPane);
   }
+
+  paneTabs.forEach((tab) => {
+    tab.addEventListener('click', function () {
+      activatePane(tab.dataset.paneTab);
+    });
+  });
 
   function applyHighlighting() {
     if (window.hljs && typeof window.hljs.highlightAll === 'function') {

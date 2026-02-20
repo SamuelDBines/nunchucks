@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nunchucks Editor Demo</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" />
+</head>
+<body>
+  <main class="wrapper">
+    <nav>
+      <a href="./index.html">Docs Home</a>
+      <a href="./golang.html">Go Details</a>
+      <a href="./templating.html">Templating Docs</a>
+      <a href="./playground.html">Editor Demo</a>
+    </nav>
+
+    <section class="hero">
+      <h1>Mini Editor + Output</h1>
+      <p>VS Code-inspired multi-file editor panel with rendered output preview.</p>
+    </section>
+
+    <div class="pane-switch" role="tablist" aria-label="Mobile pane switcher">
+      <button class="pane-btn is-active" data-pane-tab="files" role="tab" aria-selected="true">Files</button>
+      <button class="pane-btn" data-pane-tab="output" role="tab" aria-selected="false">Output</button>
+    </div>
+
+    <div class="playground-layout" style="margin-top:1rem;">
+      <section class="editor-pane card is-active" data-pane="files">
+        <div class="project-pane-header">
+          <h2>App Files</h2>
+        </div>
+        <p class="project-pane-sub">Switch files using tabs, like a compact editor.</p>
+
+        <div class="file-tabs" role="tablist" aria-label="Editor files">
+          <button class="file-tab is-active" data-file="app" role="tab" aria-selected="true">app.njk</button>
+          <button class="file-tab" data-file="layout" role="tab" aria-selected="false">layout.njk</button>
+          <button class="file-tab" data-file="card" role="tab" aria-selected="false">partials/user-card.njk</button>
+          <button class="file-tab" data-file="macros" role="tab" aria-selected="false">macros/ui.njk</button>
+        </div>
+
+        <div class="file-panel is-active" data-file="app" role="tabpanel">
+<pre><code class="language-django">{% extends "layout.njk" %}
+{% import "macros/ui.njk" as ui %}
+{% block title %}Team{% endblock %}
+{% block body %}
+  {% for user in users %}
+    {% include "partials/user-card.njk" with context %}
+  {% endfor %}
+  {% call ui.panel("success") %}
+    {{ users | length }} users loaded
+  {% endcall %}
+{% endblock %}</code></pre>
+        </div>
+
+        <div class="file-panel" data-file="layout" role="tabpanel" hidden>
+<pre><code class="language-django"><!doctype html>
+<html>
+  <head><title>{% block title %}Demo{% endblock %}</title></head>
+  <body>
+    <main>{% block body %}{% endblock %}</main>
+  </body>
+</html></code></pre>
+        </div>
+
+        <div class="file-panel" data-file="card" role="tabpanel" hidden>
+<pre><code class="language-django"><article class="user-card">
+  <h3>{{ user.name | title }}</h3>
+  <p>{{ user.email | lower }}</p>
+</article></code></pre>
+        </div>
+
+        <div class="file-panel" data-file="macros" role="tabpanel" hidden>
+<pre><code class="language-django">{% macro panel(kind="info") %}
+<section class="panel panel-{{ kind }}">
+  {{ caller() }}
+</section>
+{% endmacro %}</code></pre>
+        </div>
+      </section>
+
+      <section class="output-pane card" data-pane="output">
+        <h2>Output</h2>
+        <p class="project-pane-sub">Example rendered output from the templates.</p>
+<pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;Team&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;main&gt;
+      &lt;article class="user-card"&gt;
+        &lt;h3&gt;Sam&lt;/h3&gt;
+        &lt;p&gt;sam@example.com&lt;/p&gt;
+      &lt;/article&gt;
+      &lt;article class="user-card"&gt;
+        &lt;h3&gt;Kai&lt;/h3&gt;
+        &lt;p&gt;kai@example.com&lt;/p&gt;
+      &lt;/article&gt;
+      &lt;section class="panel panel-success"&gt;2 users loaded&lt;/section&gt;
+    &lt;/main&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </section>
+    </div>
+  </main>
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script defer src="./assets/docs.js"></script>
+</body>
+</html>
