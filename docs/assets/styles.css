@@ -27,6 +27,10 @@ body {
   padding: 2rem 1rem 4rem;
 }
 
+.wrapper-wide {
+  max-width: 98vw;
+}
+
 h1, h2, h3 {
   font-family: "Space Grotesk", "Avenir Next", sans-serif;
   margin: 0 0 0.75rem;
@@ -256,7 +260,8 @@ nav {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
+  min-height: calc(100vh - 220px);
 }
 
 .editor-pane {
@@ -264,41 +269,35 @@ nav {
   overflow: hidden;
   background: var(--vscode-bg);
   border-color: var(--vscode-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.output-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .output-pane pre {
-  margin-top: 0.75rem;
+  margin-top: 0.6rem;
+  flex: 1;
 }
 
-.pg-toolbar {
+.pg-tabs-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0.9rem;
   border-bottom: 1px solid var(--vscode-border);
   background: #2d2d2d;
-  color: var(--vscode-ink);
-}
-
-.pg-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.pg-add {
-  border: 1px solid var(--vscode-border);
-  background: #3a3d41;
-  color: var(--vscode-ink);
-  border-radius: 6px;
-  padding: 0.25rem 0.55rem;
-  cursor: pointer;
 }
 
 .pg-tabs {
+  flex: 1;
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  border-bottom: 1px solid var(--vscode-border);
   background: var(--vscode-tab);
 }
 
@@ -328,25 +327,149 @@ nav {
   color: #ce9178;
 }
 
-.pg-editor-wrap {
-  padding: 0;
-}
-
-.pg-editor {
-  width: 100%;
-  min-height: 430px;
+.pg-add-inline {
   border: 0;
-  padding: 0.9rem;
-  resize: vertical;
-  background: var(--vscode-bg);
+  border-left: 1px solid var(--vscode-border);
+  background: #3a3d41;
   color: var(--vscode-ink);
-  font-family: "SF Mono", "Menlo", "Monaco", "Consolas", monospace;
-  font-size: 0.88rem;
-  line-height: 1.45;
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-.pg-editor:focus {
-  outline: 1px solid #007acc;
+.pg-editor-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+.pg-editor-surface {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  background: var(--vscode-bg);
+}
+
+.pg-output-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.pg-export {
+  border: 1px solid var(--line);
+  background: #f8fbf6;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.pg-output-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+  margin-top: 0.55rem;
+}
+
+.pg-out-tab {
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  font-family: "SF Mono", "Menlo", "Monaco", "Consolas", monospace;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pg-out-tab.is-active {
+  background: #eef5eb;
+  color: var(--ink);
+}
+
+.pg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 120;
+}
+
+.pg-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 480px);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  z-index: 121;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+}
+
+.pg-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.pg-modal-close {
+  border: 0;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.pg-modal-body {
+  padding: 0.85rem 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pg-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.pg-field select,
+.pg-field input {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+}
+
+.pg-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding: 0 1rem 1rem;
+}
+
+.pg-btn-secondary,
+.pg-btn-primary {
+  border-radius: 8px;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+}
+
+.pg-btn-secondary {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+
+.pg-btn-primary {
+  border: 1px solid var(--brand);
+  background: var(--brand);
+  color: #fff;
 }
 
 .pane-switch {
@@ -373,6 +496,7 @@ nav {
 @media (max-width: 900px) {
   .playground-layout {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 
   .pane-switch {

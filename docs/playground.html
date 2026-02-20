@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" />
 </head>
 <body>
-  <main class="wrapper">
+  <main class="wrapper wrapper-wide">
     <nav>
       <a href="./index.html">Docs Home</a>
       <a href="./golang.html">Go Details</a>
@@ -28,23 +28,53 @@
 
     <div class="playground-layout" style="margin-top:1rem;" data-playground>
       <section class="editor-pane card is-active" data-pane="files">
-        <div class="pg-toolbar">
-          <div class="pg-title">Editor</div>
-          <button class="pg-add" type="button" data-add-file>+ Add File</button>
+        <div class="pg-tabs-row">
+          <div class="pg-tabs" role="tablist" aria-label="Editor files" data-pg-tabs></div>
+          <button class="pg-add-inline" type="button" data-add-file aria-label="Add file">+</button>
         </div>
 
-        <div class="pg-tabs" role="tablist" aria-label="Editor files" data-pg-tabs></div>
-
         <div class="pg-editor-wrap">
-          <textarea class="pg-editor" data-pg-editor spellcheck="false"></textarea>
+          <div class="pg-editor-surface" data-pg-editor></div>
         </div>
       </section>
 
       <section class="output-pane card" data-pane="output">
-        <h2>Output</h2>
+        <div class="pg-output-head">
+          <h2>Playground</h2>
+          <button class="pg-export" type="button" data-export-output>Export</button>
+        </div>
         <p class="project-pane-sub">Live preview (lightweight demo renderer for docs).</p>
+        <div class="pg-output-tabs" role="tablist" aria-label="Output files" data-pg-output-tabs></div>
 <pre><code class="language-html" data-pg-output></code></pre>
       </section>
+    </div>
+
+    <div class="pg-modal-backdrop" data-pg-modal-backdrop hidden></div>
+    <div class="pg-modal" data-pg-modal hidden role="dialog" aria-modal="true" aria-label="Add file">
+      <div class="pg-modal-head">
+        <h3>Add File</h3>
+        <button type="button" class="pg-modal-close" data-pg-modal-close aria-label="Close">×</button>
+      </div>
+      <div class="pg-modal-body">
+        <label class="pg-field">
+          <span>File Type</span>
+          <select data-pg-file-type>
+            <option value="page">Page</option>
+            <option value="layout">Layout</option>
+            <option value="partial">Partial</option>
+            <option value="macro">Macro</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label class="pg-field">
+          <span>File Name</span>
+          <input type="text" data-pg-file-name placeholder="home" />
+        </label>
+      </div>
+      <div class="pg-modal-actions">
+        <button type="button" class="pg-btn-secondary" data-pg-modal-cancel>Cancel</button>
+        <button type="button" class="pg-btn-primary" data-pg-modal-create>Create</button>
+      </div>
     </div>
     <footer style="margin-top:1.5rem; text-align:center; color: var(--muted); font-size:0.92rem;">
       <a href="https://samueldbines.github.io/" target="_blank" rel="noopener noreferrer">© 2026 Samuel Bines</a>
@@ -59,6 +89,7 @@
 }</script>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
   <script defer src="./assets/docs.js"></script>
 </body>
 </html>
