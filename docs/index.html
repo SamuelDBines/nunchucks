@@ -121,15 +121,82 @@ print(result.stdout);</code></pre>
 
     <section class="card" style="margin-top:1rem;">
       <h2>Filters</h2>
-      <p>Current Go filters:</p>
+      <p>Current Go filters include:</p>
       <ul>
-        <li><code>lower</code></li>
-        <li><code>upper</code></li>
+        <li><code>abs</code>, <code>batch</code>, <code>capitalize</code>, <code>center</code>, <code>default</code></li>
+        <li><code>dictsort</code>, <code>dump</code>, <code>escape</code>, <code>first</code>, <code>float</code>, <code>forceescape</code></li>
+        <li><code>groupby</code>, <code>indent</code>, <code>int</code>, <code>join</code>, <code>last</code>, <code>length</code>, <code>list</code></li>
+        <li><code>lower</code>, <code>nl2br</code>, <code>random</code>, <code>reject</code>, <code>rejectattr</code>, <code>replace</code></li>
+        <li><code>reverse</code>, <code>round</code>, <code>safe</code>, <code>select</code>, <code>selectattr</code>, <code>slice</code>, <code>sort</code></li>
+        <li><code>string</code>, <code>striptags</code>, <code>sum</code>, <code>title</code>, <code>trim</code>, <code>truncate</code>, <code>upper</code></li>
+        <li><code>urlencode</code>, <code>urlize</code>, <code>wordcount</code></li>
       </ul>
 <pre><code class="language-njk">{{ "NUNCHUCKS" | lower }}
 {{ "nunchucks" | upper }}
 {% filter upper %}hello {{ user.name }}{% endfilter %}</code></pre>
-      <p><small>Roadmap: full Nunjucks-style built-ins (abs, default, join, length, replace, sort, truncate, urlencode, urlize, wordcount, and others).</small></p>
+      <p><small>Note: behavior is close to Nunjucks/Jinja for most filters, with a few edge cases still being tightened.</small></p>
+    </section>
+
+    <section class="card" style="margin-top:1rem;">
+      <h2>Deep Example 1: Macros + Layout + Call Blocks</h2>
+      <p>Use this when you want reusable UI components and nested content.</p>
+<pre><code class="language-njk"># base.njk
+&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;header&gt;{% block header %}Default Header{% endblock %}&lt;/header&gt;
+    &lt;main&gt;{% block content %}{% endblock %}&lt;/main&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+# macros.njk
+{% macro panel(kind="info") %}
+&lt;section class="panel panel-{{ kind }}"&gt;
+  {{ caller() }}
+&lt;/section&gt;
+{% endmacro %}
+
+# page.njk
+{% extends "base.njk" %}
+{% import "macros.njk" as ui %}
+{% block header %}Account Overview{% endblock %}
+{% block content %}
+  {% call ui.panel("success") %}
+    Hello {{ user.name | title }}
+  {% endcall %}
+{% endblock %}</code></pre>
+<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
+out, err := env.Render("page.njk", map[string]any{
+  "user": map[string]any{"name": "samuel"},
+})
+if err != nil { panic(err) }
+fmt.Println(out)</code></pre>
+    </section>
+
+    <section class="card" style="margin-top:1rem;">
+      <h2>Deep Example 2: Data Shaping (groupby + dictsort + selectattr + range)</h2>
+      <p>Use this when rendering dashboards, reports, and config summaries.</p>
+<pre><code class="language-njk">{# users grouped by role (case-insensitive by default) #}
+{% for grp in users | groupby("role", "none") %}
+Role={{ grp.grouper }} count={{ grp.list | length }}
+{% endfor %}
+
+{# active users only #}
+Active={{ users | selectattr("active") | length }}
+
+{# reverse sort map by value #}
+TopKey={{ scores | dictsort("value", false, true) | first | first }}
+
+{# deterministic ranges from builtin function #}
+Steps={{ range(1, 8, 2) | join(",") }}</code></pre>
+<pre><code class="language-go">out, err := env.Render("report.njk", map[string]any{
+  "users": []any{
+    map[string]any{"name":"Zed","role":"Dev","active":true},
+    map[string]any{"name":"Amy","role":"ops","active":false},
+    map[string]any{"name":"Bob","role":"dev","active":true},
+  },
+  "scores": map[string]any{"alpha": 92, "beta": 87, "gamma": 95},
+})</code></pre>
     </section>
 
     <section class="card" style="margin-top:1rem;">
