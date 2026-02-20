@@ -9,6 +9,7 @@
   const projectBackdrop = document.querySelector('[data-project-backdrop]');
   const paneTabs = Array.from(document.querySelectorAll('[data-pane-tab]'));
   const panes = Array.from(document.querySelectorAll('[data-pane]'));
+  const playground = document.querySelector('[data-playground]');
 
   function activate(lang) {
     tabs.forEach((tab) => {
@@ -89,6 +90,111 @@
       activatePane(tab.dataset.paneTab);
     });
   });
+
+  if (playground) {
+    const tabsHost = playground.querySelector('[data-pg-tabs]');
+    const editor = playground.querySelector('[data-pg-editor]');
+    const output = playground.querySelector('[data-pg-output]');
+    const addBtn = playground.querySelector('[data-add-file]');
+    const jsonNode = document.getElementById('pg-initial-files');
+
+    let files = {};
+    let activeFile = '';
+
+    try {
+      files = JSON.parse(jsonNode ? jsonNode.textContent || '{}' : '{}');
+    } catch (_err) {
+      files = {};
+    }
+
+    const names = Object.keys(files);
+    if (names.length === 0) {
+      files['app.njk'] = '';
+    }
+    activeFile = Object.keys(files)[0];
+
+    function fileTypeClass(name) {
+      if (name.endsWith('.njk')) return 'is-njk';
+      if (name.endsWith('.html')) return 'is-html';
+      return 'is-other';
+    }
+
+    function renderTabs() {
+      tabsHost.innerHTML = '';
+      Object.keys(files).forEach((name) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pg-tab' + (name === activeFile ? ' is-active' : '') + ' ' + fileTypeClass(name);
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', name === activeFile ? 'true' : 'false');
+        btn.dataset.file = name;
+
+        const base = document.createElement('span');
+        base.className = 'pg-tab-name';
+        base.textContent = name;
+        btn.appendChild(base);
+
+        btn.addEventListener('click', function () {
+          activeFile = name;
+          editor.value = files[name];
+          renderTabs();
+        });
+        tabsHost.appendChild(btn);
+      });
+    }
+
+    function simpleRender(template) {
+      let out = template;
+      out = out.replace(/\{\{\s*users\s*\|\s*length\s*\}\}/g, '2');
+      out = out.replace(/\{\{\s*user\.name\s*\|\s*title\s*\}\}/g, 'Sam');
+      out = out.replace(/\{\{\s*user\.email\s*\|\s*lower\s*\}\}/g, 'sam@example.com');
+      out = out.replace(/\{\{\s*users\s*\|\s*length\s*\}\}/g, '2');
+      out = out.replace(/\{%\s*extends[\s\S]*?%\}/g, '');
+      out = out.replace(/\{%\s*import[\s\S]*?%\}/g, '');
+      out = out.replace(/\{%\s*block[\s\S]*?%\}/g, '');
+      out = out.replace(/\{%\s*endblock\s*%\}/g, '');
+      out = out.replace(/\{%\s*for[\s\S]*?%\}/g, '');
+      out = out.replace(/\{%\s*endfor\s*%\}/g, '');
+      out = out.replace(/\{%\s*call[\s\S]*?%\}/g, '');
+      out = out.replace(/\{%\s*endcall\s*%\}/g, '');
+      out = out.replace(/\{%\s*include[\s\S]*?%\}/g, '<!-- include -->');
+      out = out.replace(/\{\{[\s\S]*?\}\}/g, '');
+      return out.trim();
+    }
+
+    function updateOutput() {
+      const source = files['app.njk'] || files[activeFile] || '';
+      output.textContent = simpleRender(source);
+      if (window.hljs && typeof window.hljs.highlightElement === 'function') {
+        window.hljs.highlightElement(output);
+      }
+    }
+
+    editor.addEventListener('input', function () {
+      files[activeFile] = editor.value;
+      updateOutput();
+    });
+
+    if (addBtn) {
+      addBtn.addEventListener('click', function () {
+        const name = window.prompt('New file name (example: partials/new-card.njk)');
+        if (!name) return;
+        if (files[name]) {
+          window.alert('File already exists');
+          return;
+        }
+        files[name] = '{# new file #}\\n';
+        activeFile = name;
+        editor.value = files[name];
+        renderTabs();
+        updateOutput();
+      });
+    }
+
+    editor.value = files[activeFile] || '';
+    renderTabs();
+    updateOutput();
+  }
 
   function applyHighlighting() {
     if (window.hljs && typeof window.hljs.highlightAll === 'function') {
