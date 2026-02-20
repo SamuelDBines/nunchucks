@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.njk": "jinja-html",
+    "*.nunjucks": "jinja-html"
+  },
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active"
+}
