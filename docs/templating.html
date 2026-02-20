@@ -17,338 +17,338 @@
 
     <section class="hero">
       <h1>Templating Reference</h1>
-      <p>Modeled after Nunjucks templating docs, but focused on Nunchucks implementation and parity work.</p>
+      <p>Modeled after Nunjucks templating docs, focused on Nunchucks implementation and parity work.</p>
       <p><small>Reference: <a href="https://mozilla.github.io/nunjucks/templating.html">mozilla.github.io/nunjucks/templating.html</a></small></p>
     </section>
 
     <section class="card" style="margin-top:1rem;">
-      <h2>Directory</h2>
-      <p>Every item below links to a detailed section with at least one example.</p>
-      <ul class="toc">
-        <li><a href="#core-topics">Core Topics</a></li>
-        <li><a href="#tags">Tags</a></li>
-        <li><a href="#expressions">Expressions</a></li>
-        <li><a href="#globals">Global Functions</a></li>
-        <li><a href="#builtin-filters">Builtin Filters</a></li>
-      </ul>
-      <p><strong>Core links:</strong>
-        <a href="#core-user-defined-templates-warning">User-Defined Templates Warning</a>,
-        <a href="#core-file-extensions">File Extensions</a>,
-        <a href="#core-syntax-highlighting">Syntax Highlighting</a>,
-        <a href="#core-variables">Variables</a>,
-        <a href="#core-filters">Filters</a>,
-        <a href="#core-template-inheritance">Template Inheritance</a>,
-        <a href="#core-super">super</a>,
-        <a href="#core-keyword-arguments">Keyword Arguments</a>,
-        <a href="#core-comments">Comments</a>,
-        <a href="#core-whitespace-control">Whitespace Control</a>,
-        <a href="#core-autoescaping">Autoescaping</a>
-      </p>
-      <p><strong>Tag links:</strong>
-        <a href="#tag-if">if</a>,
-        <a href="#tag-for">for</a>,
-        <a href="#tag-asynceach">asyncEach</a>,
-        <a href="#tag-asyncall">asyncAll</a>,
-        <a href="#tag-macro">macro</a>,
-        <a href="#tag-set">set</a>,
-        <a href="#tag-extends">extends</a>,
-        <a href="#tag-block">block</a>,
-        <a href="#tag-include">include</a>,
-        <a href="#tag-import">import/from import</a>,
-        <a href="#tag-raw">raw</a>,
-        <a href="#tag-verbatim">verbatim</a>,
-        <a href="#tag-filter-block">filter block</a>,
-        <a href="#tag-call">call</a>
-      </p>
-      <p><strong>Expression links:</strong>
-        <a href="#expr-math">Math</a>,
-        <a href="#expr-comparisons">Comparisons</a>,
-        <a href="#expr-logic">Logic</a>,
-        <a href="#expr-if-expression">If Expression</a>,
-        <a href="#expr-function-calls">Function Calls</a>,
-        <a href="#expr-regular-expressions">Regular Expressions</a>
-      </p>
-      <p><strong>Global links:</strong>
-        <a href="#global-range">range</a>,
-        <a href="#global-cycler">cycler</a>,
-        <a href="#global-joiner">joiner</a>
-      </p>
-      <p><strong>Filter links:</strong>
-        <a href="#filter-abs">abs</a>,
-        <a href="#filter-batch">batch</a>,
-        <a href="#filter-capitalize">capitalize</a>,
-        <a href="#filter-center">center</a>,
-        <a href="#filter-default">default</a>,
-        <a href="#filter-dictsort">dictsort</a>,
-        <a href="#filter-dump">dump</a>,
-        <a href="#filter-escape">escape</a>,
-        <a href="#filter-first">first</a>,
-        <a href="#filter-float">float</a>,
-        <a href="#filter-forceescape">forceescape</a>,
-        <a href="#filter-groupby">groupby</a>,
-        <a href="#filter-indent">indent</a>,
-        <a href="#filter-int">int</a>,
-        <a href="#filter-join">join</a>,
-        <a href="#filter-last">last</a>,
-        <a href="#filter-length">length</a>,
-        <a href="#filter-list">list</a>,
-        <a href="#filter-lower">lower</a>,
-        <a href="#filter-nl2br">nl2br</a>,
-        <a href="#filter-random">random</a>,
-        <a href="#filter-reject">reject</a>,
-        <a href="#filter-rejectattr">rejectattr</a>,
-        <a href="#filter-replace">replace</a>,
-        <a href="#filter-reverse">reverse</a>,
-        <a href="#filter-round">round</a>,
-        <a href="#filter-safe">safe</a>,
-        <a href="#filter-select">select</a>,
-        <a href="#filter-selectattr">selectattr</a>,
-        <a href="#filter-slice">slice</a>,
-        <a href="#filter-sort">sort</a>,
-        <a href="#filter-string">string</a>,
-        <a href="#filter-striptags">striptags</a>,
-        <a href="#filter-sum">sum</a>,
-        <a href="#filter-title">title</a>,
-        <a href="#filter-trim">trim</a>,
-        <a href="#filter-truncate">truncate</a>,
-        <a href="#filter-upper">upper</a>,
-        <a href="#filter-urlencode">urlencode</a>,
-        <a href="#filter-urlize">urlize</a>,
-        <a href="#filter-wordcount">wordcount</a>
-      </p>
+      <h2>Pick A Language</h2>
+      <p>Select runtime docs examples for the same template concepts.</p>
+      <div class="lang-tabs" role="tablist" aria-label="Templating language selector">
+        <button class="lang-tab is-active" data-lang="go" role="tab" aria-selected="true">Go</button>
+        <button class="lang-tab" data-lang="ts" role="tab" aria-selected="false">TypeScript</button>
+        <button class="lang-tab" data-lang="js" role="tab" aria-selected="false">JavaScript</button>
+        <button class="lang-tab" data-lang="py" role="tab" aria-selected="false">Python</button>
+        <button class="lang-tab" data-lang="dart" role="tab" aria-selected="false">Dart</button>
+      </div>
+
+      <div class="lang-panel is-active" data-lang="go" role="tabpanel">
+<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
+out, err := env.Render("app.njk", map[string]any{"user": map[string]any{"name": "sam"}})
+if err != nil { panic(err) }
+fmt.Println(out)</code></pre>
+      </div>
+      <div class="lang-panel" data-lang="ts" role="tabpanel" hidden>
+<pre><code class="language-ts">import { configure, FileSystemLoader } from "@samuelbines/nunchucks";
+const env = configure({ path: "views", loader: FileSystemLoader, watch: true, dev: true });
+const html = env.render("app.njk", { user: { name: "sam" } });</code></pre>
+      </div>
+      <div class="lang-panel" data-lang="js" role="tabpanel" hidden>
+<pre><code class="language-js">const html = nc.renderFromMap({
+  template: "app.njk",
+  files,
+  context: { user: { name: "sam" } },
+});</code></pre>
+      </div>
+      <div class="lang-panel" data-lang="py" role="tabpanel" hidden>
+<pre><code class="language-python">import subprocess, json
+html = subprocess.check_output([
+  "nunchucks", "render", "-views", "./views", "-template", "app.njk",
+  "-data", json.dumps({"user": {"name": "sam"}})
+], text=True)</code></pre>
+      </div>
+      <div class="lang-panel" data-lang="dart" role="tabpanel" hidden>
+<pre><code class="language-dart">final result = await Process.run('nunchucks', [
+  'render', '-views', './views', '-template', 'app.njk',
+  '-data', jsonEncode({'user': {'name': 'sam'}}),
+]);</code></pre>
+      </div>
     </section>
 
-    <section id="core-topics" class="card" style="margin-top:1rem;">
-      <h2>Core Topics</h2>
+    <button class="project-open" data-open-project>Open Real App Files</button>
+    <div class="project-backdrop" data-project-backdrop hidden></div>
 
-      <h3 id="core-user-defined-templates-warning">User-Defined Templates Warning</h3>
-      <p>Templates are executable logic. Do not allow arbitrary user-authored templates in production without hard isolation. <code>&lt;todo still: add formal threat model and sandbox guidance&gt;</code></p>
-      <pre><code class="language-bash"># Good: render trusted templates from your repo
-go run ./cmd/nunchucks render -views ./views -template page.njk -data '{"user":{"name":"sam"}}'</code></pre>
+    <div class="docs-layout" style="margin-top:1rem;">
+      <div class="docs-content">
+        <section class="card">
+          <h2>Directory</h2>
+          <p>Each item links to a detailed section with examples.</p>
+          <ul class="toc">
+            <li><a href="#core-topics">Core Topics</a></li>
+            <li><a href="#tags">Tags</a></li>
+            <li><a href="#expressions">Expressions</a></li>
+            <li><a href="#globals">Global Functions</a></li>
+            <li><a href="#builtin-filters">Builtin Filters</a></li>
+          </ul>
+          <p><strong>Core section links:</strong>
+            <a href="#core-user-defined-templates-warning">User-Defined Templates Warning</a>,
+            <a href="#core-file-extensions">File Extensions</a>,
+            <a href="#core-syntax-highlighting">Syntax Highlighting</a>,
+            <a href="#core-variables">Variables</a>,
+            <a href="#core-filters">Filters</a>,
+            <a href="#core-template-inheritance">Template Inheritance</a>,
+            <a href="#core-super">super</a>,
+            <a href="#core-keyword-arguments">Keyword Arguments</a>,
+            <a href="#core-comments">Comments</a>,
+            <a href="#core-whitespace-control">Whitespace Control</a>,
+            <a href="#core-autoescaping">Autoescaping</a>
+          </p>
+        </section>
 
-      <h3 id="core-file-extensions">File Extensions</h3>
-      <p>Use <code>.njk</code> for templates to keep tooling and migration consistent across runtimes. <code>&lt;todo still: add migration guide for mixed .html/.njk repos&gt;</code></p>
-      <pre><code class="language-text">views/
-  base.njk
-  index.njk
-  partials/card.njk</code></pre>
+        <section id="core-topics" class="card" style="margin-top:1rem;">
+          <h2>Core Topics</h2>
+          <h3 id="core-user-defined-templates-warning">User-Defined Templates Warning</h3>
+          <p>Treat templates as executable input. Do not render untrusted template source without a sandbox boundary.</p>
+<pre><code class="language-bash">go run ./cmd/nunchucks render -views ./views -template app.njk -data '{\"safe\":true}'</code></pre>
 
-      <h3 id="core-syntax-highlighting">Syntax Highlighting</h3>
-      <p>Use editor syntax extensions for Nunjucks/Twig/Jinja to make tags and expressions readable. <code>&lt;todo still: publish recommended extension list per IDE&gt;</code></p>
-      <pre><code class="language-django">{% if user.isAdmin %}
-  {{ "welcome" | upper }}
-{% endif %}</code></pre>
+          <h3 id="core-file-extensions">File Extensions</h3>
+          <p>Use <code>.njk</code> for templates and reserve <code>.html</code> / target formats for rendered output.</p>
+<pre><code class="language-text">views/\n  layout.njk\n  app.njk\n  partials/user-card.njk</code></pre>
 
-      <h3 id="core-variables">Variables</h3>
-      <p>Variables resolve from context and local scope. Dot-path lookups are supported. <code>&lt;todo still: bracket access and strict-undefined mode docs&gt;</code></p>
-      <pre><code class="language-django">Hello {{ user.name | default("guest", true) }}</code></pre>
+          <h3 id="core-syntax-highlighting">Syntax Highlighting</h3>
+          <p>This docs site uses highlight.js with <code>language-django</code> for template syntax.</p>
+<pre><code class="language-django">{% if user.isAdmin %}{{ \"ok\" | upper }}{% endif %}</code></pre>
 
-      <h3 id="core-filters">Filters</h3>
-      <p>Filters transform values and can be chained. Block filters are supported for wrapping content. <code>&lt;todo still: document custom filter registration API by runtime&gt;</code></p>
-      <pre><code class="language-django">{{ title | trim | lower | capitalize }}
+          <h3 id="core-variables">Variables</h3>
+          <p>Variables resolve from context and local scope. Dot-path lookups are supported.</p>
+<pre><code class="language-django">Hello {{ user.name | default("guest", true) }}</code></pre>
+
+          <h3 id="core-filters">Filters</h3>
+          <p>Filters transform values and chain left-to-right.</p>
+<pre><code class="language-django">{{ title | trim | lower | capitalize }}
 {% filter upper %}hello {{ user.name }}{% endfilter %}</code></pre>
 
-      <h3 id="core-template-inheritance">Template Inheritance</h3>
-      <p>Compose base and child templates using <code>extends</code> and named blocks. <code>&lt;todo still: document block resolution edge cases&gt;</code></p>
-      <pre><code class="language-django">{% extends "base.njk" %}
-{% block content %}Child content{% endblock %}</code></pre>
-
-      <h3 id="core-super">super</h3>
-      <p>Use <code>super()</code> inside blocks to include parent output while extending it. <code>&lt;todo still: add nested inheritance examples&gt;</code></p>
-      <pre><code class="language-django">{% block content %}
+          <h3 id="core-template-inheritance">Template Inheritance</h3>
+          <p>Use <code>extends</code> + <code>block</code> for layouts and <code>super()</code> to include parent output.</p>
+<pre><code class="language-django">{% extends "layout.njk" %}
+{% block body %}
   {{ super() }}
-  <p>Extra child content</p>
+  <p>Page body</p>
 {% endblock %}</code></pre>
 
-      <h3 id="core-keyword-arguments">Keyword Arguments</h3>
-      <p>Macros and callable expressions support named arguments. <code>&lt;todo still: finalize parity guarantees between Go and TS runtimes&gt;</code></p>
-      <pre><code class="language-django">{% macro badge(text, kind="info") %}[{{ kind }}] {{ text }}{% endmacro %}
+          <h3 id="core-super">super</h3>
+          <p><code>super()</code> inserts parent block output so child templates can append rather than replace.</p>
+<pre><code class="language-django">{% block header %}\n  {{ super() }}\n  <small>Subheader</small>\n{% endblock %}</code></pre>
+
+          <h3 id="core-keyword-arguments">Keyword Arguments</h3>
+          <p>Macros and callable expressions support named arguments.</p>
+<pre><code class="language-django">{% macro badge(text, kind="info") %}[{{ kind }}] {{ text }}{% endmacro %}
 {{ badge("API", kind="success") }}</code></pre>
 
-      <h3 id="core-comments">Comments</h3>
-      <p>Comments are non-rendered template notes. <code>&lt;todo still: full comments docs + compatibility tests&gt;</code></p>
-      <pre><code class="language-django">{# This comment does not render #}
-Visible text</code></pre>
+          <h3 id="core-comments">Comments</h3>
+          <p>Comments do not render output and are useful for in-template notes.</p>
+<pre><code class="language-django">{# rendered output ignores this #}\nVisible value</code></pre>
 
-      <h3 id="core-whitespace-control">Whitespace Control</h3>
-      <p>Whitespace handling can affect rendered HTML and generated config files. <code>&lt;todo still: document trim marker parity and behavior matrix&gt;</code></p>
-      <pre><code class="language-django">{% if enabled %}
-value: {{ value }}
-{% endif %}</code></pre>
+          <h3 id="core-whitespace-control">Whitespace Control</h3>
+          <p>Whitespace in templates impacts generated output, especially config files.</p>
+<pre><code class="language-django">{% if enabled %}\nvalue: {{ value }}\n{% endif %}</code></pre>
 
-      <h3 id="core-autoescaping">Autoescaping</h3>
-      <p>Escape behavior should be explicit and consistent across runtimes; use <code>escape</code>/<code>safe</code> carefully. <code>&lt;todo still: define global autoescape policy&gt;</code></p>
-      <pre><code class="language-django">{{ html | escape }}
-{{ trustedHtml | safe }}</code></pre>
-    </section>
+          <h3 id="core-autoescaping">Autoescaping</h3>
+          <p>Use <code>escape</code>, <code>forceescape</code>, and <code>safe</code> intentionally when rendering HTML.</p>
+<pre><code class="language-django">{{ html | escape }}\n{{ trustedHtml | safe }}</code></pre>
+        </section>
 
-    <section id="tags" class="card" style="margin-top:1rem;">
-      <h2>Tags</h2>
+        <section id="tags" class="card" style="margin-top:1rem;">
+          <h2>Tags</h2>
+          <h3 id="tag-if">if</h3>
+<pre><code class="language-django">{% if user %}Hi {{ user.name }}{% else %}Hi guest{% endif %}</code></pre>
 
-      <h3 id="tag-if">if</h3>
-      <p>Branch output based on expression truthiness. <code>&lt;todo still: document full truthiness table&gt;</code></p>
-      <pre><code class="language-django">{% if user %}Hi {{ user.name }}{% else %}Hi guest{% endif %}</code></pre>
-
-      <h3 id="tag-for">for</h3>
-      <p>Iterate over collections and use loop metadata. <code>&lt;todo still: add else-on-empty examples&gt;</code></p>
-      <pre><code class="language-django">{% for item in items %}
+          <h3 id="tag-for">for</h3>
+<pre><code class="language-django">{% for item in items %}
   {{ loop.index0 }}:{{ item }}
 {% endfor %}</code></pre>
 
-      <h3 id="tag-asynceach">asyncEach</h3>
-      <p>Nunjucks async iteration model for async loaders/filters. <code>&lt;todo still: Go runtime async story pending&gt;</code></p>
-      <pre><code class="language-django">{# Planned parity section #}
-{% for item in items %}{{ item }}{% endfor %}</code></pre>
+          <h3 id="tag-macro">macro + call</h3>
+<pre><code class="language-django">{% macro panel(kind="info") %}
+<section class="panel {{ kind }}">{{ caller() }}</section>
+{% endmacro %}
+{% call panel("success") %}inside{% endcall %}</code></pre>
 
-      <h3 id="tag-asyncall">asyncAll</h3>
-      <p>Nunjucks async all-at-once rendering model. <code>&lt;todo still: Go runtime async story pending&gt;</code></p>
-      <pre><code class="language-django">{# Planned parity section #}
-{% for item in items %}{{ item }}{% endfor %}</code></pre>
+          <h3 id="tag-include">include + import</h3>
+<pre><code class="language-django">{% import "macros/ui.njk" as ui %}
+{% include "partials/user-card.njk" with context %}
+{% include "partials/optional.njk" ignore missing %}</code></pre>
 
-      <h3 id="tag-macro">macro</h3>
-      <p>Define reusable template functions. <code>&lt;todo still: document variadic and context nuances&gt;</code></p>
-      <pre><code class="language-django">{% macro pill(text) %}&lt;span&gt;{{ text }}&lt;/span&gt;{% endmacro %}
-{{ pill("new") }}</code></pre>
+          <h3 id="tag-raw">raw + verbatim + filter block</h3>
+<pre><code class="language-django">{% raw %}{{ untouched }}{% endraw %}
+{% verbatim %}{% if x %}y{% endif %}{% endverbatim %}
+{% filter upper %}hello {{ user.name }}{% endfilter %}</code></pre>
+        </section>
 
-      <h3 id="tag-set">set</h3>
-      <p>Create local template variables. <code>&lt;todo still: document block capture form parity&gt;</code></p>
-      <pre><code class="language-django">{% set title = "Dashboard" %}
-{{ title }}</code></pre>
-
-      <h3 id="tag-extends">extends</h3>
-      <p>Declare the parent layout template. <code>&lt;todo still: add multi-level inheritance guide&gt;</code></p>
-      <pre><code class="language-django">{% extends "base.njk" %}</code></pre>
-
-      <h3 id="tag-block">block</h3>
-      <p>Mark replaceable sections in layouts. <code>&lt;todo still: add block scoping examples&gt;</code></p>
-      <pre><code class="language-django">{% block content %}Default content{% endblock %}</code></pre>
-
-      <h3 id="tag-include">include</h3>
-      <p>Insert another template with context rules and optional missing-file behavior. <code>&lt;todo still: add include-without-context matrix&gt;</code></p>
-      <pre><code class="language-django">{% include "card.njk" with context %}
-{% include "optional.njk" ignore missing %}</code></pre>
-
-      <h3 id="tag-import">import / from import</h3>
-      <p>Import macro namespaces or selected macros. <code>&lt;todo still: document with/without context parity&gt;</code></p>
-      <pre><code class="language-django">{% import "macros.njk" as ui %}
-{% from "macros.njk" import badge with context %}</code></pre>
-
-      <h3 id="tag-raw">raw</h3>
-      <p>Render template delimiters literally. <code>&lt;todo still: add escaping strategy guidance for docs/codegen&gt;</code></p>
-      <pre><code class="language-django">{% raw %}{{ not_evaluated }}{% endraw %}</code></pre>
-
-      <h3 id="tag-verbatim">verbatim</h3>
-      <p>Twig-compatible raw mode for literal template syntax blocks. <code>&lt;todo still: add interoperability notes&gt;</code></p>
-      <pre><code class="language-django">{% verbatim %}{% if untouched %}x{% endif %}{% endverbatim %}</code></pre>
-
-      <h3 id="tag-filter-block">filter block</h3>
-      <p>Apply a filter to an entire block output. <code>&lt;todo still: add multi-filter block examples&gt;</code></p>
-      <pre><code class="language-django">{% filter upper %}hello {{ user.name }}{% endfilter %}</code></pre>
-
-      <h3 id="tag-call">call</h3>
-      <p>Pass block content to a macro via <code>caller()</code>. <code>&lt;todo still: document caller argument patterns&gt;</code></p>
-      <pre><code class="language-django">{% macro box() %}&lt;div&gt;{{ caller() }}&lt;/div&gt;{% endmacro %}
-{% call box() %}inside{% endcall %}</code></pre>
-    </section>
-
-    <section id="expressions" class="card" style="margin-top:1rem;">
-      <h2>Expressions</h2>
-
-      <h3 id="expr-math">Math</h3>
-      <p>Arithmetic with precedence and grouping. <code>&lt;todo still: complete parity matrix with edge coercions&gt;</code></p>
-      <pre><code class="language-django">{{ 1 + 2 * 3 }}
+        <section id="expressions" class="card" style="margin-top:1rem;">
+          <h2>Expressions</h2>
+          <h3 id="expr-math">Math</h3>
+<pre><code class="language-django">{{ 1 + 2 * 3 }}
 {{ (1 + 2) * 3 }}</code></pre>
 
-      <h3 id="expr-comparisons">Comparisons</h3>
-      <p>Supports equality, ordering, and chained comparisons. <code>&lt;todo still: add full undefined comparison behavior docs&gt;</code></p>
-      <pre><code class="language-django">{{ 2 < 3 < 4 }}
-{{ role is "admin" }}</code></pre>
+          <h3 id="expr-comparisons">Comparisons + is/in</h3>
+<pre><code class="language-django">{{ 2 < 3 < 4 }}
+{{ role is "admin" }}
+{{ 2 in nums }}
+{{ 5 not in nums }}</code></pre>
 
-      <h3 id="expr-logic">Logic</h3>
-      <p>Boolean operators <code>and</code>, <code>or</code>, <code>not</code>. <code>&lt;todo still: short-circuit parity tests&gt;</code></p>
-      <pre><code class="language-django">{{ isAuth and isAdmin }}
-{{ not disabled }}</code></pre>
+          <h3 id="expr-logic">Logic + if expression</h3>
+<pre><code class="language-django">{{ isAuth and isAdmin }}
+{{ "yes" if user.isAdmin else "no" }}</code></pre>
 
-      <h3 id="expr-if-expression">If Expression</h3>
-      <p>Inline conditional expression format. <code>&lt;todo still: nested ternary readability guidance&gt;</code></p>
-      <pre><code class="language-django">{{ "yes" if user.isAdmin else "no" }}</code></pre>
+          <h3 id="expr-function-calls">Function Calls</h3>
+<pre><code class="language-django">{{ range(1, 8, 2) | join(",") }}</code></pre>
+        </section>
 
-      <h3 id="expr-function-calls">Function Calls</h3>
-      <p>Call globals/macros in expression context. <code>&lt;todo still: callable resolution precedence docs&gt;</code></p>
-      <pre><code class="language-django">{{ range(1, 6, 2) | join(",") }}</code></pre>
+        <section id="globals" class="card" style="margin-top:1rem;">
+          <h2>Global Functions</h2>
+          <h3 id="global-range">range([start], stop, [step])</h3>
+<pre><code class="language-django">{{ range(5) | join(",") }}
+{{ range(1, 8, 2) | join(",") }}
+{{ range(5, 0, -2) | join(",") }}</code></pre>
+          <p><code>&lt;todo still: cycler and joiner docs when implemented&gt;</code></p>
+        </section>
 
-      <h3 id="expr-regular-expressions">Regular Expressions</h3>
-      <p>Regex semantics are part of Nunjucks reference docs; parity in Go engine is still evolving. <code>&lt;todo still: implement/document regex behavior&gt;</code></p>
-      <pre><code class="language-django">{# planned parity docs section #}
-{{ value }}</code></pre>
-    </section>
+        <section id="builtin-filters" class="card" style="margin-top:1rem;">
+          <h2>Builtin Filters</h2>
+          <p>Real code examples for built-in filters (grouped by purpose).</p>
 
-    <section id="globals" class="card" style="margin-top:1rem;">
-      <h2>Global Functions</h2>
+          <h3>Strings + Formatting</h3>
+<pre><code class="language-django">{{ " nunchucks " | trim | capitalize }}
+{{ "nunchucks" | upper }}
+{{ "NUNCHUCKS" | lower }}
+{{ "hello world" | title }}
+{{ "hello world" | center(20) }}
+{{ "long text for docs" | truncate(10, false, "...") }}
+{{ "a\nb" | nl2br }}
+{{ "<b>hi</b>" | striptags }}</code></pre>
 
-      <h3 id="global-range">range([start], stop, [step])</h3>
-      <p>Generate deterministic integer sequences for loops and labels.</p>
-      <pre><code class="language-django">{{ range(5) | join(",") }}
-{{ range(1, 8, 2) | join(",") }}</code></pre>
+          <h3>Collections</h3>
+<pre><code class="language-django">{{ nums | first }}
+{{ nums | last }}
+{{ nums | length }}
+{{ nums | join("-") }}
+{{ nums | reverse | join(",") }}
+{{ nums | batch(2) | length }}
+{{ nums | slice(3) | length }}
+{{ users | sort(false, false, "name") | first | dump }}
+{{ users | groupby("role", "none") | length }}</code></pre>
 
-      <h3 id="global-cycler">cycler(item1, item2, ...itemN)</h3>
-      <p>Cycle through fixed values repeatedly. <code>&lt;todo still: implement global cycler and docs samples in Go runtime&gt;</code></p>
-      <pre><code class="language-django">{# planned #}
-{{ "odd/even style rotation" }}</code></pre>
+          <h3>Selection Filters</h3>
+<pre><code class="language-django">{{ nums | select("odd") | length }}
+{{ nums | reject("odd") | length }}
+{{ users | selectattr("active") | length }}
+{{ users | rejectattr("active") | length }}
+{{ users | selectattr("age", "divisibleby", 2) | length }}</code></pre>
 
-      <h3 id="global-joiner">joiner([separator])</h3>
-      <p>Emit separators only between rendered entries. <code>&lt;todo still: implement joiner helper and docs samples in Go runtime&gt;</code></p>
-      <pre><code class="language-django">{# planned #}
-{{ "comma insertion without trailing separator" }}</code></pre>
-    </section>
+          <h3>Numbers + Types</h3>
+<pre><code class="language-django">{{ -4 | abs }}
+{{ "3.14" | float }}
+{{ "42" | int }}
+{{ nums | sum }}
+{{ 3.14159 | round(2) }}
+{{ value | string }}</code></pre>
 
-    <section id="builtin-filters" class="card" style="margin-top:1rem;">
-      <h2>Builtin Filters</h2>
-      <p>Each filter item links to an anchor and includes a usage example.</p>
+          <h3>Escaping + URLs + Debug</h3>
+<pre><code class="language-django">{{ html | escape }}
+{{ html | forceescape }}
+{{ trusted | safe }}
+{{ "a b" | urlencode }}
+{{ textWithUrl | urlize }}
+{{ body | wordcount }}
+{{ data | dictsort("value", false, true) | first | first }}
+{{ state | dump }}</code></pre>
 
-      <h3 id="filter-abs">abs</h3><p>Absolute numeric value. Example: <code>{{ -4 | abs }}</code></p>
-      <h3 id="filter-batch">batch</h3><p>Chunk a list into fixed-size groups. Example: <code>{{ items | batch(2) | length }}</code></p>
-      <h3 id="filter-capitalize">capitalize</h3><p>Capitalize first letter of string. Example: <code>{{ "hello WORLD" | capitalize }}</code></p>
-      <h3 id="filter-center">center</h3><p>Pad string for centered display. Example: <code>{{ "title" | center(12) }}</code></p>
-      <h3 id="filter-default">default</h3><p>Fallback for undefined/empty values. Example: <code>{{ missing | default("fallback", true) }}</code></p>
-      <h3 id="filter-dictsort">dictsort</h3><p>Sort dictionary/map pairs by key/value. Example: <code>{{ scores | dictsort("value", false, true) | first | first }}</code></p>
-      <h3 id="filter-dump">dump</h3><p>Serialize to JSON-like output for debugging. Example: <code>{{ user | dump }}</code></p>
-      <h3 id="filter-escape">escape / e</h3><p>HTML-escape string output. Example: <code>{{ html | escape }}</code></p>
-      <h3 id="filter-first">first</h3><p>First element from sequence. Example: <code>{{ items | first }}</code></p>
-      <h3 id="filter-float">float</h3><p>Convert to float. Example: <code>{{ "3.14" | float }}</code></p>
-      <h3 id="filter-forceescape">forceescape</h3><p>Force escape even if prior value is marked safe. Example: <code>{{ html | forceescape }}</code></p>
-      <h3 id="filter-groupby">groupby</h3><p>Group sequence by attribute. Example: <code>{{ users | groupby("role", "none") | length }}</code></p>
-      <h3 id="filter-indent">indent</h3><p>Indent each line in string. Example: <code>{{ text | indent(2) }}</code></p>
-      <h3 id="filter-int">int</h3><p>Convert to integer. Example: <code>{{ "42" | int }}</code></p>
-      <h3 id="filter-join">join</h3><p>Join sequence with separator. Example: <code>{{ items | join(", ") }}</code></p>
-      <h3 id="filter-last">last</h3><p>Last element from sequence. Example: <code>{{ items | last }}</code></p>
-      <h3 id="filter-length">length</h3><p>Length of sequence/string/map. Example: <code>{{ items | length }}</code></p>
-      <h3 id="filter-list">list</h3><p>Convert input into list form. Example: <code>{{ cfg | list | join(",") }}</code></p>
-      <h3 id="filter-lower">lower</h3><p>Lowercase string. Example: <code>{{ "HELLO" | lower }}</code></p>
-      <h3 id="filter-nl2br">nl2br</h3><p>Convert line breaks to HTML <code>&lt;br /&gt;</code>. Example: <code>{{ text | nl2br }}</code></p>
-      <h3 id="filter-random">random</h3><p>Pick random element from list. Example: <code>{{ items | random }}</code></p>
-      <h3 id="filter-reject">reject</h3><p>Reject elements by predicate/test. Example: <code>{{ nums | reject("odd") | length }}</code></p>
-      <h3 id="filter-rejectattr">rejectattr</h3><p>Reject objects by attribute test. Example: <code>{{ users | rejectattr("active") | length }}</code></p>
-      <h3 id="filter-replace">replace</h3><p>Replace substring occurrences. Example: <code>{{ "hello world" | replace("world","nunchucks") }}</code></p>
-      <h3 id="filter-reverse">reverse</h3><p>Reverse sequence/string. Example: <code>{{ items | reverse | join(",") }}</code></p>
-      <h3 id="filter-round">round</h3><p>Round float to precision. Example: <code>{{ 3.1415 | round(2) }}</code></p>
-      <h3 id="filter-safe">safe</h3><p>Mark value as safe output. Example: <code>{{ trustedHtml | safe }}</code></p>
-      <h3 id="filter-select">select</h3><p>Select elements by predicate/test. Example: <code>{{ nums | select("odd") | length }}</code></p>
-      <h3 id="filter-selectattr">selectattr</h3><p>Select objects by attribute test. Example: <code>{{ users | selectattr("active") | length }}</code></p>
-      <h3 id="filter-slice">slice</h3><p>Split list into N slices. Example: <code>{{ items | slice(3) | length }}</code></p>
-      <h3 id="filter-sort">sort(arr, reverse, caseSens, attr)</h3><p>Sort sequence optionally by attribute. Example: <code>{{ users | sort(false, false, "name") | first | dump }}</code></p>
-      <h3 id="filter-string">string</h3><p>Convert value to string. Example: <code>{{ 123 | string }}</code></p>
-      <h3 id="filter-striptags">striptags(value, [preserve_linebreaks])</h3><p>Remove HTML tags from value. Example: <code>{{ html | striptags }}</code></p>
-      <h3 id="filter-sum">sum</h3><p>Sum numeric sequence values. Example: <code>{{ nums | sum }}</code></p>
-      <h3 id="filter-title">title</h3><p>Title-case string words. Example: <code>{{ "hello world" | title }}</code></p>
-      <h3 id="filter-trim">trim</h3><p>Trim surrounding whitespace. Example: <code>{{ "  hi  " | trim }}</code></p>
-      <h3 id="filter-truncate">truncate</h3><p>Trim long text with suffix. Example: <code>{{ msg | truncate(12, false, "...") }}</code></p>
-      <h3 id="filter-upper">upper</h3><p>Uppercase string. Example: <code>{{ "hello" | upper }}</code></p>
-      <h3 id="filter-urlencode">urlencode</h3><p>Encode for URL query usage. Example: <code>{{ "a b" | urlencode }}</code></p>
-      <h3 id="filter-urlize">urlize</h3><p>Convert URLs in text to anchor links. Example: <code>{{ text | urlize }}</code></p>
-      <h3 id="filter-wordcount">wordcount</h3><p>Count words in string. Example: <code>{{ body | wordcount }}</code></p>
-      <p><small>Compatibility note: some advanced edge cases are still being aligned with Nunjucks/Jinja behavior. <code>&lt;todo still: publish per-filter parity table with tests&gt;</code></small></p>
-    </section>
+          <p><small><code>&lt;todo still: publish per-filter parity status table and edge-case notes&gt;</code></small></p>
+        </section>
+      </div>
+
+      <aside class="project-pane" data-project-pane>
+        <div class="project-pane-header">
+          <h2>Real App Files</h2>
+          <button class="project-close" data-close-project aria-label="Close project files">Close</button>
+        </div>
+        <p class="project-pane-sub">This multi-file example maps directly to the sections on the left.</p>
+
+        <div class="file-tabs" role="tablist" aria-label="Project files">
+          <button class="file-tab is-active" data-file="app" role="tab" aria-selected="true">app.njk</button>
+          <button class="file-tab" data-file="layout" role="tab" aria-selected="false">layout.njk</button>
+          <button class="file-tab" data-file="card" role="tab" aria-selected="false">partials/user-card.njk</button>
+          <button class="file-tab" data-file="stats" role="tab" aria-selected="false">partials/stats.njk</button>
+          <button class="file-tab" data-file="macros" role="tab" aria-selected="false">macros/ui.njk</button>
+        </div>
+
+        <div class="file-panel is-active" data-file="app" role="tabpanel">
+<pre><code class="language-django">{% extends "layout.njk" %}
+{% import "macros/ui.njk" as ui %}
+
+{% block title %}Team Dashboard{% endblock %}
+
+{% block body %}
+  {% set activeUsers = users | selectattr("active") %}
+
+  <h2>{{ team.name | title }}</h2>
+  <p>Active users: {{ activeUsers | length }}</p>
+
+  {% for grp in users | groupby("role", "none") %}
+    <h3>{{ grp.grouper | upper }} ({{ grp.list | length }})</h3>
+    {% for user in grp.list | sort(false, false, "name") %}
+      {% include "partials/user-card.njk" with context %}
+    {% endfor %}
+  {% endfor %}
+
+  {% include "partials/stats.njk" with context %}
+
+  {% call ui.panel("success") %}
+    Rendered at steps: {{ range(1, 8, 2) | join(",") }}
+  {% endcall %}
+{% endblock %}</code></pre>
+        </div>
+
+        <div class="file-panel" data-file="layout" role="tabpanel" hidden>
+<pre><code class="language-django"><!doctype html>
+<html>
+  <head>
+    <title>{% block title %}Dashboard{% endblock %}</title>
+  </head>
+  <body>
+    <header>
+      {% block header %}Nunchucks{% endblock %}
+    </header>
+    <main>
+      {% block body %}{% endblock %}
+    </main>
+  </body>
+</html></code></pre>
+        </div>
+
+        <div class="file-panel" data-file="card" role="tabpanel" hidden>
+<pre><code class="language-django"><article class="user-card">
+  <strong>{{ user.name | title }}</strong>
+  <small>{{ user.email | lower }}</small>
+  <p>Tags: {{ user.tags | join(", ") }}</p>
+  <p>Bio words: {{ user.bio | wordcount }}</p>
+  <p>Website: {{ user.website | urlize | safe }}</p>
+</article></code></pre>
+        </div>
+
+        <div class="file-panel" data-file="stats" role="tabpanel" hidden>
+<pre><code class="language-django">{% set topKey = scores | dictsort("value", false, true) | first | first %}
+<section class="stats">
+  <p>Top score key: {{ topKey }}</p>
+  <p>Average-ish: {{ scoresList | sum | round(2) }}</p>
+  <p>First bucket size: {{ users | batch(2) | first | length }}</p>
+</section></code></pre>
+        </div>
+
+        <div class="file-panel" data-file="macros" role="tabpanel" hidden>
+<pre><code class="language-django">{% macro panel(kind="info") %}
+<section class="panel panel-{{ kind }}">
+  {{ caller() }}
+</section>
+{% endmacro %}
+
+{% macro badge(text, kind="neutral") %}
+<span class="badge badge-{{ kind }}">{{ text | upper }}</span>
+{% endmacro %}</code></pre>
+        </div>
+      </aside>
+    </div>
   </main>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
