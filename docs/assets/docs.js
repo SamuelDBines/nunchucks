@@ -70,7 +70,15 @@
     projectBackdrop.addEventListener('click', closeProjectPane);
   }
 
-  if (window.hljs && typeof window.hljs.highlightAll === 'function') {
-    window.hljs.highlightAll();
+  function applyHighlighting() {
+    if (window.hljs && typeof window.hljs.highlightAll === 'function') {
+      window.hljs.highlightAll();
+      return true;
+    }
+    return false;
+  }
+
+  if (!applyHighlighting()) {
+    window.addEventListener('load', applyHighlighting, { once: true });
   }
 })();

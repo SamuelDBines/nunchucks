@@ -148,9 +148,13 @@ nav {
 
 .file-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0;
   margin: 0;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
   border-top: 1px solid var(--vscode-border);
   border-bottom: 1px solid var(--vscode-border);
   background: var(--vscode-tab);
