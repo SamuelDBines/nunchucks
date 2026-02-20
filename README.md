@@ -1,59 +1,124 @@
-# Nunjucks
+# Nunchucks
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![CI][github-actions-image]][github-actions-url]
-[![Codecov][codecov-image]][codecov-url]
+Nunchucks is a Nunjucks/Jinja-inspired templating project with:
 
+- TypeScript package (`@samuelbines/nunchucks`)
+- Go runtime + CLI
+- WASM target from Go
+- Docs site in `docs/` (GitHub Pages)
+- Playground editor demo with live preview
 
-I guess Nunjucks 2? templating engine for javascript but taking it further.
-Still called Nunjucks, syntax inspured by - 
+Repository: `https://github.com/SamuelDBines/nunchucks`
 
-[Nunjucks](https://mozilla.github.io/nunjucks/) is a full featured
-templating engine for javascript. It is heavily inspired by
-[jinja2](https://jinja.palletsprojects.com/). View the docs
-[here](https://mozilla.github.io/nunjucks/).
+## Current Focus
+
+This project is actively evolving toward strong Nunjucks-style parity plus a multi-language workflow.
+
+Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.
 
 ## Installation
 
-`npm install nunjucks`
+### TypeScript package
 
-(View the [CHANGELOG](https://github.com/SamuelDBines/nunjucks/releases))
+```bash
+npm install @samuelbines/nunchucks
+```
 
-## Documentation
+### Go usage
 
-Will update when I am done
+```bash
+cd go
+go test ./...
+```
 
-## Browser Support
+## Go CLI
 
-Supported in all modern browsers.
+From `go/`:
+
+```bash
+go run ./cmd/nunchucks help
+
+go run ./cmd/nunchucks render \
+  -views ./views \
+  -template index.njk \
+  -data '{"title":"Hello"}'
+
+go run ./cmd/nunchucks precompile \
+  -views ./views \
+  -out ./public \
+  -data '{"title":"Hello"}'
+```
+
+## Go Examples
+
+From `go/`:
+
+```bash
+go run ./examples/basic
+go run ./examples/advanced
+```
+
+Also see sample templates under `samples/go`.
+
+## WASM Build (Go)
+
+From `go/`:
+
+```bash
+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm
+cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js
+```
+
+## Stateless Playground Render Server (Go)
+
+A stateless memory-render API is available under `go/server`.
+
+From `go/`:
+
+```bash
+go run ./server
+```
+
+Default endpoint:
+
+- `POST /api/playground/render`
+- `GET /healthz`
+
+See `go/server/README.md` for request/response format.
+
+## Docs
+
+Docs source is in `docs/` and is intended for GitHub Pages.
+
+Key pages:
+
+- `docs/index.html` (main docs)
+- `docs/templating.html` (templating reference)
+- `docs/playground.html` (mini editor + preview)
 
 ## Tests
 
-Run the tests with `npm test`. Don't do this yeet.
+### TypeScript
 
-## Get in touch
+```bash
+npm test
+```
 
-Its just me at the moment check my github username in the path. Raise an issue.
+### Go
 
-## Want to help?
+```bash
+cd go
+go test ./...
+```
 
-<!-- Contributions are always welcome! Before you submit an issue or pull request, please read our [contribution guidelines](CONTRIBUTING.md). -->
+## Status
 
-## Contributors
+This repo is under active development. Some advanced parity edge cases and async behavior are still being iterated.
 
-Removed contributors since I rewrote the entire library in the end.
-<!-- 
-[npm-image]: https://img.shields.io/npm/v/nunjucks.svg
-[npm-url]: https://npmjs.org/package/nunjucks
-[downloads-image]: https://img.shields.io/npm/dm/nunjucks.svg
-[downloads-url]: https://npmjs.org/package/nunjucks
-[github-actions-image]: https://github.com/mozilla/nunjucks/actions/workflows/tests.yml/badge.svg
-[github-actions-url]: https://github.com/mozilla/nunjucks/actions
-[codecov-image]: https://img.shields.io/codecov/c/gh/mozilla/nunjucks.svg
-[codecov-url]: https://codecov.io/gh/mozilla/nunjucks/branch/master -->
+## Contributing
 
+Open an issue or PR on GitHub.
 
+## License
 
-<!-- Nunjucks extend -->
-<!-- https://github.com/douglaszaltron/nunjucks-vscode-extensionpack/blob/master/assets/syntaxes/njk.json -->
+BSD-2-Clause
