@@ -108,6 +108,30 @@ html = subprocess.check_output([
           <h3 id="core-syntax-highlighting">Syntax Highlighting</h3>
           <p>This docs site uses highlight.js with <code>language-django</code> for template syntax. The repo also ships VS Code workspace config in <code>.vscode/settings.json</code> and <code>.vscode/extensions.json</code> for <code>.njk</code> highlighting.</p>
 <pre><code class="language-django">{% if user.isAdmin %}{{ \"ok\" | upper }}{% endif %}</code></pre>
+          <p><strong>VS Code Setup (requested style)</strong></p>
+          <p>1) Install recommendations from <code>.vscode/extensions.json</code>. 2) Use workspace settings in <code>.vscode/settings.json</code>. This repo now maps <code>.njk</code> to Jinja syntax and maps <code>.html/.yaml/.yml</code> to HTML syntax for your preferred color model (HTML tags orange, attributes blue).</p>
+<pre><code class="language-json">{
+  "files.associations": {
+    "*.html": "html",
+    "*.yaml": "html",
+    "*.yml": "html",
+    "*.njk": "jinja-html"
+  },
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": ["entity.name.tag", "entity.name.tag.html"],
+        "settings": { "foreground": "#ce9178" }
+      },
+      {
+        "scope": ["entity.other.attribute-name", "entity.other.attribute-name.html"],
+        "settings": { "foreground": "#4FC1FF" }
+      }
+    ]
+  },
+  "editor.showUnused": true
+}</code></pre>
+          <p><small>Unused gray underline requires diagnostics from a language server/linter. VS Code can style unnecessary code, but true \"unused\" detection in <code>.njk</code> depends on extension support.</small></p>
 
           <h3 id="core-variables">Variables</h3>
           <p>Variables resolve from context and local scope. Dot-path lookups are supported.</p>

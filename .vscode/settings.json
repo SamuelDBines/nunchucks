@@ -1,8 +1,38 @@
 {
   "files.associations": {
+    "*.html": "html",
+    "*.yaml": "html",
+    "*.yml": "html",
     "*.njk": "jinja-html",
     "*.nunjucks": "jinja-html"
   },
   "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": "active"
+  "editor.guides.bracketPairs": "active",
+  "editor.showUnused": true,
+  "workbench.colorCustomizations": {
+    "editorUnnecessaryCode.opacity": "#8b949e99",
+    "editorUnnecessaryCode.border": "#8b949e66"
+  },
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": [
+          "entity.name.tag",
+          "entity.name.tag.html"
+        ],
+        "settings": {
+          "foreground": "#ce9178"
+        }
+      },
+      {
+        "scope": [
+          "entity.other.attribute-name",
+          "entity.other.attribute-name.html"
+        ],
+        "settings": {
+          "foreground": "#4FC1FF"
+        }
+      }
+    ]
+  }
 }
