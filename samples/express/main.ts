@@ -14,6 +14,7 @@ const nunev = nunjucks.configure({
 	watch: true,
 	devRefresh: true,
 	detectExtensions: true,
+	out
 });
 
 nunev.express(app)

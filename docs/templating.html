@@ -9,7 +9,7 @@
 </head>
 <body>
   <main class="wrapper">
-    <nav>
+    <nav class="top-nav">
       <a href="./index.html">Docs Home</a>
       <a href="./templating.html">Templating Docs</a>
       <a href="./playground.html">Editor Demo</a>
@@ -106,10 +106,10 @@ html = subprocess.check_output([
 <pre><code class="language-text">views/\n  layout.njk\n  app.njk\n  partials/user-card.njk</code></pre>
 
           <h3 id="core-syntax-highlighting">Syntax Highlighting</h3>
-          <p>This docs site uses highlight.js with <code>language-django</code> for template syntax. The repo also ships a custom VS Code extension in <code>vscode-nunchucks-syntax</code> and workspace config in <code>.vscode/settings.json</code> for <code>.njk</code> highlighting.</p>
+          <p>This docs site uses highlight.js with <code>language-django</code> for template syntax. The repo also ships a custom VS Code extension in <code>vscode-nunchucks</code> and workspace config in <code>.vscode/settings.json</code> for <code>.njk</code> highlighting.</p>
 <pre><code class="language-django">{% if user.isAdmin %}{{ \"ok\" | upper }}{% endif %}</code></pre>
           <p><strong>VS Code Setup (requested style)</strong></p>
-          <p>1) Install the local extension folder <code>vscode-nunchucks-syntax</code> in VS Code. 2) Use workspace settings in <code>.vscode/settings.json</code>. This repo maps <code>.njk</code> to <code>nunchucks-template</code> and maps <code>.html/.yaml/.yml</code> to HTML syntax for your preferred color model (HTML tags orange, attributes blue).</p>
+          <p>1) Install the local extension folder <code>vscode-nunchucks</code> in VS Code. 2) Use workspace settings in <code>.vscode/settings.json</code>. This repo maps <code>.njk</code> to <code>nunchucks-template</code> and maps <code>.html/.yaml/.yml</code> to HTML syntax for your preferred color model (HTML tags orange, attributes blue).</p>
 <pre><code class="language-json">{
   "files.associations": {
     "*.html": "html",

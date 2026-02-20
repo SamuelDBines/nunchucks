@@ -44,7 +44,6 @@ const main = () => {
       console.log('Error tagging: ', err)
       execSync(`git push`);
     }
-    // execSync(`pnpm publish --access=public`)
   } catch(err) {
     //Revert old tag
     packageJson.version = oldtag

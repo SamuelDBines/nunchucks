@@ -1,40 +1,81 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nunchucks Docs</title>
-  <link rel="stylesheet" href="./assets/styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" />
-</head>
-<body>
-  <main class="wrapper">
-    <nav>
-      <a href="./index.html">Docs Home</a>
-      <a href="./templating.html">Templating Coverage</a>
-      <a href="./playground.html">Editor Demo</a>
-    </nav>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Nunchucks Docs</title>
+		<link rel="stylesheet" href="./assets/styles.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+		/>
+	</head>
+	<body>
+		<main class="wrapper">
+			<nav class="top-nav">
+				<a href="./index.html">Docs Home</a>
+				<a href="./templating.html">Templating Coverage</a>
+				<a href="./playground.html">Editor Demo</a>
+			</nav>
 
-    <section class="hero">
-      <h1>Nunchucks Documentation</h1>
-      <p>Multi-language templating with a Go core, CLI, and WASM bridge.</p>
-      <small>GitHub Pages serves this <code>docs/</code> folder.</small>
-    </section>
+			<section class="hero">
+				<h1>Nunchucks Documentation</h1>
+				<p>Multi-language templating with a Go core, CLI, and WASM bridge.</p>
+				<small>GitHub Pages serves this <code>docs/</code> folder.</small>
+			</section>
 
-    <section class="card" style="margin-top:1rem;">
-      <h2>Pick A Language</h2>
-      <p>Use the selector to view how to render templates from each language/runtime.</p>
+			<section class="card" style="margin-top: 1rem">
+				<h2>Pick A Language</h2>
+				<p>
+					Use the selector to view how to render templates from each
+					language/runtime.
+				</p>
 
-      <div class="lang-tabs" role="tablist" aria-label="Language selector">
-        <button class="lang-tab is-active" data-lang="go" role="tab" aria-selected="true">Go</button>
-        <button class="lang-tab" data-lang="ts" role="tab" aria-selected="false">TypeScript</button>
-        <button class="lang-tab" data-lang="js" role="tab" aria-selected="false">JavaScript</button>
-        <button class="lang-tab" data-lang="py" role="tab" aria-selected="false">Python</button>
-        <button class="lang-tab" data-lang="dart" role="tab" aria-selected="false">Dart</button>
-      </div>
+				<div class="lang-tabs" role="tablist" aria-label="Language selector">
+					<button
+						class="lang-tab is-active"
+						data-lang="go"
+						role="tab"
+						aria-selected="true"
+					>
+						Go
+					</button>
+					<button
+						class="lang-tab"
+						data-lang="ts"
+						role="tab"
+						aria-selected="false"
+					>
+						TypeScript
+					</button>
+					<button
+						class="lang-tab"
+						data-lang="js"
+						role="tab"
+						aria-selected="false"
+					>
+						JavaScript
+					</button>
+					<button
+						class="lang-tab"
+						data-lang="py"
+						role="tab"
+						aria-selected="false"
+					>
+						Python
+					</button>
+					<button
+						class="lang-tab"
+						data-lang="dart"
+						role="tab"
+						aria-selected="false"
+					>
+						Dart
+					</button>
+				</div>
 
-      <div class="lang-panel is-active" data-lang="go" role="tabpanel">
-<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
+				<div class="lang-panel is-active" data-lang="go" role="tabpanel">
+					<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
 out, err := env.Render("index.njk", map[string]any{
   "user": map[string]any{"name": "sam"},
 })
@@ -42,8 +83,8 @@ if err != nil {
   panic(err)
 }
 fmt.Println(out)</code></pre>
-      <p><strong>Go Details</strong></p>
-<pre><code class="language-bash"># CLI
+					<p><strong>Go Details</strong></p>
+					<pre><code class="language-bash"># CLI
 go run ./cmd/nunchucks help
 go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
 go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'
@@ -52,11 +93,16 @@ go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"
 cd go
 GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm
 cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js</code></pre>
-      <p><small>Examples: <code>go run ./examples/basic</code> and <code>go run ./examples/advanced</code>.</small></p>
-      </div>
+					<p>
+						<small
+							>Examples: <code>go run ./examples/basic</code> and
+							<code>go run ./examples/advanced</code>.</small
+						>
+					</p>
+				</div>
 
-      <div class="lang-panel" data-lang="ts" role="tabpanel" hidden>
-<pre><code class="language-ts">import { configure } from "@samuelbines/nunchucks";
+				<div class="lang-panel" data-lang="ts" role="tabpanel" hidden>
+					<pre><code class="language-ts">import { configure } from "@samuelbines/nunchucks";
 
 const app = express();
 const env = configure({
@@ -67,10 +113,10 @@ const env = configure({
   devRefresh: true,
 });
 env.express(app);</code></pre>
-      </div>
+				</div>
 
-      <div class="lang-panel" data-lang="js" role="tabpanel" hidden>
-<pre><code class="language-js">import { loadNunchucksWasm } from "./go/wasm/loader.js";
+				<div class="lang-panel" data-lang="js" role="tabpanel" hidden>
+					<pre><code class="language-js">import { loadNunchucksWasm } from "./go/wasm/loader.js";
 
 const nc = await loadNunchucksWasm({
   wasmURL: "./nunchucks.wasm",
@@ -84,10 +130,10 @@ const out = nc.renderFromMap({
   },
   context: { user: { name: "sam" } },
 });</code></pre>
-      </div>
+				</div>
 
-      <div class="lang-panel" data-lang="py" role="tabpanel" hidden>
-<pre><code class="language-python"># Python wrapper pattern (current): call nunchucks CLI
+				<div class="lang-panel" data-lang="py" role="tabpanel" hidden>
+					<pre><code class="language-python"># Python wrapper pattern (current): call nunchucks CLI
 import json
 import subprocess
 
@@ -99,10 +145,10 @@ cmd = [
 ]
 out = subprocess.check_output(cmd, text=True)
 print(out)</code></pre>
-      </div>
+				</div>
 
-      <div class="lang-panel" data-lang="dart" role="tabpanel" hidden>
-<pre><code class="language-dart">// Dart wrapper pattern (current): call nunchucks CLI
+				<div class="lang-panel" data-lang="dart" role="tabpanel" hidden>
+					<pre><code class="language-dart">// Dart wrapper pattern (current): call nunchucks CLI
 import 'dart:convert';
 import 'dart:io';
 
@@ -113,47 +159,216 @@ final result = await Process.run('nunchucks', [
   '-data', jsonEncode({'user': {'name': 'sam'}}),
 ]);
 print(result.stdout);</code></pre>
-      </div>
+				</div>
 
-      <p><small>Go and TS are native engines. JS/Python/Dart can use the Go CLI/WASM bridge today.</small></p>
-    </section>
+				<p>
+					<small
+						>Go and TS are native engines. JS/Python/Dart can use the Go
+						CLI/WASM bridge today.</small
+					>
+				</p>
+			</section>
+			<section class="hero">
+				<h1>Go Library</h1>
+				<p>Package: <code>github.com/SamuelDBines/nunjucks/go</code></p>
+			</section>
 
-    <section class="card" style="margin-top:1rem;">
-      <h2>Tags</h2>
-      <p>Current Go runtime support:</p>
-      <ul>
-        <li><code>if</code>, <code>for</code>, <code>set</code></li>
-        <li><code>extends</code>, <code>block</code>, <code>include</code></li>
-        <li><code>macro</code>, <code>import ... as</code>, <code>call</code></li>
-        <li><code>raw</code>, <code>verbatim</code>, <code>filter ... endfilter</code></li>
-      </ul>
-<pre><code class="language-django">{% import "macros.njk" as ui %}
+			<section class="card" style="margin-top: 1rem">
+				<h2>Quick Start</h2>
+				<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
+out, err := env.Render("index.njk", map[string]any{
+    "title": "Nunchucks",
+    "items": []any{"alpha", "beta"},
+})
+if err != nil {
+    panic(err)
+}
+fmt.Println(out)</code></pre>
+			</section>
+
+			<section class="card" style="margin-top: 1rem">
+				<h2>CLI</h2>
+				<pre><code class="language-bash">go run ./cmd/nunchucks help
+go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
+go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'</code></pre>
+			</section>
+
+			<section class="card" style="margin-top: 1rem">
+				<h2>Examples</h2>
+				<pre><code class="language-bash">cd go
+go run ./examples/basic
+go run ./examples/advanced</code></pre>
+			</section>
+
+			<section class="card" style="margin-top: 1rem">
+				<h2>Detailed Example A: Template Composition</h2>
+				<pre><code class="language-django"># views/layout.njk
+&lt;h1&gt;{% block title %}Title{% endblock %}&lt;/h1&gt;
+&lt;main&gt;{% block body %}{% endblock %}&lt;/main&gt;
+
+# views/macros.njk
+{% macro badge(text) %}&lt;span class="badge"&gt;{{ text | upper }}&lt;/span&gt;{% endmacro %}
+
+# views/home.njk
+{% extends "layout.njk" %}
+{% import "macros.njk" as ui %}
+{% block title %}Users{% endblock %}
+{% block body %}
+  {% for u in users %}
+    {{ ui.badge(u.name) }}
+  {% endfor %}
+{% endblock %}</code></pre>
+				<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
+out, err := env.Render("home.njk", map[string]any{
+  "users": []any{
+    map[string]any{"name": "sam"},
+    map[string]any{"name": "kai"},
+  },
+})
+if err != nil { panic(err) }</code></pre>
+			</section>
+
+			<section class="card" style="margin-top: 1rem">
+				<h2>Detailed Example B: Filter + Function Parity</h2>
+				<pre><code class="language-django">{% set active = users | selectattr("active") %}
+Active={{ active | length }}
+
+{% for grp in users | groupby("role", "none") %}
+{{ grp.grouper }}={{ grp.list | length }}
+{% endfor %}
+
+BestScoreKey={{ scores | dictsort("value", false, true) | first | first }}
+Intervals={{ range(0, 10, 3) | join(",") }}</code></pre>
+				<pre><code class="language-go">out, err := env.Render("report.njk", map[string]any{
+  "users": []any{
+    map[string]any{"name":"A","active":true,"role":"Dev"},
+    map[string]any{"name":"B","active":false,"role":"ops"},
+    map[string]any{"name":"C","active":true,"role":"dev"},
+  },
+  "scores": map[string]any{"x": 4, "y": 7, "z": 2},
+})</code></pre>
+			</section>
+
+			<section class="grid">
+				<article class="card">
+					<h3>Implemented</h3>
+					<ul>
+						<li><code>Configure</code></li>
+						<li><code>Render(name, ctx)</code></li>
+						<li><code>RenderString(src, ctx)</code></li>
+						<li>
+							<code>include</code>, <code>extends</code>, blocks,
+							<code>super()</code>
+						</li>
+						<li>
+							<code>set</code>, <code>if</code>, <code>for</code>,
+							<code>{{ expr }}</code>
+						</li>
+						<li>
+							<code>macro</code>, <code>import ... as</code>, <code>call</code>
+						</li>
+						<li>
+							<code>raw</code>, <code>verbatim</code>,
+							<code>filter ... endfilter</code>
+						</li>
+					</ul>
+				</article>
+				<article class="card">
+					<h3>Expression Support</h3>
+					<ul>
+						<li>Literals: string, number, bool, nil</li>
+						<li>Dot-path lookup from context or vars</li>
+						<li>Filters: <code>lower</code>, <code>upper</code></li>
+					</ul>
+				</article>
+			</section>
+
+			<section class="card" style="margin-top: 1rem">
+				<h2>WASM Target</h2>
+				<p>
+					The Go core can be compiled to WebAssembly and consumed from JS
+					runtimes.
+				</p>
+				<pre><code class="language-bash">cd go
+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm
+cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js</code></pre>
+				<p>Then load with <code>go/wasm/loader.js</code> and call:</p>
+				<ul>
+					<li><code>renderFromMap({ template, files, context })</code></li>
+					<li><code>renderString({ source, context })</code></li>
+				</ul>
+			</section>
+			<section class="card" style="margin-top: 1rem">
+				<h2>Tags</h2>
+				<p>Current Go runtime support:</p>
+				<ul>
+					<li><code>if</code>, <code>for</code>, <code>set</code></li>
+					<li>
+						<code>extends</code>, <code>block</code>, <code>include</code>
+					</li>
+					<li>
+						<code>macro</code>, <code>import ... as</code>, <code>call</code>
+					</li>
+					<li>
+						<code>raw</code>, <code>verbatim</code>,
+						<code>filter ... endfilter</code>
+					</li>
+				</ul>
+				<pre><code class="language-django">{% import "macros.njk" as ui %}
 {% set name = "sam" %}
 {% if name %}{{ ui.badge(name) }}{% endif %}</code></pre>
-    </section>
+			</section>
 
-    <section class="card" style="margin-top:1rem;">
-      <h2>Filters</h2>
-      <p>Current Go filters include:</p>
-      <ul>
-        <li><code>abs</code>, <code>batch</code>, <code>capitalize</code>, <code>center</code>, <code>default</code></li>
-        <li><code>dictsort</code>, <code>dump</code>, <code>escape</code>, <code>first</code>, <code>float</code>, <code>forceescape</code></li>
-        <li><code>groupby</code>, <code>indent</code>, <code>int</code>, <code>join</code>, <code>last</code>, <code>length</code>, <code>list</code></li>
-        <li><code>lower</code>, <code>nl2br</code>, <code>random</code>, <code>reject</code>, <code>rejectattr</code>, <code>replace</code></li>
-        <li><code>reverse</code>, <code>round</code>, <code>safe</code>, <code>select</code>, <code>selectattr</code>, <code>slice</code>, <code>sort</code></li>
-        <li><code>string</code>, <code>striptags</code>, <code>sum</code>, <code>title</code>, <code>trim</code>, <code>truncate</code>, <code>upper</code></li>
-        <li><code>urlencode</code>, <code>urlize</code>, <code>wordcount</code></li>
-      </ul>
-<pre><code class="language-django">{{ "NUNCHUCKS" | lower }}
+			<section class="card" style="margin-top: 1rem">
+				<h2>Filters</h2>
+				<p>Current Go filters include:</p>
+				<ul>
+					<li>
+						<code>abs</code>, <code>batch</code>, <code>capitalize</code>,
+						<code>center</code>, <code>default</code>
+					</li>
+					<li>
+						<code>dictsort</code>, <code>dump</code>, <code>escape</code>,
+						<code>first</code>, <code>float</code>, <code>forceescape</code>
+					</li>
+					<li>
+						<code>groupby</code>, <code>indent</code>, <code>int</code>,
+						<code>join</code>, <code>last</code>, <code>length</code>,
+						<code>list</code>
+					</li>
+					<li>
+						<code>lower</code>, <code>nl2br</code>, <code>random</code>,
+						<code>reject</code>, <code>rejectattr</code>, <code>replace</code>
+					</li>
+					<li>
+						<code>reverse</code>, <code>round</code>, <code>safe</code>,
+						<code>select</code>, <code>selectattr</code>, <code>slice</code>,
+						<code>sort</code>
+					</li>
+					<li>
+						<code>string</code>, <code>striptags</code>, <code>sum</code>,
+						<code>title</code>, <code>trim</code>, <code>truncate</code>,
+						<code>upper</code>
+					</li>
+					<li>
+						<code>urlencode</code>, <code>urlize</code>, <code>wordcount</code>
+					</li>
+				</ul>
+				<pre><code class="language-django">{{ "NUNCHUCKS" | lower }}
 {{ "nunchucks" | upper }}
 {% filter upper %}hello {{ user.name }}{% endfilter %}</code></pre>
-      <p><small>Note: behavior is close to Nunjucks/Jinja for most filters, with a few edge cases still being tightened.</small></p>
-    </section>
+				<p>
+					<small
+						>Note: behavior is close to Nunjucks/Jinja for most filters, with a
+						few edge cases still being tightened.</small
+					>
+				</p>
+			</section>
 
-    <section class="card" style="margin-top:1rem;">
-      <h2>Deep Example 1: Macros + Layout + Call Blocks</h2>
-      <p>Use this when you want reusable UI components and nested content.</p>
-<pre><code class="language-django"># base.njk
+			<section class="card" style="margin-top: 1rem">
+				<h2>Deep Example 1: Macros + Layout + Call Blocks</h2>
+				<p>Use this when you want reusable UI components and nested content.</p>
+				<pre><code class="language-django"># base.njk
 &lt;!doctype html&gt;
 &lt;html&gt;
   &lt;body&gt;
@@ -178,18 +393,22 @@ print(result.stdout);</code></pre>
     Hello {{ user.name | title }}
   {% endcall %}
 {% endblock %}</code></pre>
-<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
+				<pre><code class="language-go">env := nunchucks.Configure(nunchucks.ConfigOptions{Path: "views"})
 out, err := env.Render("page.njk", map[string]any{
   "user": map[string]any{"name": "samuel"},
 })
 if err != nil { panic(err) }
 fmt.Println(out)</code></pre>
-    </section>
+			</section>
 
-    <section class="card" style="margin-top:1rem;">
-      <h2>Deep Example 2: Data Shaping (groupby + dictsort + selectattr + range)</h2>
-      <p>Use this when rendering dashboards, reports, and config summaries.</p>
-<pre><code class="language-django">{# users grouped by role (case-insensitive by default) #}
+			<section class="card" style="margin-top: 1rem">
+				<h2>
+					Deep Example 2: Data Shaping (groupby + dictsort + selectattr + range)
+				</h2>
+				<p>
+					Use this when rendering dashboards, reports, and config summaries.
+				</p>
+				<pre><code class="language-django">{# users grouped by role (case-insensitive by default) #}
 {% for grp in users | groupby("role", "none") %}
 Role={{ grp.grouper }} count={{ grp.list | length }}
 {% endfor %}
@@ -202,7 +421,7 @@ TopKey={{ scores | dictsort("value", false, true) | first | first }}
 
 {# deterministic ranges from builtin function #}
 Steps={{ range(1, 8, 2) | join(",") }}</code></pre>
-<pre><code class="language-go">out, err := env.Render("report.njk", map[string]any{
+				<pre><code class="language-go">out, err := env.Render("report.njk", map[string]any{
   "users": []any{
     map[string]any{"name":"Zed","role":"Dev","active":true},
     map[string]any{"name":"Amy","role":"ops","active":false},
@@ -210,14 +429,29 @@ Steps={{ range(1, 8, 2) | join(",") }}</code></pre>
   },
   "scores": map[string]any{"alpha": 92, "beta": 87, "gamma": 95},
 })</code></pre>
-    </section>
+			</section>
 
-    <footer style="margin-top:1.5rem; text-align:center; color: var(--muted); font-size:0.92rem;">
-      <a href="https://samueldbines.github.io/" target="_blank" rel="noopener noreferrer">© 2026 Samuel Bines</a>
-    </footer>
-  </main>
+			<footer
+				style="
+					margin-top: 1.5rem;
+					text-align: center;
+					color: var(--muted);
+					font-size: 0.92rem;
+				"
+			>
+				<a
+					href="https://samueldbines.github.io/"
+					target="_blank"
+					rel="noopener noreferrer"
+					>© 2026 Samuel Bines</a
+				>
+			</footer>
+		</main>
 
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-  <script defer src="./assets/docs.js"></script>
-</body>
+		<script
+			defer
+			src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+		></script>
+		<script defer src="./assets/docs.js"></script>
+	</body>
 </html>
