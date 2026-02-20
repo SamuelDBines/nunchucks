@@ -11,7 +11,6 @@
   <main class="wrapper">
     <nav>
       <a href="./index.html">Docs Home</a>
-      <a href="./golang.html">Go Details</a>
       <a href="./templating.html">Templating Coverage</a>
       <a href="./playground.html">Editor Demo</a>
     </nav>
@@ -43,6 +42,17 @@ if err != nil {
   panic(err)
 }
 fmt.Println(out)</code></pre>
+      <p><strong>Go Details</strong></p>
+<pre><code class="language-bash"># CLI
+go run ./cmd/nunchucks help
+go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
+go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'
+
+# WASM build
+cd go
+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm
+cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js</code></pre>
+      <p><small>Examples: <code>go run ./examples/basic</code> and <code>go run ./examples/advanced</code>.</small></p>
       </div>
 
       <div class="lang-panel" data-lang="ts" role="tabpanel" hidden>
