@@ -314,8 +314,13 @@ html = subprocess.check_output([
 {% import "macros/ui.njk" as ui %}
 
 {% block title %}Team Dashboard{% endblock %}
+{% block header %}
+  {{ super() }}
+  <small>Team dashboard</small>
+{% endblock %}
 
 {% block body %}
+  {# core dashboard section #}
   {% set activeUsers = users | selectattr("active") %}
 
   <h2>{{ team.name | title }}</h2>

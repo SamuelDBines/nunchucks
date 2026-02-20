@@ -459,12 +459,191 @@
     updateOutput();
   }
 
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function highlightHtmlSegment(seg) {
+    const escaped = escapeHtml(seg);
+    return escaped.replace(/(&lt;\/?)([a-zA-Z][\w:-]*)([\s\S]*?)(&gt;)/g, function (_m, open, tagName, attrs, close) {
+      const attrsHighlighted = attrs.replace(/([a-zA-Z_:][-a-zA-Z0-9_:.]*)(=)/g, '<span class="nc-html-attr">$1</span>$2');
+      return open + '<span class="nc-html-tag">' + tagName + '</span>' + attrsHighlighted + close;
+    });
+  }
+
+  function highlightTemplateExpr(expr) {
+    let out = escapeHtml(expr);
+    const stash = [];
+    out = out.replace(/&quot;[^&]*?&quot;|'[^']*?'/g, function (m) {
+      stash.push('<span class="nc-string">' + m + '</span>');
+      return '@@NCSTR' + (stash.length - 1) + '@@';
+    });
+
+    out = out.replace(/\|\s*([a-zA-Z_][\w]*)/g, function (_m, name) {
+      return '<span class="nc-operator">|</span><span class="nc-filter">' + name + '</span>';
+    });
+    out = out.replace(/\b([a-zA-Z_][\w]*)\s*(?=\()/g, '<span class="nc-func">$1</span>');
+    out = out.replace(/\b\d+(?:\.\d+)?\b/g, '<span class="nc-number">$&</span>');
+    out = out.replace(/\b(and|or|not|in|is)\b/g, '<span class="nc-operator">$1</span>');
+    out = out.replace(/\b(if|else|true|false|none|null)\b/g, '<span class="nc-keyword">$1</span>');
+    out = out.replace(/\b(extends|include|import|from|as|with|context|ignore|missing|elif|endif|for|endfor|set|endset|block|endblock|macro|endmacro|call|endcall|filter|endfilter|raw|endraw|verbatim|endverbatim|super)\b/g, '<span class="nc-keyword">$1</span>');
+
+    out = out.replace(/@@NCSTR(\d+)@@/g, function (_m, i) {
+      return stash[Number(i)] || '';
+    });
+    return out;
+  }
+
+  function highlightNunchucksSource(src) {
+    const tokenRe = /(\{#[\s\S]*?#\}|\{%-?[\s\S]*?-?%\}|\{\{-?[\s\S]*?-?\}\})/g;
+    let out = '';
+    let pos = 0;
+    let m;
+    while ((m = tokenRe.exec(src)) !== null) {
+      out += highlightHtmlSegment(src.slice(pos, m.index));
+      const token = m[0];
+      if (token.startsWith('{#')) {
+        out += '<span class="nc-comment"><span class="nc-delim">{#</span>' +
+          escapeHtml(token.slice(2, -2)) +
+          '<span class="nc-delim">#}</span></span>';
+      } else if (token.startsWith('{{')) {
+        const open = token.startsWith('{{-') ? '{{-' : '{{';
+        const close = token.endsWith('-}}') ? '-}}' : '}}';
+        const inner = token.slice(open.length, token.length - close.length);
+        out += '<span class="nc-delim">' + escapeHtml(open) + '</span>' +
+          highlightTemplateExpr(inner) +
+          '<span class="nc-delim">' + escapeHtml(close) + '</span>';
+      } else {
+        const open = token.startsWith('{%-') ? '{%-' : '{%';
+        const close = token.endsWith('-%}') ? '-%}' : '%}';
+        const inner = token.slice(open.length, token.length - close.length);
+        out += '<span class="nc-delim">' + escapeHtml(open) + '</span>' +
+          highlightTemplateExpr(inner) +
+          '<span class="nc-delim">' + escapeHtml(close) + '</span>';
+      }
+      pos = tokenRe.lastIndex;
+    }
+    out += highlightHtmlSegment(src.slice(pos));
+    return out;
+  }
+
+  function renderNunchucksBlock(codeEl, focusNeedle) {
+    const raw = codeEl.dataset.ncRaw || codeEl.textContent || '';
+    codeEl.dataset.ncRaw = raw;
+    codeEl.classList.add('nunchucks-code');
+    const rendered = highlightNunchucksSource(raw).split('\n');
+    const lines = raw.split('\n');
+    let focusIndex = -1;
+    if (focusNeedle) {
+      focusIndex = lines.findIndex(function (line) {
+        return line.indexOf(focusNeedle) >= 0;
+      });
+    }
+    codeEl.innerHTML = rendered.map(function (line, i) {
+      const cls = 'nc-line' + (i === focusIndex ? ' is-focus' : '');
+      return '<span class="' + cls + '" data-line="' + (i + 1) + '">' + (line || '&nbsp;') + '</span>';
+    }).join('\n');
+  }
+
+  function applyNunchucksHighlighting() {
+    const blocks = Array.from(document.querySelectorAll('code.language-django, code.language-nunchucks-template'));
+    blocks.forEach(function (codeEl) {
+      renderNunchucksBlock(codeEl);
+    });
+  }
+
+  function initCoreTopicSync() {
+    const core = document.getElementById('core-topics');
+    if (!core || document.body.dataset.coreSyncInit === '1') return;
+    document.body.dataset.coreSyncInit = '1';
+
+    const topicMap = {
+      'core-user-defined-templates-warning': { file: 'app', needle: '{# core dashboard section #}' },
+      'core-file-extensions': { file: 'layout', needle: '<!doctype html>' },
+      'core-syntax-highlighting': { file: 'app', needle: '{% import "macros/ui.njk" as ui %}' },
+      'core-variables': { file: 'card', needle: '{{ user.name | title }}' },
+      'core-filters': { file: 'app', needle: 'users | groupby("role", "none")' },
+      'core-template-inheritance': { file: 'app', needle: '{% extends "layout.njk" %}' },
+      'core-super': { file: 'app', needle: '{{ super() }}' },
+      'core-keyword-arguments': { file: 'macros', needle: 'macro panel(kind="info")' },
+      'core-comments': { file: 'app', needle: '{# core dashboard section #}' },
+      'core-whitespace-control': { file: 'layout', needle: '{% block body %}{% endblock %}' },
+      'core-autoescaping': { file: 'card', needle: 'user.website | urlize | safe' }
+    };
+
+    const ids = Object.keys(topicMap).filter(function (id) {
+      return !!document.getElementById(id);
+    });
+    if (ids.length === 0) return;
+
+    function syncTopic(id) {
+      ids.forEach(function (topicId) {
+        const el = document.getElementById(topicId);
+        if (!el) return;
+        el.classList.toggle('core-topic-active', topicId === id);
+      });
+
+      const cfg = topicMap[id];
+      if (!cfg) return;
+      activateFile(cfg.file);
+      const activeTab = document.querySelector('.file-tab[data-file="' + cfg.file + '"]');
+      if (activeTab && activeTab.scrollIntoView) {
+        activeTab.scrollIntoView({ inline: 'center', block: 'nearest' });
+      }
+
+      const fileCodes = Array.from(document.querySelectorAll('.file-panel code.language-django'));
+      fileCodes.forEach(function (codeEl) {
+        renderNunchucksBlock(codeEl);
+      });
+      const target = document.querySelector('.file-panel[data-file="' + cfg.file + '"] code.language-django');
+      if (target) {
+        renderNunchucksBlock(target, cfg.needle);
+      }
+    }
+
+    function activeIdFromScroll() {
+      const marker = 180;
+      let bestId = ids[0];
+      let bestDistance = Number.POSITIVE_INFINITY;
+      ids.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const distance = Math.abs(rect.top - marker);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestId = id;
+        }
+      });
+      return bestId;
+    }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        syncTopic(activeIdFromScroll());
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    syncTopic(activeIdFromScroll());
+  }
+
   function applyHighlighting() {
     if (window.hljs && typeof window.hljs.highlightAll === 'function') {
       window.hljs.highlightAll();
-      return true;
     }
-    return false;
+    applyNunchucksHighlighting();
+    initCoreTopicSync();
+    return true;
   }
 
   if (!applyHighlighting()) {

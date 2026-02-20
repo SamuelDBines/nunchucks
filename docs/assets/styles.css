@@ -275,6 +275,67 @@ small { color: var(--muted); }
   font-family: inherit;
 }
 
+.nunchucks-code .nc-line {
+  display: block;
+  padding: 0 0.2rem;
+  margin: 0 -0.2rem;
+  border-radius: 4px;
+}
+
+.nunchucks-code .nc-line.is-focus {
+  background: rgba(0, 122, 204, 0.2);
+  box-shadow: inset 2px 0 0 #007acc;
+}
+
+.nunchucks-code .nc-comment {
+  color: #6a9955;
+}
+
+.nunchucks-code .nc-delim {
+  color: #d4d4d4;
+}
+
+.nunchucks-code .nc-keyword {
+  color: #c586c0;
+}
+
+.nunchucks-code .nc-name {
+  color: #9cdcfe;
+}
+
+.nunchucks-code .nc-filter {
+  color: #dcdcaa;
+}
+
+.nunchucks-code .nc-func {
+  color: #dcdcaa;
+}
+
+.nunchucks-code .nc-string {
+  color: #ce9178;
+}
+
+.nunchucks-code .nc-number {
+  color: #b5cea8;
+}
+
+.nunchucks-code .nc-operator {
+  color: #d4d4d4;
+}
+
+.nunchucks-code .nc-html-tag {
+  color: #ce9178;
+}
+
+.nunchucks-code .nc-html-attr {
+  color: #4fc1ff;
+}
+
+.core-topic-active {
+  outline: 2px solid rgba(0, 122, 204, 0.2);
+  border-radius: 6px;
+}
+
 @media (max-width: 1100px) {
   .docs-layout {
     grid-template-columns: 1fr;
