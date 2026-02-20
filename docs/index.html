@@ -13,6 +13,10 @@
 	<body>
 		<main class="wrapper">
 			<nav class="top-nav">
+				<a class="brand-mark" href="./index.html">
+					<img src="./assets/nunchucks-logo.svg" alt="Nunchucks logo" />
+					<span>Nunchucks</span>
+				</a>
 				<a href="./index.html">Docs Home</a>
 				<a href="./templating.html">Templating Coverage</a>
 				<a href="./playground.html">Editor Demo</a>
@@ -22,6 +26,16 @@
 				<h1>Nunchucks Documentation</h1>
 				<p>Multi-language templating with a Go core, CLI, and WASM bridge.</p>
 				<small>GitHub Pages serves this <code>docs/</code> folder.</small>
+				<div class="nunchucks-example">
+					<p class="nunchucks-example-head">Nunchucks template</p>
+					<pre><code class="language-django">{% extends "layout.njk" %}
+{% block body %}
+  &lt;h2&gt;{{ user.name | title }}&lt;/h2&gt;
+  {% if user.active %}
+    &lt;p&gt;Status: active&lt;/p&gt;
+  {% endif %}
+{% endblock %}</code></pre>
+				</div>
 			</section>
 
 			<section class="card" style="margin-top: 1rem">

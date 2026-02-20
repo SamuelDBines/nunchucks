@@ -35,6 +35,8 @@ body {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .wrapper-wide .top-nav {
@@ -42,6 +44,45 @@ body {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 1.25rem;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 0.4rem;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.brand-mark img {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #101820;
+}
+
+.nunchucks-example {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 0.8rem;
+}
+
+.nunchucks-example-head {
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: #edf3ea;
+  border-bottom: 1px solid var(--line);
+}
+
+.nunchucks-example pre {
+  margin: 0;
+  border-radius: 0;
 }
 
 h1, h2, h3 {
