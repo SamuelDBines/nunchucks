@@ -121,4 +121,5 @@ Open an issue or PR on GitHub.
 
 ## License
 
-BSD-2-Clause
+- App/repo: BSD-2-Clause (`LICENSE`)
+- VS Code extension: BSD-2-Clause (`vscode-nunchucks/LICENSE`)

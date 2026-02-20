@@ -3,8 +3,16 @@
   "displayName": "Nunchucks Syntax",
   "description": "Syntax highlighting for Nunchucks templates.",
   "version": "0.0.1",
-  "publisher": "samuelbines",
+  "publisher": "BishopCoTech",
   "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SamuelDBines/nunchucks.git"
+  },
+  "homepage": "https://github.com/SamuelDBines/nunchucks/tree/main/vscode-nunchucks",
+  "bugs": {
+    "url": "https://github.com/SamuelDBines/nunchucks/issues"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },

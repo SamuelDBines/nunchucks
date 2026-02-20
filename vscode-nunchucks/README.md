@@ -17,3 +17,7 @@ Local VS Code extension for Nunchucks template highlighting.
 
 - `.njk`
 - `.nunchucks`
+
+## License
+
+BSD-2-Clause. See `vscode-nunchucks/LICENSE`.
