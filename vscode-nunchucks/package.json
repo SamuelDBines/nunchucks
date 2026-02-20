@@ -2,7 +2,7 @@
   "name": "nunchucks-syntax",
   "displayName": "Nunchucks Syntax",
   "description": "Syntax highlighting for Nunchucks templates.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "BishopCoTech",
   "license": "BSD-2-Clause",
   "repository": {
