@@ -396,6 +396,46 @@ nav {
   color: var(--ink);
 }
 
+.pg-view-tabs {
+  display: inline-flex;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 0.6rem;
+}
+
+.pg-view-tab {
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  padding: 0.32rem 0.62rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.pg-view-tab:last-child {
+  border-right: 0;
+}
+
+.pg-view-tab.is-active {
+  background: #eef5eb;
+  color: var(--ink);
+}
+
+.pg-view-panel {
+  margin-top: 0.6rem;
+}
+
+.pg-preview-frame {
+  width: 100%;
+  min-height: 360px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
 .pg-modal-backdrop {
   position: fixed;
   inset: 0;

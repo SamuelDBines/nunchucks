@@ -49,7 +49,16 @@
         </div>
         <p class="project-pane-sub">Live preview. Uses local stateless API when available, then client fallback.</p>
         <div class="pg-output-tabs" role="tablist" aria-label="Output files" data-pg-output-tabs></div>
+        <div class="pg-view-tabs" role="tablist" aria-label="Output view mode">
+          <button class="pg-view-tab is-active" data-pg-view-tab="preview" role="tab" aria-selected="true">Preview</button>
+          <button class="pg-view-tab" data-pg-view-tab="code" role="tab" aria-selected="false">Code</button>
+        </div>
+        <div class="pg-view-panel is-active" data-pg-view="preview">
+          <iframe title="Playground preview" class="pg-preview-frame" data-pg-preview></iframe>
+        </div>
+        <div class="pg-view-panel" data-pg-view="code" hidden>
 <pre><code class="language-html" data-pg-output></code></pre>
+        </div>
       </section>
     </div>
 

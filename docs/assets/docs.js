@@ -95,7 +95,10 @@
     const tabsHost = playground.querySelector('[data-pg-tabs]');
     const editorHost = playground.querySelector('[data-pg-editor]');
     const output = playground.querySelector('[data-pg-output]');
+    const preview = playground.querySelector('[data-pg-preview]');
     const outputTabsHost = playground.querySelector('[data-pg-output-tabs]');
+    const viewTabs = Array.from(playground.querySelectorAll('[data-pg-view-tab]'));
+    const viewPanels = Array.from(playground.querySelectorAll('[data-pg-view]'));
     const addBtn = playground.querySelector('[data-add-file]');
     const exportBtn = playground.querySelector('[data-export-output]');
     const modal = document.querySelector('[data-pg-modal]');
@@ -110,6 +113,7 @@
     let files = {};
     let activeFile = '';
     let activeOutputFile = '';
+    let activeOutputView = 'preview';
     let editor = null;
     let renderSeq = 0;
 
@@ -210,6 +214,20 @@
       });
     }
 
+    function activateOutputView(view) {
+      activeOutputView = view;
+      viewTabs.forEach((tab) => {
+        const on = tab.dataset.pgViewTab === view;
+        tab.classList.toggle('is-active', on);
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      viewPanels.forEach((panel) => {
+        const on = panel.dataset.pgView === view;
+        panel.classList.toggle('is-active', on);
+        panel.hidden = !on;
+      });
+    }
+
     function titleCase(s) {
       return String(s).replace(/\w\S*/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
     }
@@ -287,6 +305,10 @@
       const text = rendered[name] || '';
       output.className = /layout\.njk|app\.njk|user-card\.njk/.test(name) ? 'language-html' : 'language-django';
       output.textContent = text;
+      if (preview) {
+        const asHtml = /layout\.njk|app\.njk|user-card\.njk/.test(name);
+        preview.srcdoc = asHtml ? text : '<pre style="font-family:monospace;white-space:pre-wrap;padding:12px;">' + text.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</pre>';
+      }
       if (window.hljs && typeof window.hljs.highlightElement === 'function') {
         window.hljs.highlightElement(output);
       }
@@ -424,9 +446,16 @@
       });
     }
 
+    viewTabs.forEach((tab) => {
+      tab.addEventListener('click', function () {
+        activateOutputView(tab.dataset.pgViewTab);
+      });
+    });
+
     setEditorText(files[activeFile] || '');
     renderTabs();
     renderOutputTabs();
+    activateOutputView(activeOutputView);
     updateOutput();
   }
 
