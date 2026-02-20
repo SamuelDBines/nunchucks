@@ -17,15 +17,25 @@
 					<img src="./assets/nunchucks-logo.svg" alt="Nunchucks logo" />
 					<span>Nunchucks</span>
 				</a>
-				<a href="./index.html">Docs Home</a>
-				<a href="./templating.html">Templating Coverage</a>
-				<a href="./playground.html">Editor Demo</a>
+				<a href="./index.html">Overview</a>
+				<a href="./templating.html">Reference</a>
+				<a href="./playground.html">Playground</a>
 			</nav>
 
 			<section class="hero">
 				<h1>Nunchucks Documentation</h1>
 				<p>Multi-language templating with a Go core, CLI, and WASM bridge.</p>
 				<small>GitHub Pages serves this <code>docs/</code> folder.</small>
+				<p style="margin-top:0.7rem;">
+					<strong>Packages:</strong>
+					<a href="https://www.npmjs.com/package/@samuelbines/nunchucks" target="_blank" rel="noopener noreferrer">npm (@samuelbines/nunchucks)</a>
+					|
+					<a href="https://pkg.go.dev/github.com/SamuelDBines/nunjucks/go" target="_blank" rel="noopener noreferrer">Go package (pkg.go.dev)</a>
+					|
+					<a href="https://github.com/SamuelDBines/nunchucks/tree/main/go" target="_blank" rel="noopener noreferrer">Go source</a>
+				</p>
+				<pre><code class="language-bash">npm install @samuelbines/nunchucks
+npm link @samuelbines/nunchucks</code></pre>
 				<div class="nunchucks-example">
 					<p class="nunchucks-example-head">Nunchucks template</p>
 					<pre><code class="language-django">{% extends "layout.njk" %}

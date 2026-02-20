@@ -157,9 +157,19 @@ small { color: var(--muted); }
   break-inside: avoid;
 }
 
+.core-links {
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 700px) {
   .toc {
     columns: 1;
+  }
+
+  .core-links {
+    font-size: 0.82rem;
+    line-height: 1.45;
   }
 }
 
@@ -389,6 +399,16 @@ small { color: var(--muted); }
   min-height: 0;
 }
 
+.editor-pane,
+.output-pane,
+.pg-tabs-row,
+.pg-tabs,
+.pg-output-head,
+.pg-output-tabs,
+.pg-view-tabs {
+  min-width: 0;
+}
+
 .output-pane pre {
   margin-top: 0.6rem;
   flex: 1;
@@ -408,6 +428,7 @@ small { color: var(--muted); }
   flex-wrap: nowrap;
   overflow-x: auto;
   background: var(--vscode-tab);
+  max-width: 100%;
 }
 
 .pg-tab {
@@ -486,6 +507,7 @@ small { color: var(--muted); }
   border-radius: 8px;
   background: #fbfcfa;
   margin-top: 0.55rem;
+  max-width: 100%;
 }
 
 .pg-out-tab {
@@ -512,6 +534,7 @@ small { color: var(--muted); }
   border-radius: 8px;
   overflow: hidden;
   margin-top: 0.6rem;
+  max-width: 100%;
 }
 
 .pg-view-tab {
@@ -651,6 +674,12 @@ small { color: var(--muted); }
     min-height: auto;
   }
 
+  .wrapper-wide {
+    max-width: 100%;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+
   .pane-switch {
     display: flex;
   }
@@ -661,5 +690,13 @@ small { color: var(--muted); }
 
   .playground-layout [data-pane].is-active {
     display: block;
+  }
+
+  .pg-editor-surface {
+    min-height: 320px;
+  }
+
+  .pg-preview-frame {
+    min-height: 280px;
   }
 }
