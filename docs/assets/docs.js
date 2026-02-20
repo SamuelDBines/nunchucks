@@ -111,6 +111,7 @@
     let activeFile = '';
     let activeOutputFile = '';
     let editor = null;
+    let renderSeq = 0;
 
     try {
       files = JSON.parse(jsonNode ? jsonNode.textContent || '{}' : '{}');
@@ -266,22 +267,65 @@
         .trim();
 
       const out = {};
+      Object.keys(files).forEach((name) => {
+        out[name] = files[name];
+      });
       out['app.njk'] = html;
       out['layout.njk'] = html;
-      out['partials/user-card.njk'] = renderUserCard(card, users[0]);
-      out['macros/ui.njk'] = renderPanel('<section class=\"panel panel-{{ kind }}\">{{ caller() }}</section>', 'info', 'sample');
+      if (files['partials/user-card.njk']) {
+        out['partials/user-card.njk'] = renderUserCard(card, users[0]);
+      }
+      if (files['macros/ui.njk']) {
+        out['macros/ui.njk'] = renderPanel('<section class=\"panel panel-{{ kind }}\">{{ caller() }}</section>', 'info', 'sample');
+      }
       return out;
     }
 
-    function updateOutput() {
-      const rendered = renderAppLikeOutputs();
-      const name = activeOutputFile in rendered ? activeOutputFile : Object.keys(rendered)[0];
+    function applyOutput(rendered) {
+      const keys = Object.keys(rendered);
+      const name = activeOutputFile in rendered ? activeOutputFile : keys[0];
       const text = rendered[name] || '';
       output.className = /layout\.njk|app\.njk|user-card\.njk/.test(name) ? 'language-html' : 'language-django';
       output.textContent = text;
       if (window.hljs && typeof window.hljs.highlightElement === 'function') {
         window.hljs.highlightElement(output);
       }
+    }
+
+    async function fetchServerOutputs() {
+      const api = window.NUNCHUCKS_PLAYGROUND_API || '/api/playground/render';
+      try {
+        const res = await fetch(api, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            template: 'app.njk',
+            files,
+            context: {
+              users: [
+                { name: 'sam', email: 'Sam@Example.com' },
+                { name: 'kai', email: 'Kai@Example.com' }
+              ]
+            }
+          })
+        });
+        if (!res.ok) return null;
+        const body = await res.json();
+        if (!body || typeof body !== 'object' || !body.outputs) return null;
+        return body.outputs;
+      } catch (_err) {
+        return null;
+      }
+    }
+
+    function updateOutput() {
+      const seq = ++renderSeq;
+      const local = renderAppLikeOutputs();
+      applyOutput(local);
+      fetchServerOutputs().then((remote) => {
+        if (!remote || seq !== renderSeq) return;
+        applyOutput(remote);
+      });
     }
 
     if (editor) {

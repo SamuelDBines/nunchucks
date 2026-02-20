@@ -364,6 +364,9 @@ nav {
   border-radius: 8px;
   padding: 0.3rem 0.6rem;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .pg-output-tabs {

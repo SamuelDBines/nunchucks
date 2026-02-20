@@ -40,9 +40,14 @@
       <section class="output-pane card" data-pane="output">
         <div class="pg-output-head">
           <h2>Playground</h2>
-          <button class="pg-export" type="button" data-export-output>Export</button>
+          <button class="pg-export" type="button" data-export-output>
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M12 3l4 4h-3v6h-2V7H8l4-4zm-7 14h14v2H5v-2z"/>
+            </svg>
+            Export
+          </button>
         </div>
-        <p class="project-pane-sub">Live preview (lightweight demo renderer for docs).</p>
+        <p class="project-pane-sub">Live preview. Uses local stateless API when available, then client fallback.</p>
         <div class="pg-output-tabs" role="tablist" aria-label="Output files" data-pg-output-tabs></div>
 <pre><code class="language-html" data-pg-output></code></pre>
       </section>
