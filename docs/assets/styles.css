@@ -89,3 +89,18 @@ nav {
   color: #fff;
   border-color: var(--brand);
 }
+
+.toc {
+  columns: 2;
+  column-gap: 2rem;
+}
+
+.toc li {
+  break-inside: avoid;
+}
+
+@media (max-width: 700px) {
+  .toc {
+    columns: 1;
+  }
+}

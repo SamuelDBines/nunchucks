@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Nunchucks Docs</title>
   <link rel="stylesheet" href="./assets/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" />
 </head>
 <body>
   <main class="wrapper">
@@ -115,7 +116,7 @@ print(result.stdout);</code></pre>
         <li><code>macro</code>, <code>import ... as</code>, <code>call</code></li>
         <li><code>raw</code>, <code>verbatim</code>, <code>filter ... endfilter</code></li>
       </ul>
-<pre><code class="language-njk">{% import "macros.njk" as ui %}
+<pre><code class="language-django">{% import "macros.njk" as ui %}
 {% set name = "sam" %}
 {% if name %}{{ ui.badge(name) }}{% endif %}</code></pre>
     </section>
@@ -132,7 +133,7 @@ print(result.stdout);</code></pre>
         <li><code>string</code>, <code>striptags</code>, <code>sum</code>, <code>title</code>, <code>trim</code>, <code>truncate</code>, <code>upper</code></li>
         <li><code>urlencode</code>, <code>urlize</code>, <code>wordcount</code></li>
       </ul>
-<pre><code class="language-njk">{{ "NUNCHUCKS" | lower }}
+<pre><code class="language-django">{{ "NUNCHUCKS" | lower }}
 {{ "nunchucks" | upper }}
 {% filter upper %}hello {{ user.name }}{% endfilter %}</code></pre>
       <p><small>Note: behavior is close to Nunjucks/Jinja for most filters, with a few edge cases still being tightened.</small></p>
@@ -141,7 +142,7 @@ print(result.stdout);</code></pre>
     <section class="card" style="margin-top:1rem;">
       <h2>Deep Example 1: Macros + Layout + Call Blocks</h2>
       <p>Use this when you want reusable UI components and nested content.</p>
-<pre><code class="language-njk"># base.njk
+<pre><code class="language-django"># base.njk
 &lt;!doctype html&gt;
 &lt;html&gt;
   &lt;body&gt;
@@ -177,7 +178,7 @@ fmt.Println(out)</code></pre>
     <section class="card" style="margin-top:1rem;">
       <h2>Deep Example 2: Data Shaping (groupby + dictsort + selectattr + range)</h2>
       <p>Use this when rendering dashboards, reports, and config summaries.</p>
-<pre><code class="language-njk">{# users grouped by role (case-insensitive by default) #}
+<pre><code class="language-django">{# users grouped by role (case-insensitive by default) #}
 {% for grp in users | groupby("role", "none") %}
 Role={{ grp.grouper }} count={{ grp.list | length }}
 {% endfor %}
@@ -211,6 +212,7 @@ Steps={{ range(1, 8, 2) | join(",") }}</code></pre>
     </section>
   </main>
 
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
   <script src="./assets/docs.js"></script>
 </body>
 </html>

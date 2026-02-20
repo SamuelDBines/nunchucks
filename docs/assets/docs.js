@@ -21,4 +21,8 @@
       activate(tab.dataset.lang);
     });
   });
+
+  if (window.hljs && typeof window.hljs.highlightAll === 'function') {
+    window.hljs.highlightAll();
+  }
 })();
