@@ -1,0 +1,129 @@
+{
+  "name": "Nunchucks",
+  "scopeName": "text.nunchucks",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#statement"
+    },
+    {
+      "include": "#expression"
+    },
+    {
+      "include": "text.html.basic"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.block.nunchucks",
+      "begin": "\\{#",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.begin.nunchucks"
+        }
+      },
+      "end": "#\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.end.nunchucks"
+        }
+      }
+    },
+    "statement": {
+      "name": "meta.statement.nunchucks",
+      "begin": "\\{%",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.nunchucks"
+        }
+      },
+      "end": "%\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.nunchucks"
+        }
+      },
+      "patterns": [
+        {
+          "name": "keyword.control.nunchucks",
+          "match": "\\b(if|elif|else|endif|for|endfor|set|extends|block|endblock|include|import|from|macro|endmacro|call|endcall|raw|endraw|verbatim|endverbatim|filter|endfilter|with|without|context|ignore|missing|as|in|is|not|and|or)\\b"
+        },
+        {
+          "name": "entity.name.function.nunchucks",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()"
+        },
+        {
+          "name": "keyword.operator.nunchucks",
+          "match": "\\||==|!=|<=|>=|<|>|\\+|-|\\*|/|%"
+        },
+        {
+          "name": "constant.numeric.nunchucks",
+          "match": "\\b\\d+(?:\\.\\d+)?\\b"
+        },
+        {
+          "name": "string.quoted.double.nunchucks",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.nunchucks",
+          "begin": "'",
+          "end": "'"
+        },
+        {
+          "name": "variable.other.nunchucks",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*\\b"
+        }
+      ]
+    },
+    "expression": {
+      "name": "meta.expression.nunchucks",
+      "begin": "\\{\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.nunchucks"
+        }
+      },
+      "end": "\\}\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.nunchucks"
+        }
+      },
+      "patterns": [
+        {
+          "name": "support.function.filter.nunchucks",
+          "match": "(?<=\\|)\\s*[A-Za-z_][A-Za-z0-9_]*"
+        },
+        {
+          "name": "entity.name.function.nunchucks",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()"
+        },
+        {
+          "name": "keyword.operator.nunchucks",
+          "match": "\\||==|!=|<=|>=|<|>|\\+|-|\\*|/|%"
+        },
+        {
+          "name": "constant.numeric.nunchucks",
+          "match": "\\b\\d+(?:\\.\\d+)?\\b"
+        },
+        {
+          "name": "string.quoted.double.nunchucks",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.nunchucks",
+          "begin": "'",
+          "end": "'"
+        },
+        {
+          "name": "variable.other.nunchucks",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*\\b"
+        }
+      ]
+    }
+  }
+}

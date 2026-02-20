@@ -1,0 +1,37 @@
+{
+  "name": "nunchucks-syntax",
+  "displayName": "Nunchucks Syntax",
+  "description": "Syntax highlighting for Nunchucks templates.",
+  "version": "0.0.1",
+  "publisher": "samuelbines",
+  "license": "BSD-2-Clause",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "nunchucks-template",
+        "aliases": [
+          "Nunchucks",
+          "nunchucks"
+        ],
+        "extensions": [
+          ".njk",
+          ".nunchucks"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "nunchucks-template",
+        "scopeName": "text.nunchucks",
+        "path": "./syntaxes/nunchucks.tmLanguage.json"
+      }
+    ]
+  }
+}

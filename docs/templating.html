@@ -17,8 +17,8 @@
 
     <section class="hero">
       <h1>Templating Reference</h1>
-      <p>Modeled after Nunjucks templating docs, focused on Nunchucks implementation and parity work.</p>
-      <p><small>Reference: <a href="https://mozilla.github.io/nunjucks/templating.html">mozilla.github.io/nunjucks/templating.html</a></small></p>
+      <p>Nunchucks templating reference focused on implementation details and parity work.</p>
+      <p><small>Historical syntax inspiration: <a href="https://mozilla.github.io/nunjucks/templating.html">mozilla.github.io/nunjucks/templating.html</a></small></p>
     </section>
 
     <section class="card" style="margin-top:1rem;">
@@ -106,16 +106,16 @@ html = subprocess.check_output([
 <pre><code class="language-text">views/\n  layout.njk\n  app.njk\n  partials/user-card.njk</code></pre>
 
           <h3 id="core-syntax-highlighting">Syntax Highlighting</h3>
-          <p>This docs site uses highlight.js with <code>language-django</code> for template syntax. The repo also ships VS Code workspace config in <code>.vscode/settings.json</code> and <code>.vscode/extensions.json</code> for <code>.njk</code> highlighting.</p>
+          <p>This docs site uses highlight.js with <code>language-django</code> for template syntax. The repo also ships a custom VS Code extension in <code>vscode-nunchucks-syntax</code> and workspace config in <code>.vscode/settings.json</code> for <code>.njk</code> highlighting.</p>
 <pre><code class="language-django">{% if user.isAdmin %}{{ \"ok\" | upper }}{% endif %}</code></pre>
           <p><strong>VS Code Setup (requested style)</strong></p>
-          <p>1) Install recommendations from <code>.vscode/extensions.json</code>. 2) Use workspace settings in <code>.vscode/settings.json</code>. This repo now maps <code>.njk</code> to Jinja syntax and maps <code>.html/.yaml/.yml</code> to HTML syntax for your preferred color model (HTML tags orange, attributes blue).</p>
+          <p>1) Install the local extension folder <code>vscode-nunchucks-syntax</code> in VS Code. 2) Use workspace settings in <code>.vscode/settings.json</code>. This repo maps <code>.njk</code> to <code>nunchucks-template</code> and maps <code>.html/.yaml/.yml</code> to HTML syntax for your preferred color model (HTML tags orange, attributes blue).</p>
 <pre><code class="language-json">{
   "files.associations": {
     "*.html": "html",
     "*.yaml": "html",
     "*.yml": "html",
-    "*.njk": "jinja-html"
+    "*.njk": "nunchucks-template"
   },
   "editor.tokenColorCustomizations": {
     "textMateRules": [

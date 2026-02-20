@@ -1,6 +1,6 @@
 # Nunchucks
 
-Nunchucks is a Nunjucks/Jinja-inspired templating project with:
+Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:
 
 - TypeScript package (`@samuelbines/nunchucks`)
 - Go runtime + CLI
@@ -12,7 +12,7 @@ Repository: `https://github.com/SamuelDBines/nunchucks`
 
 ## Current Focus
 
-This project is actively evolving toward strong Nunjucks-style parity plus a multi-language workflow.
+This project is actively evolving toward strong syntax parity plus a multi-language workflow.
 
 Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.
 
