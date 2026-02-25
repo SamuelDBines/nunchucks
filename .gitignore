@@ -17,3 +17,5 @@ tmp/*
 chatgpt.input.*
 go/wasm/*.wasm
 go/wasm/wasm_exec.js
+app/public/bareframe/
+.DS_Store
