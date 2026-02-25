@@ -2,7 +2,7 @@
 
 Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:
 
-- TypeScript package (`@samuelbines/nunchucks`)
+- JavaScript/TypeScript package backed by Go WASM (`@samuelbines/nunchucks`)
 - Go runtime + CLI
 - WASM target from Go
 - Docs site in `docs/` (GitHub Pages)
@@ -18,10 +18,25 @@ Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `bloc
 
 ## Installation
 
-### TypeScript package
+### JS/TS package (Go WASM runtime)
 
 ```bash
 npm install @samuelbines/nunchucks
+```
+
+```ts
+import { loadNunchucksWasm } from "@samuelbines/nunchucks";
+
+const nc = await loadNunchucksWasm({
+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
+});
+
+const html = nc.renderFromMap({
+  template: "index.njk",
+  files: { "index.njk": "Hello {{ name }}" },
+  context: { name: "world" },
+});
 ```
 
 ### Go usage
@@ -97,12 +112,6 @@ Key pages:
 - `docs/playground.html` (mini editor + preview)
 
 ## Tests
-
-### TypeScript
-
-```bash
-npm test
-```
 
 ### Go
 

@@ -3,32 +3,39 @@
   "description": "A powerful templating engine with inheritance, asynchronous control, and more (jinja2 inspired)",
   "version": "0.0.11",
   "author": "Samuel Bines <samuelbines@gmail.com>",
-  "browser": "./browser/nunjucks.js",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "./go/wasm/loader.js",
+  "types": "./go/wasm/loader.d.ts",
+  "exports": {
+    ".": {
+      "types": "./go/wasm/loader.d.ts",
+      "import": "./go/wasm/loader.js",
+      "default": "./go/wasm/loader.js"
+    }
+  },
   "scripts": {
-    "build": "tsc",
-    "lint": "eslint --flag unstable_config_lookup_from_file nunjucks scripts tests",
+    "build": "node ./scripts/build-wasm.cjs",
+    "lint": "echo \"lint not configured for wasm-only package\"",
     "push": "node ./scripts/push.cjs && pnpm publish --access=public",
-    "prepare": "npm run build",
-    "test:instrument": "cross-env NODE_ENV=test scripts/bundle.js",
-    "test:runner": "cross-env NODE_ENV=test NODE_PATH=tests/test-node-pkgs scripts/testrunner.js",
-    "vitest:browser": "vitest init browser",
-    "test": "vitest",
-    "test:ts": "ts-node scripts/test.ts",
-    "test:smoke": "npx ts-node scripts/smoke.ts",
-    "prepare:input": "npx ts-node scripts/build-input.ts",
-    "test:verbose": "vitest --reporter=verbose",
-    "test:browser": "vitest",
-    "demo:build": "pnpm run build && node ./samples/express/main.js",
-    "demo:run": "ts-node  samples/express/main.ts",
-    "demo:precompile": "ts-node samples/express/premain.ts",
+    "prepare": "pnpm run build",
+    "test:instrument": "echo \"instrumentation removed for wasm-only package\"",
+    "test:runner": "echo \"runner removed for wasm-only package\"",
+    "vitest:browser": "echo \"vitest browser removed; use go wasm runtime\"",
+    "test": "cd go && go test ./...",
+    "test:ts": "echo \"ts engine removed; runtime is go wasm\"",
+    "test:smoke": "echo \"smoke test removed; runtime is go wasm\"",
+    "prepare:input": "echo \"prepare input removed; runtime is go wasm\"",
+    "test:verbose": "cd go && go test -v ./...",
+    "test:browser": "echo \"browser tests removed; use go wasm runtime tests\"",
+    "demo:build": "pnpm run build",
+    "demo:run": "echo \"legacy ts express demo removed\"",
+    "demo:precompile": "echo \"legacy ts precompile demo removed\"",
     "demo:dev": "nodemon",
-    "demo:local": "node ./samples/express/main.js",
+    "demo:local": "echo \"legacy ts express demo removed\"",
     "update-package": "pnpm build && pnpm pack && pnpm version patch && pnpm publish --access public"
   },
   "files": [
-    "dist",
+    "go/wasm",
     "README.md",
     "LICENSE",
     "package.json"
@@ -53,13 +60,9 @@
     "url": "https://github.com/SamuelDBines/nunchucks/issues"
   },
   "devDependencies": {
-    "@testing-library/dom": "^10.4.1",
     "@types/node": "^25.0.3",
-    "@vitest/browser-playwright": "^4.0.16",
     "nodemon": "^3.1.11",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.16"
+    "ts-node": "^10.9.2"
   },
   "dependencies": {
     "express": "^5.2.1"

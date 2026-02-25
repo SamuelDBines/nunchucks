@@ -11,11 +11,11 @@ cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js
 Browser/Node loader:
 
 ```js
-import { loadNunchucksWasm } from './loader.js';
+import { loadNunchucksWasm } from '@samuelbines/nunchucks';
 
 const nc = await loadNunchucksWasm({
-  wasmURL: './nunchucks.wasm',
-  goURL: './wasm_exec.js',
+  wasmURL: '/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm',
+  goURL: '/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js',
 });
 
 const html = nc.renderFromMap({

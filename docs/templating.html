@@ -51,12 +51,24 @@ if err != nil { panic(err) }
 fmt.Println(out)</code></pre>
       </div>
       <div class="lang-panel" data-lang="ts" role="tabpanel" hidden>
-<pre><code class="language-ts">import { configure, FileSystemLoader } from "@samuelbines/nunchucks";
-const env = configure({ path: "views", loader: FileSystemLoader, watch: true, dev: true });
-const html = env.render("app.njk", { user: { name: "sam" } });</code></pre>
+<pre><code class="language-ts">import { loadNunchucksWasm } from "@samuelbines/nunchucks";
+const nc = await loadNunchucksWasm({
+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
+});
+const html = nc.renderFromMap({
+  template: "app.njk",
+  files,
+  context: { user: { name: "sam" } },
+});</code></pre>
       </div>
       <div class="lang-panel" data-lang="js" role="tabpanel" hidden>
-<pre><code class="language-js">const html = nc.renderFromMap({
+<pre><code class="language-js">import { loadNunchucksWasm } from "@samuelbines/nunchucks";
+const nc = await loadNunchucksWasm({
+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
+});
+const html = nc.renderFromMap({
   template: "app.njk",
   files,
   context: { user: { name: "sam" } },

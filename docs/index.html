@@ -131,25 +131,26 @@ cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js</code></pre>
 				</div>
 
 				<div class="lang-panel" data-lang="ts" role="tabpanel" hidden>
-					<pre><code class="language-ts">import { configure } from "@samuelbines/nunchucks";
+					<pre><code class="language-ts">import { loadNunchucksWasm } from "@samuelbines/nunchucks";
 
-const app = express();
-const env = configure({
-  path: "views",
-  loader: FileSystemLoader,
-  dev: true,
-  watch: true,
-  devRefresh: true,
+const nc = await loadNunchucksWasm({
+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
 });
-env.express(app);</code></pre>
+
+const html = nc.renderFromMap({
+  template: "index.njk",
+  files: { "index.njk": "Hello {{ user.name }}" },
+  context: { user: { name: "sam" } },
+});</code></pre>
 				</div>
 
 				<div class="lang-panel" data-lang="js" role="tabpanel" hidden>
-					<pre><code class="language-js">import { loadNunchucksWasm } from "./go/wasm/loader.js";
+					<pre><code class="language-js">import { loadNunchucksWasm } from "@samuelbines/nunchucks";
 
 const nc = await loadNunchucksWasm({
-  wasmURL: "./nunchucks.wasm",
-  goURL: "./wasm_exec.js",
+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
 });
 
 const out = nc.renderFromMap({
@@ -192,8 +193,8 @@ print(result.stdout);</code></pre>
 
 				<p>
 					<small
-						>Go and TS are native engines. JS/Python/Dart can use the Go
-						CLI/WASM bridge today.</small
+						>Go is the source runtime. JS/TS use the Go WASM bridge;
+						Python/Dart can use the CLI bridge today.</small
 					>
 				</p>
 			</section>

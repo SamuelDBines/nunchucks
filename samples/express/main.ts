@@ -1,23 +1,23 @@
 import path from 'path';
-import * as nunjucks from '../../src';
-import express, { request, response, NextFunction } from 'express';
+import { loadNunchucksWasm } from '../../go/wasm/loader.js';
+import express from 'express';
 
 const PORT = 13300;
 
 const app = express();
 
-const viewsDir = path.join(__dirname, 'views');
+const files = {
+	'index.njk': `Hello {{ username }}`,
+	'about.html': `<h1>About</h1><p>{{ user.name }}</p>`,
+	'test.njk': `{% for i in items %}<li>{{ i }}</li>{% endfor %}`,
+	'index.json': `{"user":"{{ user }}"}`,
+	'index.yaml': `user: {{ user }}`,
+};
 
-const nunev = nunjucks.configure({
-	path: viewsDir,
-	dev: true,
-	watch: true,
-	devRefresh: true,
-	detectExtensions: true,
-	out
+const nc = await loadNunchucksWasm({
+	wasmURL: path.resolve(__dirname, '../../go/wasm/nunchucks.wasm'),
+	goURL: path.resolve(__dirname, '../../go/wasm/wasm_exec.js'),
 });
-
-nunev.express(app)
 
 
 // app
@@ -30,43 +30,46 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', function (req, res) {
-	// res.setHeader('Content')
-	res.render('index', {
-		username: 'James Long <strong>copyright</strong>',
+	const out = nc.renderFromMap({
+		template: 'index.njk',
+		files,
+		context: { username: 'James Long <strong>copyright</strong>' },
 	});
+	res.type('html').send(out);
 });
 app.get('/index.json', function (req, res) {
-	// res.setHeader('Content')
-	res.render('index.json', {
-		user: 'Sam',
-	});
+	const out = nc.renderFromMap({ template: 'index.json', files, context: { user: 'Sam' } });
+	res.type('application/json').send(out);
 });
 app.get('/index.yaml', function (req, res) {
-	// res.setHeader('Content')
-	res.render('index.yaml', {
-		user: 'Sam',
-	});
+	const out = nc.renderFromMap({ template: 'index.yaml', files, context: { user: 'Sam' } });
+	res.type('text/yaml').send(out);
 });
 
 app.get('/about', function (req, res) {
-	res.render('about.html', { items: [1,2,4], user: { name: 'tony' } });
+	const out = nc.renderFromMap({ template: 'about.html', files, context: { items: [1, 2, 4], user: { name: 'tony' } } });
+	res.type('html').send(out);
 });
 
 app.get('/test-one', function (req, res) {
-	res.render('test', { items: [1,2,4] });
+	const out = nc.renderFromMap({ template: 'test.njk', files, context: { items: [1, 2, 4] } });
+	res.type('html').send(out);
 });
 
 app.get('/test', function (req, res) {
-	res.render('test', { items: [1,2,4] });
+	const out = nc.renderFromMap({ template: 'test.njk', files, context: { items: [1, 2, 4] } });
+	res.type('html').send(out);
 });
 
 app.get('/{*splat}', function (req, res) {
-	// res.setHeader('Content')
-	console.log(req.params.splat)
-	const file = req.params.splat.join('/')
-	res.render(file, {
-		user: 'Sam',
-	});
+	console.log(req.params.splat);
+	const file = req.params.splat.join('/');
+	if (!files[file]) {
+		res.status(404).send('not found');
+		return;
+	}
+	const out = nc.renderFromMap({ template: file, files, context: { user: 'Sam' } });
+	res.type(file.endsWith('.json') ? 'application/json' : file.endsWith('.yaml') ? 'text/yaml' : 'html').send(out);
 });
 
 app.listen(PORT, function () {
