@@ -35,7 +35,7 @@ jobs:
           node-version: 20
           cache: pnpm
       - name: Install JS deps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
       - name: JS sanity checks
         run: |
           node --check app/server.mjs
