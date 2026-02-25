@@ -251,3 +251,46 @@ func TestFromImportContextModes(t *testing.T) {
 		t.Fatalf("expected from-import context behavior guest|sam, got %q", out)
 	}
 }
+
+func TestClientBlockTransformsToModuleScript(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `{% client %}
+{% fetch | '/api/users/' + userID | as users | %}
+console.log(users.length);
+{% endclient %}`
+
+	out, err := env.RenderString(src, map[string]any{"userID": 42})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(out, `<script type="module" data-nunchucks-client>`) {
+		t.Fatalf("missing client module script wrapper: %q", out)
+	}
+	if !strings.Contains(out, `const __nc_fetch_res_0 = await fetch("/api/users/42");`) {
+		t.Fatalf("missing fetch transform output: %q", out)
+	}
+	if !strings.Contains(out, `const users = await __nc_fetch_res_0.json();`) {
+		t.Fatalf("missing json assignment output: %q", out)
+	}
+}
+
+func TestClientBlockFetchTextMode(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `{% client %}
+{% fetch | '/status.txt' | as statusText | text | %}
+console.log(statusText);
+{% endclient %}`
+
+	out, err := env.RenderString(src, map[string]any{})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(out, `const __nc_fetch_res_0 = await fetch("/status.txt");`) {
+		t.Fatalf("missing fetch call output: %q", out)
+	}
+	if !strings.Contains(out, `const statusText = await __nc_fetch_res_0.text();`) {
+		t.Fatalf("missing text mode output: %q", out)
+	}
+}

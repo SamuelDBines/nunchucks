@@ -8,6 +8,9 @@ import (
 
 var exprRe = regexp.MustCompile(`\{\{\s*([\s\S]*?)\s*\}\}`)
 var stmtRe = regexp.MustCompile(`\{%\s*([A-Za-z_][A-Za-z0-9_]*)\b([\s\S]*?)%\}`)
+var clientOpenRe = regexp.MustCompile(`\{%\s*client\s*%\}`)
+var clientCloseRe = regexp.MustCompile(`\{%\s*endclient\s*%\}`)
+var fetchStmtRe = regexp.MustCompile(`\{%\s*fetch\s+([\s\S]*?)%\}`)
 
 type MacroDef struct {
 	Params []MacroParam
@@ -103,6 +106,11 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 		return "", err
 	}
 
+	out, err = e.applyClientBlocks(out, vars, ctx, macros)
+	if err != nil {
+		return "", err
+	}
+
 	out = exprRe.ReplaceAllStringFunc(out, func(m string) string {
 		mm := exprRe.FindStringSubmatch(m)
 		if len(mm) < 2 {
@@ -114,6 +122,104 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 	out = stmtRe.ReplaceAllString(out, "")
 	out = restoreRawBlocks(out, raws)
 	return out, nil
+}
+
+func parseFetchPipeSpec(raw string) (endpoint string, asVar string, mode string, ok bool) {
+	parts := strings.Split(raw, "|")
+	tokens := make([]string, 0, len(parts))
+	for _, p := range parts {
+		t := strings.TrimSpace(p)
+		if t == "" {
+			continue
+		}
+		tokens = append(tokens, t)
+	}
+	if len(tokens) == 0 {
+		return "", "", "", false
+	}
+
+	endpoint = tokens[0]
+	mode = "json"
+
+	for i := 1; i < len(tokens); i++ {
+		t := tokens[i]
+		if strings.EqualFold(t, "json") {
+			mode = "json"
+			continue
+		}
+		if strings.EqualFold(t, "text") {
+			mode = "text"
+			continue
+		}
+		low := strings.ToLower(t)
+		if strings.HasPrefix(low, "as ") {
+			asVar = strings.TrimSpace(t[3:])
+			continue
+		}
+		if low == "as" && i+1 < len(tokens) {
+			asVar = strings.TrimSpace(tokens[i+1])
+			i++
+		}
+	}
+
+	return endpoint, asVar, mode, true
+}
+
+func transformFetchStatementsToJS(body string, vars, ctx map[string]any) string {
+	idx := 0
+	return fetchStmtRe.ReplaceAllStringFunc(body, func(m string) string {
+		parts := fetchStmtRe.FindStringSubmatch(m)
+		if len(parts) < 2 {
+			return m
+		}
+		endpointExpr, asVar, mode, ok := parseFetchPipeSpec(parts[1])
+		if !ok {
+			return m
+		}
+		endpointVal := evalExpr(endpointExpr, vars, ctx)
+		endpoint := fmt.Sprintf("%q", fmt.Sprint(endpointVal))
+		resName := fmt.Sprintf("__nc_fetch_res_%d", idx)
+		idx++
+		lines := []string{
+			fmt.Sprintf("const %s = await fetch(%s);", resName, endpoint),
+		}
+		if asVar != "" {
+			lines = append(lines, fmt.Sprintf("const %s = await %s.%s();", asVar, resName, mode))
+		}
+		return strings.Join(lines, "\n")
+	})
+}
+
+func (e *Env) applyClientBlocks(src string, vars, ctx map[string]any, macros map[string]MacroDef) (string, error) {
+	out := src
+	for {
+		open := clientOpenRe.FindStringIndex(out)
+		if open == nil {
+			return out, nil
+		}
+		close := clientCloseRe.FindStringIndex(out[open[1]:])
+		if close == nil {
+			return "", fmt.Errorf("missing endclient")
+		}
+
+		bodyStart := open[1]
+		bodyEnd := open[1] + close[0]
+		closeEnd := open[1] + close[1]
+		body := out[bodyStart:bodyEnd]
+
+		body = transformFetchStatementsToJS(body, vars, ctx)
+
+		renderedBody, err := e.renderWithState(body, ctx, cloneMap(vars), cloneMacros(macros))
+		if err != nil {
+			return "", err
+		}
+
+		script := `<script type="module" data-nunchucks-client>(async () => {
+` + renderedBody + `
+})().catch((err) => console.error("nunchucks client block error", err));</script>`
+
+		out = out[:open[0]] + script + out[closeEnd:]
+	}
 }
 
 type includeSpec struct {

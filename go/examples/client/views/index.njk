@@ -1,0 +1,8 @@
+<h1>{{ pageTitle }}</h1>
+<div id="app">Loading...</div>
+
+{% client %}
+{% fetch | '/api/users/' + userID | as user | %}
+document.getElementById("app").innerHTML = `<strong>${user.name}</strong>`;
+{% endclient %}
+

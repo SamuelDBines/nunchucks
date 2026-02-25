@@ -71,6 +71,7 @@ From `go/`:
 ```bash
 go run ./examples/basic
 go run ./examples/advanced
+go run ./examples/client
 ```
 
 Also see sample templates under `samples/go`.
