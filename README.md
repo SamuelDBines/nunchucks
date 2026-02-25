@@ -106,11 +106,37 @@ See `go/server/README.md` for request/response format.
 
 Docs source is in `docs/` and is intended for GitHub Pages.
 
+Architecture docs:
+
+- `SSR.md` (server-side rendering behavior)
+- `CLIENT_RENDERING.md` (client-side behavior and roadmap)
+
 Key pages:
 
 - `docs/index.html` (main docs)
 - `docs/templating.html` (templating reference)
 - `docs/playground.html` (mini editor + preview)
+
+## Local App Builder (Live Reload + Playground)
+
+A local builder is available in `app/` to edit template files, add files, and preview output in one page with file watching.
+
+Run:
+
+```bash
+pnpm app
+```
+
+Open:
+
+- `http://localhost:5177`
+
+Notes:
+
+- `app/views` is the file workspace.
+- Saving from the UI writes to `app/views`.
+- File changes in `app/views` trigger live refresh.
+- Rendering uses the Go playground server API (started automatically by `app/server.mjs`).
 
 ## Tests
 

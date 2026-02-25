@@ -1,8 +1,10 @@
 <h1>{{ pageTitle }}</h1>
 <div id="app">Loading...</div>
+<button onClick={{ app.clicked = true; document.getElementById("status").textContent = "Clicked"; }}>Click me</button>
+<p id="status">Not clicked</p>
 
 {% client %}
+{% state app | { clicked: false } | %}
 {% fetch | '/api/users/' + userID | as user | %}
 document.getElementById("app").innerHTML = `<strong>${user.name}</strong>`;
 {% endclient %}
-

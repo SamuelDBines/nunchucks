@@ -294,3 +294,130 @@ console.log(statusText);
 		t.Fatalf("missing text mode output: %q", out)
 	}
 }
+
+func TestClientBlockStateStatement(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `{% client %}
+{% state app | { pressed: false, userId: userID } | %}
+app.pressed = !app.pressed;
+{% endclient %}`
+
+	out, err := env.RenderString(src, map[string]any{"userID": 42})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(out, `window.__nunchucks = window.__nunchucks || { state: {} };`) {
+		t.Fatalf("missing nunchucks state bootstrap: %q", out)
+	}
+	if !strings.Contains(out, `window.__nunchucks.state["app"] = {"pressed":false,"userId":42};`) {
+		t.Fatalf("missing state payload transform: %q", out)
+	}
+	if !strings.Contains(out, `const app = window.__nunchucks.state["app"];`) {
+		t.Fatalf("missing state variable alias: %q", out)
+	}
+}
+
+func TestInlineClientEventBindingTransform(t *testing.T) {
+	env := Configure(ConfigOptions{Loader: &testLoader{files: map[string]string{}}})
+	src := `{% client %}{% state app | { pressed: false } | %}{% endclient %}
+<button id="btn" onClick={{ app.pressed = true }}>Press</button>`
+
+	out, err := env.RenderString(src, map[string]any{})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(out, `data-nc-onclick="__nc_evt_0"`) {
+		t.Fatalf("missing inline event attribute transform: %q", out)
+	}
+	if !strings.Contains(out, `<script type="module" data-nunchucks-client-events>`) {
+		t.Fatalf("missing inline event runtime script: %q", out)
+	}
+	if !strings.Contains(out, `with (window.__nunchucks.state) { app.pressed = true; }`) {
+		t.Fatalf("missing inline event expression runtime: %q", out)
+	}
+}
+
+func TestGlobalTemplatesInjectAcrossAllFiles(t *testing.T) {
+	files := map[string]string{
+		"a.njk":       `<div>A</div>`,
+		"b.njk":       `<section>B</section>`,
+		"globals.njk": `<style>.shared{color:red}</style>`,
+	}
+	env := Configure(ConfigOptions{
+		Loader:          &testLoader{files: files},
+		GlobalTemplates: []string{"globals.njk"},
+	})
+
+	outA, err := env.Render("a.njk", nil)
+	if err != nil {
+		t.Fatalf("unexpected error rendering a.njk: %v", err)
+	}
+	outB, err := env.Render("b.njk", nil)
+	if err != nil {
+		t.Fatalf("unexpected error rendering b.njk: %v", err)
+	}
+
+	if !strings.Contains(outA, `<style>.shared{color:red}</style>`) || !strings.Contains(outA, `<div>A</div>`) {
+		t.Fatalf("expected global styles in a.njk output, got %q", outA)
+	}
+	if !strings.Contains(outB, `<style>.shared{color:red}</style>`) || !strings.Contains(outB, `<section>B</section>`) {
+		t.Fatalf("expected global styles in b.njk output, got %q", outB)
+	}
+}
+
+func TestGlobalTemplatesProvideMacrosWithoutLayout(t *testing.T) {
+	files := map[string]string{
+		"main.njk":    `{{ badge("sam") }}`,
+		"globals.njk": `{% macro badge(name) %}<b>{{ name | upper }}</b>{% endmacro %}`,
+	}
+	env := Configure(ConfigOptions{
+		Loader:          &testLoader{files: files},
+		GlobalTemplates: []string{"globals.njk"},
+	})
+
+	out, err := env.Render("main.njk", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if compactWhitespace(out) != `<b>SAM</b>` {
+		t.Fatalf("expected global macro output, got %q", out)
+	}
+}
+
+func TestGlobalHeadAndFootTemplateInjection(t *testing.T) {
+	files := map[string]string{
+		"page.njk":     `<!doctype html><html><head><title>{{ title }}</title></head><body><main>Hello</main></body></html>`,
+		"links.njk":    `<link rel="stylesheet" href="/assets/app.css?v={{ version }}">`,
+		"scripts.njk":  `<script type="module" src="/assets/app.js?v={{ version }}"></script>`,
+		"scripts2.njk": `<script>window.__build="{{ version }}"</script>`,
+	}
+	env := Configure(ConfigOptions{
+		Loader:              &testLoader{files: files},
+		GlobalHeadTemplates: []string{"links.njk"},
+		GlobalFootTemplates: []string{"scripts.njk", "scripts2.njk"},
+	})
+
+	out, err := env.Render("page.njk", map[string]any{"title": "Demo", "version": "42"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	headNeedle := `<link rel="stylesheet" href="/assets/app.css?v=42">`
+	footNeedleA := `<script type="module" src="/assets/app.js?v=42"></script>`
+	footNeedleB := `<script>window.__build="42"</script>`
+
+	headIdx := strings.Index(out, headNeedle)
+	headCloseIdx := strings.Index(strings.ToLower(out), "</head>")
+	if headIdx < 0 || headCloseIdx < 0 || headIdx > headCloseIdx {
+		t.Fatalf("expected global head links before </head>, got %q", out)
+	}
+
+	bodyCloseIdx := strings.Index(strings.ToLower(out), "</body>")
+	footIdxA := strings.Index(out, footNeedleA)
+	footIdxB := strings.Index(out, footNeedleB)
+	if footIdxA < 0 || footIdxB < 0 || bodyCloseIdx < 0 || footIdxA > bodyCloseIdx || footIdxB > bodyCloseIdx {
+		t.Fatalf("expected global scripts before </body>, got %q", out)
+	}
+}

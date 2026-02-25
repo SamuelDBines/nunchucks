@@ -9,6 +9,17 @@ import (
 	nunchucks "github.com/SamuelDBines/nunjucks/go"
 )
 
+type stringListFlag []string
+
+func (s *stringListFlag) String() string {
+	return fmt.Sprint([]string(*s))
+}
+
+func (s *stringListFlag) Set(v string) error {
+	*s = append(*s, v)
+	return nil
+}
+
 func usage() {
 	fmt.Fprintln(os.Stderr, "nunchucks <command> [options]")
 	fmt.Fprintln(os.Stderr, "commands:")
@@ -32,6 +43,12 @@ func runRender(args []string) error {
 	views := fs.String("views", "views", "templates directory")
 	template := fs.String("template", "", "template path relative to views")
 	data := fs.String("data", "{}", "JSON context object")
+	var globalTemplates stringListFlag
+	var globalHeadTemplates stringListFlag
+	var globalFootTemplates stringListFlag
+	fs.Var(&globalTemplates, "global", "global template (repeatable)")
+	fs.Var(&globalHeadTemplates, "global-head", "global head template (repeatable)")
+	fs.Var(&globalFootTemplates, "global-foot", "global foot template (repeatable)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -42,7 +59,12 @@ func runRender(args []string) error {
 	if err != nil {
 		return fmt.Errorf("invalid -data JSON: %w", err)
 	}
-	env := nunchucks.Configure(nunchucks.ConfigOptions{Path: *views})
+	env := nunchucks.Configure(nunchucks.ConfigOptions{
+		Path:                *views,
+		GlobalTemplates:     []string(globalTemplates),
+		GlobalHeadTemplates: []string(globalHeadTemplates),
+		GlobalFootTemplates: []string(globalFootTemplates),
+	})
 	out, err := env.Render(*template, ctx)
 	if err != nil {
 		return err
@@ -56,6 +78,12 @@ func runPrecompile(args []string) error {
 	views := fs.String("views", "views", "templates directory")
 	outDir := fs.String("out", "public", "output directory")
 	data := fs.String("data", "{}", "JSON context object")
+	var globalTemplates stringListFlag
+	var globalHeadTemplates stringListFlag
+	var globalFootTemplates stringListFlag
+	fs.Var(&globalTemplates, "global", "global template (repeatable)")
+	fs.Var(&globalHeadTemplates, "global-head", "global head template (repeatable)")
+	fs.Var(&globalFootTemplates, "global-foot", "global foot template (repeatable)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -63,7 +91,12 @@ func runPrecompile(args []string) error {
 	if err != nil {
 		return fmt.Errorf("invalid -data JSON: %w", err)
 	}
-	env := nunchucks.Configure(nunchucks.ConfigOptions{Path: *views})
+	env := nunchucks.Configure(nunchucks.ConfigOptions{
+		Path:                *views,
+		GlobalTemplates:     []string(globalTemplates),
+		GlobalHeadTemplates: []string(globalHeadTemplates),
+		GlobalFootTemplates: []string(globalFootTemplates),
+	})
 	return env.PrecompileDir(*outDir, ctx)
 }
 

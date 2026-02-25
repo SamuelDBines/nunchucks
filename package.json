@@ -32,6 +32,7 @@
     "demo:precompile": "echo \"legacy ts precompile demo removed\"",
     "demo:dev": "nodemon",
     "demo:local": "echo \"legacy ts express demo removed\"",
+    "app": "node ./app/server.mjs",
     "update-package": "pnpm build && pnpm pack && pnpm version patch && pnpm publish --access public"
   },
   "files": [

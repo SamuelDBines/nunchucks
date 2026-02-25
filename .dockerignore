@@ -1,0 +1,14 @@
+.git
+.github
+.vscode
+node_modules
+**/node_modules
+app/public/bareframe/.git
+app/public/bareframe/src
+app/public/bareframe/examples
+app/public/bareframe/docs
+samples
+docs
+tmp
+.deployment/*.bak
+.DS_Store

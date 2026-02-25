@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nunchucks
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: email-credentials
+  namespace: nunchucks
+type: Opaque
+data:
+  # Set these via sealed-secret/external secret manager for production.
+  # Placeholder base64 values are kept only so manifest shape is complete.
+  EMAIL_USER: Zm9vQGV4YW1wbGUuY29t
+  EMAIL_PASSWORD: Y2hhbmdlLW1l
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nunchucks-deployment
+  namespace: nunchucks
+  labels:
+    app: nunchucks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nunchucks
+  template:
+    metadata:
+      labels:
+        app: nunchucks
+    spec:
+      containers:
+        - name: nunchucks
+          image: registry.digitalocean.com/firebrick/nunchucks:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APP_PORT
+              value: '3000'
+            - name: EMAIL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: email-credentials
+                  key: EMAIL_USER
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: email-credentials
+                  key: EMAIL_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /api/files
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/files
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nunchucks-svc
+  namespace: nunchucks
+spec:
+  selector:
+    app: nunchucks
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nunchucks-tls
+  namespace: nunchucks
+spec:
+  secretName: nunchucks-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - app.nunchucks.info
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nunchucks-ingress
+  namespace: nunchucks
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/limit-connections: '20'
+    nginx.ingress.kubernetes.io/limit-rpm: '100'
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - nunchucks.co.uk # Replace with your domain
+        - bischop-co-tech.co.uk
+      secretName: nunchucks-tls
+  rules:
+    - host: nunchucks.co.uk
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nunchucks-svc
+                port:
+                  number: 3000
+    - host: bischop-co-tech.co.uk
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nunchucks-svc
+                port:
+                  number: 3000

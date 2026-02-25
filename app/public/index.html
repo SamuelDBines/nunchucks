@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Nunchucks App Builder</title>
+		<link rel="stylesheet" href="./styles.css" />
+		<link
+			id="themeStylesheet"
+			rel="stylesheet"
+			href="./bareframe/dist/themes/light.css"
+		/>
+	</head>
+	<body>
+		<header class="topbar">
+			<h1>App Builder</h1>
+			<div class="actions">
+				<button id="addFile">+ File</button>
+				<button id="saveFile">Save</button>
+				<button id="deleteFile">Delete</button>
+				<button id="resetWorkspace">Reset</button>
+				<button id="importWorkspace">Import</button>
+				<button id="exportWorkspace">Export</button>
+				<button id="downloadOutput">Download</button>
+				<button id="renderNow">Render</button>
+				<input
+					id="importWorkspaceInput"
+					type="file"
+					accept="application/json,.json"
+					hidden
+				/>
+			</div>
+		</header>
+
+		<main class="layout">
+			<section class="panel files">
+				<h2>Files</h2>
+				<div id="fileTabs" class="tabs"></div>
+				<small>Workspace is stored in your browser (IndexedDB).</small>
+			</section>
+
+			<section class="panel editor">
+				<h2>Editor</h2>
+				<div id="editor" class="editor-surface"></div>
+				<label class="row">
+					<span>Template</span>
+					<input id="templateName" />
+				</label>
+				<label class="row">
+					<span>Context (JSON)</span>
+					<textarea id="contextJson" class="context" spellcheck="false">
+{ "users": [{ "name": "sam" }, { "name": "kai" }] }</textarea
+					>
+				</label>
+			</section>
+
+			<section class="panel preview">
+				<h2>Preview</h2>
+				<div class="subtabs">
+					<button class="view is-active" data-view="preview">Preview</button>
+					<button class="view" data-view="code">Code</button>
+				</div>
+				<iframe id="previewFrame" title="Rendered preview"></iframe>
+				<pre id="codeOut" hidden></pre>
+			</section>
+		</main>
+		<script
+			defer
+			src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"
+		></script>
+		<script type="module" src="./app.js"></script>
+		<script type="module" src="./bareframe/dist/index.js"></script>
+	</body>
+</html>

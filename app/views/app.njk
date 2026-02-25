@@ -1,0 +1,11 @@
+{% extends "layout.njk" %}
+{% block title %}Nunchucks Builder Demo{% endblock %}
+{% block body %}
+  <h1 style="color:blue;">Users</h1>
+  <bf-button>Primary</bf-button>
+  <ul>
+    {% for user in users %}
+      <li><strong>{{ user.name | title }}</strong></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

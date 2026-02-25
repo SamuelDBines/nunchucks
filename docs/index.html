@@ -299,6 +299,11 @@ Intervals={{ range(0, 10, 3) | join(",") }}</code></pre>
 							<code>raw</code>, <code>verbatim</code>,
 							<code>filter ... endfilter</code>
 						</li>
+						<li>
+							<code>client</code>, <code>endclient</code>,
+							<code>fetch</code>, <code>state</code>, inline
+							<code>onClick={{ ... }}</code> events
+						</li>
 					</ul>
 				</article>
 				<article class="card">
@@ -326,6 +331,37 @@ cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js</code></pre>
 					<li><code>renderString({ source, context })</code></li>
 				</ul>
 			</section>
+			<section class="card" style="margin-top: 1rem">
+				<h2>Client Runtime</h2>
+				<p>
+					Nunchucks now supports a first client-runtime layer in the Go engine.
+					<code>{% client %}...{% endclient %}</code> compiles to browser module
+					scripts, <code>{% fetch %}</code> compiles to async fetch calls, and
+					<code>{% state %}</code> bootstraps state under
+					<code>window.__nunchucks.state</code>.
+				</p>
+				<pre><code class="language-django">&lt;button onClick={{ app.pressed = true }}&gt;Press&lt;/button&gt;
+{% client %}
+{% state app | { pressed: false } | %}
+{% fetch | '/api/users/' + userID | as user | %}
+console.log(user.name)
+{% endclient %}</code></pre>
+			</section>
+
+			<section class="card" style="margin-top: 1rem">
+				<h2>App Builder Workspace</h2>
+				<p>
+					The local app builder now stores files in browser IndexedDB rather than
+					writing to shared server files by default. This makes per-user sessions
+					isolated and safer for multi-user usage.
+				</p>
+				<p>
+					Controls available in the app builder: <code>Reset</code>,
+					<code>Import</code>, <code>Export</code>, and
+					<code>Download</code> output.
+				</p>
+			</section>
+
 			<section class="card" style="margin-top: 1rem">
 				<h2>Tags</h2>
 				<p>Current Go runtime support:</p>

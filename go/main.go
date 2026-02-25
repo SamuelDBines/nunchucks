@@ -4,14 +4,20 @@ import "strings"
 
 // ConfigOptions controls environment setup for rendering templates.
 type ConfigOptions struct {
-	Path   string
-	Loader Loader
+	Path                string
+	Loader              Loader
+	GlobalTemplates     []string
+	GlobalHeadTemplates []string
+	GlobalFootTemplates []string
 }
 
 // Env is the Go renderer environment.
 type Env struct {
-	basePath string
-	loader   Loader
+	basePath            string
+	loader              Loader
+	globalTemplates     []string
+	globalHeadTemplates []string
+	globalFootTemplates []string
 }
 
 func builtinGlobals() map[string]any {
@@ -66,7 +72,40 @@ func Configure(opts ConfigOptions) *Env {
 		ldr = FileSystemLoader(path)
 	}
 
-	return &Env{basePath: path, loader: ldr}
+	globals := make([]string, 0, len(opts.GlobalTemplates))
+	for _, name := range opts.GlobalTemplates {
+		n := strings.TrimSpace(name)
+		if n == "" {
+			continue
+		}
+		globals = append(globals, n)
+	}
+
+	headGlobals := make([]string, 0, len(opts.GlobalHeadTemplates))
+	for _, name := range opts.GlobalHeadTemplates {
+		n := strings.TrimSpace(name)
+		if n == "" {
+			continue
+		}
+		headGlobals = append(headGlobals, n)
+	}
+
+	footGlobals := make([]string, 0, len(opts.GlobalFootTemplates))
+	for _, name := range opts.GlobalFootTemplates {
+		n := strings.TrimSpace(name)
+		if n == "" {
+			continue
+		}
+		footGlobals = append(footGlobals, n)
+	}
+
+	return &Env{
+		basePath:            path,
+		loader:              ldr,
+		globalTemplates:     globals,
+		globalHeadTemplates: headGlobals,
+		globalFootTemplates: footGlobals,
+	}
 }
 
 // Render loads and renders a template file with the provided context.

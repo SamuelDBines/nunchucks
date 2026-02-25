@@ -1,6 +1,7 @@
 package nunchucks
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
@@ -11,6 +12,8 @@ var stmtRe = regexp.MustCompile(`\{%\s*([A-Za-z_][A-Za-z0-9_]*)\b([\s\S]*?)%\}`)
 var clientOpenRe = regexp.MustCompile(`\{%\s*client\s*%\}`)
 var clientCloseRe = regexp.MustCompile(`\{%\s*endclient\s*%\}`)
 var fetchStmtRe = regexp.MustCompile(`\{%\s*fetch\s+([\s\S]*?)%\}`)
+var stateStmtRe = regexp.MustCompile(`\{%\s*state\s+([\s\S]*?)%\}`)
+var inlineClientEventRe = regexp.MustCompile(`\bon([A-Za-z][A-Za-z0-9_]*)\s*=\s*\{\{\s*([\s\S]*?)\s*\}\}`)
 
 type MacroDef struct {
 	Params []MacroParam
@@ -43,13 +46,98 @@ func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
 	if ctx == nil {
 		ctx = map[string]any{}
 	}
+	var err error
+	src, err = e.prependGlobalTemplates(src)
+	if err != nil {
+		return "", err
+	}
 	ctx = cloneMap(ctx)
 	for k, v := range builtinGlobals() {
 		if _, ok := ctx[k]; !ok {
 			ctx[k] = v
 		}
 	}
-	return e.renderWithState(src, ctx, map[string]any{}, map[string]MacroDef{})
+	out, err := e.renderWithState(src, ctx, map[string]any{}, map[string]MacroDef{})
+	if err != nil {
+		return "", err
+	}
+	out, err = e.injectGlobalFragments(out, ctx)
+	if err != nil {
+		return "", err
+	}
+	return out, nil
+}
+
+func (e *Env) prependGlobalTemplates(src string) (string, error) {
+	if len(e.globalTemplates) == 0 {
+		return src, nil
+	}
+	var b strings.Builder
+	for _, name := range e.globalTemplates {
+		tpl, err := e.readTemplate(name)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(tpl)
+		if !strings.HasSuffix(tpl, "\n") {
+			b.WriteString("\n")
+		}
+	}
+	b.WriteString(src)
+	return b.String(), nil
+}
+
+func (e *Env) renderGlobalFragmentTemplates(names []string, ctx map[string]any) (string, error) {
+	if len(names) == 0 {
+		return "", nil
+	}
+	var b strings.Builder
+	for _, name := range names {
+		tpl, err := e.readTemplate(name)
+		if err != nil {
+			return "", err
+		}
+		out, err := e.renderWithState(tpl, ctx, map[string]any{}, map[string]MacroDef{})
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(out)
+		if !strings.HasSuffix(out, "\n") {
+			b.WriteString("\n")
+		}
+	}
+	return b.String(), nil
+}
+
+func injectBeforeClosingTag(html, tag, fragment string) string {
+	if strings.TrimSpace(fragment) == "" {
+		return html
+	}
+	lower := strings.ToLower(html)
+	lowerTag := strings.ToLower(tag)
+	idx := strings.LastIndex(lower, lowerTag)
+	if idx < 0 {
+		if lowerTag == "</head>" {
+			return fragment + html
+		}
+		return html + fragment
+	}
+	return html[:idx] + fragment + html[idx:]
+}
+
+func (e *Env) injectGlobalFragments(out string, ctx map[string]any) (string, error) {
+	head, err := e.renderGlobalFragmentTemplates(e.globalHeadTemplates, ctx)
+	if err != nil {
+		return "", err
+	}
+	foot, err := e.renderGlobalFragmentTemplates(e.globalFootTemplates, ctx)
+	if err != nil {
+		return "", err
+	}
+
+	out = injectBeforeClosingTag(out, "</head>", head)
+	out = injectBeforeClosingTag(out, "</body>", foot)
+	return out, nil
 }
 
 func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[string]MacroDef) (string, error) {
@@ -111,6 +199,8 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 		return "", err
 	}
 
+	out, eventBindings := extractInlineClientEvents(out)
+
 	out = exprRe.ReplaceAllStringFunc(out, func(m string) string {
 		mm := exprRe.FindStringSubmatch(m)
 		if len(mm) < 2 {
@@ -120,6 +210,7 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 	})
 
 	out = stmtRe.ReplaceAllString(out, "")
+	out = appendInlineClientEventRuntime(out, eventBindings)
 	out = restoreRawBlocks(out, raws)
 	return out, nil
 }
@@ -190,6 +281,166 @@ func transformFetchStatementsToJS(body string, vars, ctx map[string]any) string 
 	})
 }
 
+func parseStateObjectLiteral(raw string, vars, ctx map[string]any) map[string]any {
+	s := strings.TrimSpace(raw)
+	if s == "" {
+		return map[string]any{}
+	}
+	if strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}") {
+		s = strings.TrimSpace(s[1 : len(s)-1])
+	}
+	if strings.TrimSpace(s) == "" {
+		return map[string]any{}
+	}
+
+	out := map[string]any{}
+	parts := splitArgs(s)
+	for _, part := range parts {
+		p := strings.TrimSpace(part)
+		if p == "" {
+			continue
+		}
+
+		key := ""
+		valExpr := ""
+		if k, v, ok := splitTopLevelAssign(p); ok {
+			key = strings.TrimSpace(k)
+			valExpr = strings.TrimSpace(v)
+		} else {
+			kv := strings.SplitN(p, ":", 2)
+			if len(kv) != 2 {
+				continue
+			}
+			key = strings.TrimSpace(kv[0])
+			valExpr = strings.TrimSpace(kv[1])
+		}
+
+		key = strings.Trim(key, `"'`)
+		if key == "" {
+			continue
+		}
+		out[key] = evalExpr(valExpr, vars, ctx)
+	}
+	return out
+}
+
+func parseStatePipeSpec(raw string, vars, ctx map[string]any) (string, map[string]any, bool) {
+	parts := strings.Split(raw, "|")
+	tokens := make([]string, 0, len(parts))
+	for _, p := range parts {
+		t := strings.TrimSpace(p)
+		if t == "" {
+			continue
+		}
+		tokens = append(tokens, t)
+	}
+	if len(tokens) == 0 {
+		return "", nil, false
+	}
+
+	name := strings.TrimSpace(tokens[0])
+	if name == "" {
+		return "", nil, false
+	}
+	initial := map[string]any{}
+	if len(tokens) > 1 {
+		initial = parseStateObjectLiteral(tokens[1], vars, ctx)
+	}
+	return name, initial, true
+}
+
+func transformStateStatementsToJS(body string, vars, ctx map[string]any) string {
+	return stateStmtRe.ReplaceAllStringFunc(body, func(m string) string {
+		parts := stateStmtRe.FindStringSubmatch(m)
+		if len(parts) < 2 {
+			return m
+		}
+		name, initial, ok := parseStatePipeSpec(parts[1], vars, ctx)
+		if !ok {
+			return m
+		}
+		payload, err := json.Marshal(initial)
+		if err != nil {
+			return m
+		}
+		return fmt.Sprintf(`window.__nunchucks = window.__nunchucks || { state: {} };
+window.__nunchucks.state[%q] = %s;
+const %s = window.__nunchucks.state[%q];`, name, string(payload), name, name)
+	})
+}
+
+type inlineClientEventBinding struct {
+	ID   string
+	Expr string
+}
+
+func extractInlineClientEvents(src string) (string, []inlineClientEventBinding) {
+	idx := 0
+	bindings := []inlineClientEventBinding{}
+	out := inlineClientEventRe.ReplaceAllStringFunc(src, func(m string) string {
+		parts := inlineClientEventRe.FindStringSubmatch(m)
+		if len(parts) < 3 {
+			return m
+		}
+		eventName := strings.ToLower(strings.TrimSpace(parts[1]))
+		expr := strings.TrimSpace(parts[2])
+		id := fmt.Sprintf("__nc_evt_%d", idx)
+		idx++
+		bindings = append(bindings, inlineClientEventBinding{
+			ID:   id,
+			Expr: expr,
+		})
+		return fmt.Sprintf(`data-nc-on%s="%s"`, eventName, id)
+	})
+	return out, bindings
+}
+
+func appendInlineClientEventRuntime(src string, bindings []inlineClientEventBinding) string {
+	if len(bindings) == 0 {
+		return src
+	}
+
+	var b strings.Builder
+	b.WriteString(`<script type="module" data-nunchucks-client-events>(function () {
+window.__nunchucks = window.__nunchucks || { state: {} };
+const __handlers = Object.create(null);
+`)
+	for _, binding := range bindings {
+		b.WriteString(fmt.Sprintf(`__handlers[%q] = function(event, el) {
+  with (window.__nunchucks.state) { %s; }
+};
+`, binding.ID, binding.Expr))
+	}
+	b.WriteString(`
+function __bindClientEvents(root) {
+  const scope = root || document;
+  const nodes = scope.querySelectorAll("*");
+  for (const el of nodes) {
+    for (const attr of el.attributes) {
+      if (!attr.name.startsWith("data-nc-on")) continue;
+      const eventName = attr.name.slice("data-nc-on".length);
+      const handler = __handlers[attr.value];
+      if (!handler) continue;
+      if (!el.__ncBound) el.__ncBound = {};
+      if (el.__ncBound[eventName]) continue;
+      el.addEventListener(eventName, function (event) {
+        handler(event, el);
+      });
+      el.__ncBound[eventName] = true;
+    }
+  }
+}
+window.__nunchucks.bindEvents = __bindClientEvents;
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", function () { __bindClientEvents(document); });
+} else {
+  __bindClientEvents(document);
+}
+})();</script>`)
+
+	return src + b.String()
+}
+
 func (e *Env) applyClientBlocks(src string, vars, ctx map[string]any, macros map[string]MacroDef) (string, error) {
 	out := src
 	for {
@@ -208,6 +459,7 @@ func (e *Env) applyClientBlocks(src string, vars, ctx map[string]any, macros map
 		body := out[bodyStart:bodyEnd]
 
 		body = transformFetchStatementsToJS(body, vars, ctx)
+		body = transformStateStatementsToJS(body, vars, ctx)
 
 		renderedBody, err := e.renderWithState(body, ctx, cloneMap(vars), cloneMacros(macros))
 		if err != nil {

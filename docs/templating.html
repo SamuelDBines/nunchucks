@@ -222,6 +222,18 @@ html = subprocess.check_output([
 <pre><code class="language-django">{% raw %}{{ untouched }}{% endraw %}
 {% verbatim %}{% if x %}y{% endif %}{% endverbatim %}
 {% filter upper %}hello {{ user.name }}{% endfilter %}</code></pre>
+
+          <h3 id="tag-client">client + fetch + state + inline events</h3>
+          <p>Client blocks are compiled to module scripts. Use <code>fetch</code> and <code>state</code> inside <code>client</code>. Use inline events on HTML with <code>onClick={{ ... }}</code> style expressions.</p>
+<pre><code class="language-django">&lt;button onClick={{ app.pressed = true }}&gt;Press&lt;/button&gt;
+&lt;p id="status"&gt;Ready&lt;/p&gt;
+
+{% client %}
+{% state app | { pressed: false, userId: userID } | %}
+{% fetch | '/api/users/' + userID | as user | %}
+document.getElementById("status").textContent = user.name;
+{% endclient %}</code></pre>
+          <p><small>Generated runtime stores state at <code>window.__nunchucks.state</code> and binds event handlers from transformed <code>data-nc-on*</code> attributes.</small></p>
         </section>
 
         <section id="expressions" class="card" style="margin-top:1rem;">

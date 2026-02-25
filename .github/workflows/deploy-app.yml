@@ -1,0 +1,87 @@
+name: Deploy App (DOKS)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'go/**'
+      - '.deployment/**'
+      - '.github/workflows/deploy-app.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go/go.mod
+      - name: Go tests
+        run: cd go && go test ./...
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install JS deps
+        run: pnpm install --frozen-lockfile
+      - name: JS sanity checks
+        run: |
+          node --check app/server.mjs
+          node --check app/public/app.js
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      DOCR_REGISTRY: firebrick
+      IMAGE_REPO: nunchucks
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate with DigitalOcean
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DOCR
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Build and push image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE="registry.digitalocean.com/${DOCR_REGISTRY}/${IMAGE_REPO}:${IMAGE_TAG}"
+          LATEST="registry.digitalocean.com/${DOCR_REGISTRY}/${IMAGE_REPO}:latest"
+
+          docker build -f app/Dockerfile -t "$IMAGE" -t "$LATEST" .
+          docker push "$IMAGE"
+          docker push "$LATEST"
+
+      - name: Set kubeconfig
+        env:
+          DOKS_CLUSTER_NAME: ${{ vars.DOKS_CLUSTER_NAME }}
+        run: |
+          CLUSTER_NAME="${DOKS_CLUSTER_NAME:-london-cluster}"
+          doctl kubernetes cluster kubeconfig save "$CLUSTER_NAME"
+
+      - name: Apply manifests + rollout
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE="registry.digitalocean.com/${DOCR_REGISTRY}/${IMAGE_REPO}:${IMAGE_TAG}"
+
+          kubectl apply -f .deployment/nunchucks.yaml
+          kubectl -n nunchucks set image deployment/nunchucks-deployment nunchucks="$IMAGE"
+          kubectl -n nunchucks rollout status deployment/nunchucks-deployment --timeout=180s
