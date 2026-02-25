@@ -23,8 +23,15 @@
 			</nav>
 
 			<section class="hero">
-				<h1>Nunchucks Documentation</h1>
-				<p>Multi-language templating with a Go core, CLI, and WASM bridge.</p>
+				<div class="hero-head">
+					<div>
+						<h1>Nunchucks Documentation</h1>
+						<p>Multi-language templating with a Go core, CLI, and WASM bridge.</p>
+					</div>
+					<div id="donate-button-container">
+						<div id="donate-button"></div>
+					</div>
+				</div>
 				<small>GitHub Pages serves this <code>docs/</code> folder.</small>
 				<p style="margin-top:0.7rem;">
 					<strong>Packages:</strong>
@@ -511,6 +518,18 @@ Steps={{ range(1, 8, 2) | join(",") }}</code></pre>
 				>
 			</footer>
 		</main>
+		<script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
+		<script>
+			PayPal.Donation.Button({
+				env: 'production',
+				hosted_button_id: 'LKTM22NDQDVW6',
+				image: {
+					src: 'https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif',
+					alt: 'Donate with PayPal button',
+					title: 'PayPal - The safer, easier way to pay online!',
+				},
+			}).render('#donate-button');
+		</script>
 
 		<script
 			defer

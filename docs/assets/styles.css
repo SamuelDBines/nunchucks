@@ -101,6 +101,19 @@ a { color: var(--brand); }
   padding: 1.5rem;
 }
 
+.hero-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+#donate-button-container {
+  flex: 0 0 auto;
+  min-width: 170px;
+  text-align: right;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -163,6 +176,15 @@ small { color: var(--muted); }
 }
 
 @media (max-width: 700px) {
+  .hero-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #donate-button-container {
+    text-align: left;
+  }
+
   .toc {
     columns: 1;
   }

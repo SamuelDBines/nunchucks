@@ -115,10 +115,19 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - nunchucks.co.uk # Replace with your domain
-        - bischop-co-tech.co.uk
+        - app.nunchucks.info
       secretName: nunchucks-tls
   rules:
+    - host: app.nunchucks.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nunchucks-svc
+                port:
+                  number: 3000
     - host: nunchucks.co.uk
       http:
         paths:
