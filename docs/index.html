@@ -46,6 +46,9 @@
 					<a href="https://marketplace.visualstudio.com/items?itemName=BishopCoTech.nunchucks-syntax&ssr=false#review-details" target="_blank" rel="noopener noreferrer">BishopCoTech.nunchucks-syntax</a>
 					<small style="margin-left:0.35rem;">(search: <code>nunchucks syntax</code>)</small>
 				</p>
+				<p style="margin-top:0.55rem;">
+					<strong>Recommended:</strong> use the Nunchucks CLI as your primary integration path.
+				</p>
 				<pre><code class="language-bash">npm install @samuelbines/nunchucks
 npm link @samuelbines/nunchucks</code></pre>
 				<div class="nunchucks-example">
@@ -61,10 +64,31 @@ npm link @samuelbines/nunchucks</code></pre>
 			</section>
 
 			<section class="card" style="margin-top: 1rem">
+				<h2>Install CLI (Recommended)</h2>
+				<p>Most users should use the CLI first, then add language wrappers only where needed.</p>
+				<pre><code class="language-bash"># Build local CLI binary
+cd go
+go build -o ../bin/nunchucks ./cmd/nunchucks
+
+# Run
+../bin/nunchucks help
+../bin/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
+
+# Or install with Go
+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest</code></pre>
+				<p>
+					<small>
+						Direct binary downloads (when published):
+						<a href="https://github.com/SamuelDBines/nunchucks/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.
+					</small>
+				</p>
+			</section>
+
+			<section class="card" style="margin-top: 1rem">
 				<h2>Pick A Language</h2>
 				<p>
-					Use the selector to view how to render templates from each
-					language/runtime.
+					Use the selector to view wrapper/integration patterns from each runtime.
+					CLI usage above remains the primary path.
 				</p>
 
 				<div class="lang-tabs" role="tablist" aria-label="Language selector">
@@ -201,7 +225,7 @@ print(result.stdout);</code></pre>
 
 				<p>
 					<small
-						>Go is the source runtime. JS/TS use the Go WASM bridge;
+						>Go CLI/runtime is the source path. JS/TS use the Go WASM bridge;
 						Python/Dart can use the CLI bridge today.</small
 					>
 				</p>

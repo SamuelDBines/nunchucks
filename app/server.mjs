@@ -64,6 +64,74 @@ function resolveGlobalArgs(files) {
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
+
+function renderFromViews(template, context = {}) {
+  const files = listFilesRecursive(viewsDir);
+  const globalArgs = resolveGlobalArgs(files);
+
+  if (fs.existsSync(NUNCHUCKS_BIN)) {
+    return execFileSync(
+      NUNCHUCKS_BIN,
+      [
+        "render",
+        "-views", viewsDir,
+        "-template", template,
+        "-data", JSON.stringify(context),
+        ...globalArgs,
+      ],
+      { encoding: "utf-8" }
+    );
+  }
+
+  return execFileSync(
+    "go",
+    [
+      "run", "./cmd/nunchucks", "render",
+      "-views", viewsDir,
+      "-template", template,
+      "-data", JSON.stringify(context),
+      ...globalArgs,
+    ],
+    {
+      cwd: path.join(rootDir, "go"),
+      encoding: "utf-8",
+    }
+  );
+}
+
+app.get("/bareframe", (_req, res) => {
+  try {
+    const html = renderFromViews("bareframe/index.njk");
+    res.type("html").send(html);
+  } catch (err) {
+    res.status(500).send(String(err));
+  }
+});
+
+app.get("/bareframe/:page", (req, res, next) => {
+  try {
+    const rawPage = String(req.params.page || "").trim();
+    if (!rawPage || rawPage.includes("/") || rawPage.includes("..")) {
+      return next();
+    }
+    const templateName = rawPage.endsWith(".njk")
+      ? rawPage
+      : rawPage.endsWith(".html")
+        ? rawPage.replace(/\.html$/i, ".njk")
+        : `${rawPage}.njk`;
+
+    const fullTemplate = path.join(viewsDir, "bareframe", templateName);
+    if (!fs.existsSync(fullTemplate)) {
+      return next();
+    }
+
+    const html = renderFromViews(`bareframe/${templateName}`);
+    res.type("html").send(html);
+  } catch (err) {
+    res.status(500).send(String(err));
+  }
+});
+
 app.use(express.static(publicDir));
 
 app.get("/__events", (_req, res) => {

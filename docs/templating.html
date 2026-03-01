@@ -22,6 +22,9 @@
     <section class="hero">
       <h1>Reference</h1>
       <p>Nunchucks templating reference focused on implementation details and parity work.</p>
+      <p><strong>CLI-first:</strong> nunchucks is primarily consumed as a CLI tool. Use language runtimes as wrappers where needed.</p>
+<pre><code class="language-bash">go run ./cmd/nunchucks help
+go run ./cmd/nunchucks render -views ./views -template app.njk -data '{"user":{"name":"sam"}}'</code></pre>
       <p><small>Historical syntax inspiration: <a href="https://mozilla.github.io/nunjucks/templating.html">mozilla.github.io/nunjucks/templating.html</a></small></p>
       <div class="nunchucks-example">
         <p class="nunchucks-example-head">Nunchucks syntax preview</p>
