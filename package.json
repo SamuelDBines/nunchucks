@@ -1,39 +1,23 @@
 {
-  "name": "@samuelbines/nunchucks",
+  "author": "Samuel Bines \u003csamuelbines@gmail.com\u003e",
+  "bugs": {
+    "url": "https://github.com/SamuelDBines/nunchucks/issues"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
   "description": "A powerful templating engine with inheritance, asynchronous control, and more (jinja2 inspired)",
-  "version": "0.0.11",
-  "author": "Samuel Bines <samuelbines@gmail.com>",
-  "type": "module",
-  "main": "./go/wasm/loader.js",
-  "types": "./go/wasm/loader.d.ts",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2"
+  },
   "exports": {
     ".": {
-      "types": "./go/wasm/loader.d.ts",
+      "default": "./go/wasm/loader.js",
       "import": "./go/wasm/loader.js",
-      "default": "./go/wasm/loader.js"
+      "types": "./go/wasm/loader.d.ts"
     }
-  },
-  "scripts": {
-    "build": "node ./scripts/build-wasm.cjs",
-    "lint": "echo \"lint not configured for wasm-only package\"",
-    "push": "node ./scripts/push.cjs && pnpm publish --access=public",
-    "prepare": "pnpm run build",
-    "test:instrument": "echo \"instrumentation removed for wasm-only package\"",
-    "test:runner": "echo \"runner removed for wasm-only package\"",
-    "vitest:browser": "echo \"vitest browser removed; use go wasm runtime\"",
-    "test": "cd go && go test ./...",
-    "test:ts": "echo \"ts engine removed; runtime is go wasm\"",
-    "test:smoke": "echo \"smoke test removed; runtime is go wasm\"",
-    "prepare:input": "echo \"prepare input removed; runtime is go wasm\"",
-    "test:verbose": "cd go && go test -v ./...",
-    "test:browser": "echo \"browser tests removed; use go wasm runtime tests\"",
-    "demo:build": "pnpm run build",
-    "demo:run": "echo \"legacy ts express demo removed\"",
-    "demo:precompile": "echo \"legacy ts precompile demo removed\"",
-    "demo:dev": "nodemon",
-    "demo:local": "echo \"legacy ts express demo removed\"",
-    "app": "node ./app/server.mjs",
-    "update-package": "pnpm build && pnpm pack && pnpm version patch && pnpm publish --access public"
   },
   "files": [
     "go/wasm",
@@ -41,31 +25,47 @@
     "LICENSE",
     "package.json"
   ],
-  "nyc": {
-    "require": [
-      "babel-register"
-    ],
-    "sourceMap": false,
-    "instrument": false
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/SamuelDBines/nunchucks.git"
-  },
   "keywords": [
     "template",
     "templating"
   ],
   "license": "BSD-2-Clause",
-  "bugs": {
-    "url": "https://github.com/SamuelDBines/nunchucks/issues"
+  "main": "./go/wasm/loader.js",
+  "name": "@samuelbines/nunchucks",
+  "nyc": {
+    "instrument": false,
+    "require": [
+      "babel-register"
+    ],
+    "sourceMap": false
   },
-  "devDependencies": {
-    "@types/node": "^25.0.3",
-    "nodemon": "^3.1.11",
-    "ts-node": "^10.9.2"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SamuelDBines/nunchucks.git"
   },
-  "dependencies": {
-    "express": "^5.2.1"
-  }
+  "scripts": {
+    "app": "node ./app/server.mjs",
+    "build": "node ./scripts/build-wasm.cjs",
+    "demo:build": "pnpm run build",
+    "demo:dev": "nodemon",
+    "demo:local": "echo \"legacy ts express demo removed\"",
+    "demo:precompile": "echo \"legacy ts precompile demo removed\"",
+    "demo:run": "echo \"legacy ts express demo removed\"",
+    "lint": "echo \"lint not configured for wasm-only package\"",
+    "prepare": "pnpm run build",
+    "prepare:input": "echo \"prepare input removed; runtime is go wasm\"",
+    "push": "node ./scripts/push.cjs \u0026\u0026 pnpm publish --access=public",
+    "test": "cd go \u0026\u0026 go test ./...",
+    "test:browser": "echo \"browser tests removed; use go wasm runtime tests\"",
+    "test:instrument": "echo \"instrumentation removed for wasm-only package\"",
+    "test:runner": "echo \"runner removed for wasm-only package\"",
+    "test:smoke": "echo \"smoke test removed; runtime is go wasm\"",
+    "test:ts": "echo \"ts engine removed; runtime is go wasm\"",
+    "test:verbose": "cd go \u0026\u0026 go test -v ./...",
+    "update-package": "pnpm build \u0026\u0026 pnpm pack \u0026\u0026 pnpm version patch \u0026\u0026 pnpm publish --access public",
+    "vitest:browser": "echo \"vitest browser removed; use go wasm runtime\""
+  },
+  "type": "module",
+  "types": "./go/wasm/loader.d.ts",
+  "version": "0.0.7"
 }

@@ -1,0 +1,3 @@
+[submodule "app/public/bareframe"]
+	path = app/public/bareframe
+	url = git@github.com:SamuelDBines/bareframe.git

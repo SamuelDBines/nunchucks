@@ -116,10 +116,10 @@ function normalizeWorkspace(raw, defaults) {
 function ensureDefaultGlobalFiles(workspace) {
   if (!workspace.files || typeof workspace.files !== "object") return workspace;
   if (workspace.files["_globals/links.njk"] == null) {
-    workspace.files["_globals/links.njk"] = `<link id=\"themeStylesheet\" rel=\"stylesheet\" href=\"./bareframe-runtime/dist/themes/light.css\" />`;
+    workspace.files["_globals/links.njk"] = `<link id=\"themeStylesheet\" rel=\"stylesheet\" href=\"./bareframe/dist/themes/light.css\" />`;
   }
   if (workspace.files["_globals/scripts.njk"] == null) {
-    workspace.files["_globals/scripts.njk"] = `<script type=\"module\" src=\"./bareframe-runtime/dist/index.js\"></script>`;
+    workspace.files["_globals/scripts.njk"] = `<script type=\"module\" src=\"./bareframe/dist/index.js\"></script>`;
   }
   return workspace;
 }

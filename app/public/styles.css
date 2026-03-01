@@ -39,6 +39,16 @@ button {
   cursor: pointer;
 }
 button:hover { border-color: var(--accent); }
+.actions a {
+  border: 1px solid var(--line);
+  background: #1f2630;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+.actions a:hover { border-color: var(--accent); }
 
 .layout {
   display: grid;

@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - uses: actions/setup-go@v5
         with:
@@ -29,7 +31,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 0.0.7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -49,6 +51,8 @@ jobs:
       IMAGE_REPO: nunchucks
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Authenticate with DigitalOcean
         uses: digitalocean/action-doctl@v2

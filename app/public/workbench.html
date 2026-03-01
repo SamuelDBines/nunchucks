@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Bareframe Workbench</title>
+		<link rel="stylesheet" href="./workbench.css" />
+		<link id="themeStylesheet" rel="stylesheet" href="./bareframe/themes/system.css" />
+	</head>
+	<body>
+		<header class="topbar">
+			<div>
+				<h1>Bareframe Workbench</h1>
+				<p>Build components live with grouped explorer, search, and preview.</p>
+			</div>
+			<div class="controls">
+				<label>
+					<span>Theme</span>
+					<select id="themeSelect">
+						<option value="system">system</option>
+						<option value="light">light</option>
+						<option value="dark">dark</option>
+						<option value="sprint">sprint</option>
+						<option value="retro">retro</option>
+						<option value="modern">modern</option>
+						<option value="simple">simple</option>
+						<option value="nature">nature</option>
+						<option value="future">future</option>
+						<option value="aurora">aurora</option>
+						<option value="nebula">nebula</option>
+						<option value="desert">desert</option>
+						<option value="matrix">matrix</option>
+						<option value="noir">noir</option>
+						<option value="sunrise">sunrise</option>
+						<option value="oceanic">oceanic</option>
+					</select>
+				</label>
+				<bf-button id="refreshPreview" variant="secondary">Refresh Preview</bf-button>
+				<a class="link-home" href="./index.html">App Builder</a>
+			</div>
+		</header>
+
+		<main class="layout">
+			<aside class="panel explorer">
+				<h2>Components</h2>
+				<label class="search">
+					<input id="componentSearch" type="search" placeholder="Search components..." />
+				</label>
+				<div id="componentGroups" class="groups"></div>
+			</aside>
+
+			<section class="panel editor-panel">
+				<div class="panel-head">
+					<h2 id="editorTitle">Component Editor</h2>
+					<small id="selectedTag"></small>
+				</div>
+				<bf-editor id="snippetEditor" code></bf-editor>
+			</section>
+
+			<section class="panel preview-panel">
+				<div class="panel-head">
+					<h2>Preview</h2>
+					<div class="tabs">
+						<button class="tab is-active" data-tab="preview">Preview</button>
+						<button class="tab" data-tab="test">Test HTML</button>
+					</div>
+				</div>
+				<div id="previewPane" class="pane">
+					<iframe id="previewFrame" title="Component preview"></iframe>
+				</div>
+				<div id="testPane" class="pane" hidden>
+					<div class="test-head">
+						<a id="openTestPage" href="#" target="_blank" rel="noreferrer">Open test page</a>
+					</div>
+					<bf-editor id="testHtmlEditor" code disabled></bf-editor>
+				</div>
+			</section>
+		</main>
+
+		<script type="module" src="./bareframe/dist/index.js"></script>
+		<script type="module" src="./workbench.js"></script>
+	</body>
+</html>
