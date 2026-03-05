@@ -2,7 +2,7 @@
 
 set -eu
 
-repo="SamuelDBines/nunjucks"
+repo="SamuelDBines/nunchucks"
 version="${1:-latest}"
 
 fetch() {
@@ -94,10 +94,10 @@ case "$arch" in
 esac
 
 if [ "$version" = "latest" ]; then
-  if command -v curl >/dev/null 2>&1; then
-    version="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$repo/releases/latest" | awk -F/ '{print $NF}')"
-  else
-    version="$(fetch "https://api.github.com/repos/$repo/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n 1)"
+  version="$(fetch "https://api.github.com/repos/$repo/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n 1)"
+  if [ -z "$version" ]; then
+    echo "unable to resolve latest release from GitHub API" >&2
+    exit 1
   fi
 fi
 

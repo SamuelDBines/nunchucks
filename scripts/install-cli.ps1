@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$repo = "SamuelDBines/nunjucks"
+$repo = "SamuelDBines/nunchucks"
 $version = if ($args.Length -gt 0) { $args[0] } else { "latest" }
 
 function Get-InstallDir {
