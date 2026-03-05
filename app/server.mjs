@@ -12,6 +12,8 @@ const viewsDir = path.join(__dirname, "views");
 const publicDir = path.join(__dirname, "public");
 const PORT = Number(process.env.APP_PORT || 5177);
 const NUNCHUCKS_BIN = process.env.NUNCHUCKS_BIN || path.join(rootDir, "bin", "nunchucks");
+const WORKBENCH_AUTH_USER = process.env.WORKBENCH_AUTH_USER || "admin";
+const WORKBENCH_AUTH_PASS = process.env.WORKBENCH_AUTH_PASS || "bareframe";
 
 if (!fs.existsSync(viewsDir)) fs.mkdirSync(viewsDir, { recursive: true });
 
@@ -64,6 +66,37 @@ function resolveGlobalArgs(files) {
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
+
+function decodeBasicAuth(header = "") {
+  if (!header || !header.startsWith("Basic ")) {
+    return { user: "", pass: "" };
+  }
+  try {
+    const decoded = Buffer.from(header.slice(6), "base64").toString("utf-8");
+    const splitIndex = decoded.indexOf(":");
+    if (splitIndex < 0) return { user: decoded, pass: "" };
+    return {
+      user: decoded.slice(0, splitIndex),
+      pass: decoded.slice(splitIndex + 1),
+    };
+  } catch {
+    return { user: "", pass: "" };
+  }
+}
+
+function requireWorkbenchAuth(req, res, next) {
+  if (!req.path.startsWith("/workbench")) {
+    return next();
+  }
+  const { user, pass } = decodeBasicAuth(req.headers.authorization || "");
+  if (user === WORKBENCH_AUTH_USER && pass === WORKBENCH_AUTH_PASS) {
+    return next();
+  }
+  res.setHeader("WWW-Authenticate", 'Basic realm="Bareframe Workbench"');
+  return res.status(401).send("Authentication required");
+}
+
+app.use(requireWorkbenchAuth);
 
 function renderFromViews(template, context = {}) {
   const files = listFilesRecursive(viewsDir);

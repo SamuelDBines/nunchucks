@@ -54,7 +54,16 @@
 					<h2 id="editorTitle">Component Editor</h2>
 					<small id="selectedTag"></small>
 				</div>
-				<bf-editor id="snippetEditor" code></bf-editor>
+				<div class="tabs editor-tabs">
+					<button class="tab is-active" data-editor-tab="html">HTML</button>
+					<button class="tab" data-editor-tab="js">JS</button>
+				</div>
+				<div id="editorHtmlPane" class="editor-pane">
+					<bf-editor id="snippetHtmlEditor" code></bf-editor>
+				</div>
+				<div id="editorJsPane" class="editor-pane" hidden>
+					<bf-editor id="snippetJsEditor" code></bf-editor>
+				</div>
 			</section>
 
 			<section class="panel preview-panel">

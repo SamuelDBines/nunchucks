@@ -49,8 +49,9 @@
 				<p style="margin-top:0.55rem;">
 					<strong>Recommended:</strong> use the Nunchucks CLI as your primary integration path.
 				</p>
-				<pre><code class="language-bash">npm install @samuelbines/nunchucks
-npm link @samuelbines/nunchucks</code></pre>
+				<pre><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh
+nunchucks help
+nunchucks version</code></pre>
 				<div class="nunchucks-example">
 					<p class="nunchucks-example-head">Nunchucks template</p>
 					<pre><code class="language-django">{% extends "layout.njk" %}
@@ -66,22 +67,24 @@ npm link @samuelbines/nunchucks</code></pre>
 			<section class="card" style="margin-top: 1rem">
 				<h2>Install CLI (Recommended)</h2>
 				<p>Most users should use the CLI first, then add language wrappers only where needed.</p>
-				<pre><code class="language-bash"># Build local CLI binary
-cd go
-go build -o ../bin/nunchucks ./cmd/nunchucks
+				<pre><code class="language-bash"># macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh
 
-# Run
-../bin/nunchucks help
-../bin/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
+# verify
+nunchucks help
+nunchucks help render
+nunchucks version
 
-# Or install with Go
+# Go fallback
 go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest</code></pre>
-				<p>
-					<small>
-						Direct binary downloads (when published):
-						<a href="https://github.com/SamuelDBines/nunchucks/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.
-					</small>
-				</p>
+				<pre><code class="language-powershell"># Windows PowerShell
+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex
+
+# verify
+nunchucks.exe help
+nunchucks.exe help precompile
+nunchucks.exe version</code></pre>
+				<p><small>Native binaries for macOS, Linux, and Windows are published on <a href="https://github.com/SamuelDBines/nunchucks/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.</small></p>
 			</section>
 
 			<section class="card" style="margin-top: 1rem">
@@ -146,6 +149,8 @@ fmt.Println(out)</code></pre>
 					<p><strong>Go Details</strong></p>
 					<pre><code class="language-bash"># CLI
 go run ./cmd/nunchucks help
+go run ./cmd/nunchucks help render
+go run ./cmd/nunchucks version
 go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
 go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'
 

@@ -39,6 +39,34 @@ const html = nc.renderFromMap({
 });
 ```
 
+### CLI
+
+Install the native CLI from GitHub Releases:
+
+macOS and Linux:
+
+```bash
+./scripts/install-cli.sh
+nunchucks version
+nunchucks help
+```
+
+Windows PowerShell:
+
+```powershell
+./scripts/install-cli.ps1
+nunchucks.exe version
+nunchucks.exe help
+```
+
+Go users can also install from source:
+
+```bash
+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest
+```
+
+Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.
+
 ### Go usage
 
 ```bash
@@ -48,10 +76,12 @@ go test ./...
 
 ## Go CLI
 
-From `go/`:
+From `go/` or from an installed release binary:
 
 ```bash
 go run ./cmd/nunchucks help
+go run ./cmd/nunchucks help render
+go run ./cmd/nunchucks version
 
 go run ./cmd/nunchucks render \
   -views ./views \

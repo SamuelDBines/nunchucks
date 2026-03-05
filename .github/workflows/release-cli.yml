@@ -1,0 +1,102 @@
+name: Release CLI
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go/go.mod
+
+      - name: Run Go tests
+        run: cd go && go test ./...
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: darwin
+            goarch: amd64
+            archive: tar.gz
+          - goos: darwin
+            goarch: arm64
+            archive: tar.gz
+          - goos: linux
+            goarch: amd64
+            archive: tar.gz
+          - goos: linux
+            goarch: arm64
+            archive: tar.gz
+          - goos: windows
+            goarch: amd64
+            archive: zip
+          - goos: windows
+            goarch: arm64
+            archive: zip
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go/go.mod
+
+      - name: Build CLI
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+          VERSION: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          ext=""
+          if [ "${GOOS}" = "windows" ]; then
+            ext=".exe"
+          fi
+
+          binary="nunchucks${ext}"
+          asset_dir="dist/nunchucks_${VERSION}_${GOOS}_${GOARCH}"
+
+          go build \
+            -C go \
+            -trimpath \
+            -ldflags="-s -w -X main.version=${VERSION}" \
+            -o "../${asset_dir}/${binary}" \
+            ./cmd/nunchucks
+
+          cp README.md "${asset_dir}/README.md"
+          cp LICENSE "${asset_dir}/LICENSE"
+
+      - name: Package archive
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          VERSION: ${{ github.ref_name }}
+          ARCHIVE: ${{ matrix.archive }}
+        run: |
+          asset_dir="dist/nunchucks_${VERSION}_${GOOS}_${GOARCH}"
+          if [ "${ARCHIVE}" = "zip" ]; then
+            cd dist && zip -r "nunchucks_${VERSION}_${GOOS}_${GOARCH}.zip" "$(basename "${asset_dir}")"
+          else
+            tar -C dist -czf "dist/nunchucks_${VERSION}_${GOOS}_${GOARCH}.tar.gz" "$(basename "${asset_dir}")"
+          fi
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.zip

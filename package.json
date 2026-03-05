@@ -14,9 +14,9 @@
   },
   "exports": {
     ".": {
-      "default": "./go/wasm/loader.js",
       "import": "./go/wasm/loader.js",
-      "types": "./go/wasm/loader.d.ts"
+      "types": "./go/wasm/loader.d.ts",
+      "default": "./go/wasm/loader.js"
     }
   },
   "files": [
@@ -46,21 +46,13 @@
   "scripts": {
     "app": "node ./app/server.mjs",
     "build": "node ./scripts/build-wasm.cjs",
+    "build:cli": "cd go && go build -o ../bin/nunchucks ./cmd/nunchucks",
     "demo:build": "pnpm run build",
     "demo:dev": "nodemon",
-    "demo:local": "echo \"legacy ts express demo removed\"",
-    "demo:precompile": "echo \"legacy ts precompile demo removed\"",
-    "demo:run": "echo \"legacy ts express demo removed\"",
-    "lint": "echo \"lint not configured for wasm-only package\"",
     "prepare": "pnpm run build",
     "prepare:input": "echo \"prepare input removed; runtime is go wasm\"",
     "push": "node ./scripts/push.cjs \u0026\u0026 pnpm publish --access=public",
     "test": "cd go \u0026\u0026 go test ./...",
-    "test:browser": "echo \"browser tests removed; use go wasm runtime tests\"",
-    "test:instrument": "echo \"instrumentation removed for wasm-only package\"",
-    "test:runner": "echo \"runner removed for wasm-only package\"",
-    "test:smoke": "echo \"smoke test removed; runtime is go wasm\"",
-    "test:ts": "echo \"ts engine removed; runtime is go wasm\"",
     "test:verbose": "cd go \u0026\u0026 go test -v ./...",
     "update-package": "pnpm build \u0026\u0026 pnpm pack \u0026\u0026 pnpm version patch \u0026\u0026 pnpm publish --access public",
     "vitest:browser": "echo \"vitest browser removed; use go wasm runtime\""

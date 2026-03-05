@@ -4,9 +4,11 @@ const state = {
 	selected: '',
 	search: '',
 	theme: 'system',
-	snippet: '',
+	snippetHtml: '',
+	snippetJs: '',
 	testHtml: '',
 	activeTab: 'preview',
+	activeEditorTab: 'html',
 };
 
 const groupOrder = [
@@ -31,6 +33,11 @@ const el = {
 	selectedTag: document.getElementById('selectedTag'),
 	editorTitle: document.getElementById('editorTitle'),
 	snippetEditor: document.getElementById('snippetEditor'),
+	snippetHtmlEditor: document.getElementById('snippetHtmlEditor'),
+	snippetJsEditor: document.getElementById('snippetJsEditor'),
+	editorTabs: Array.from(document.querySelectorAll('[data-editor-tab]')),
+	editorHtmlPane: document.getElementById('editorHtmlPane'),
+	editorJsPane: document.getElementById('editorJsPane'),
 	testHtmlEditor: document.getElementById('testHtmlEditor'),
 	previewFrame: document.getElementById('previewFrame'),
 	openTestPage: document.getElementById('openTestPage'),
@@ -81,8 +88,38 @@ function defaultSnippet(component) {
 	return samples[component] || `<${tag}></${tag}>`;
 }
 
+function defaultSnippetJs(component) {
+	const samples = {
+		dropdown: `const dropdown = document.querySelector('bf-dropdown');
+dropdown?.addEventListener('bf-select', (event) => {
+  console.log('Selected:', event.detail.value);
+});`,
+		modal: `const openBtn = document.querySelector('[bf-open="demo-modal"]');
+openBtn?.addEventListener('bf-click', () => console.log('Opening modal'));`,
+		dialog: `document.addEventListener('bf-close', (event) => {
+  console.log('Dialog closed:', event.detail.id);
+});`,
+		progress: `const progress = document.querySelector('bf-progress');
+let value = 62;
+setInterval(() => {
+  value = (value + 4) % 101;
+  progress?.setAttribute('value', String(value));
+}, 1000);`,
+	};
+	return samples[component] || '';
+}
+
 function setEditorValue(editor, value) {
 	editor.setAttribute('value', value);
+}
+
+function editorTabTo(view) {
+	state.activeEditorTab = view;
+	for (const tab of el.editorTabs) {
+		tab.classList.toggle('is-active', tab.dataset.editorTab === view);
+	}
+	el.editorHtmlPane.hidden = view !== 'html';
+	el.editorJsPane.hidden = view !== 'js';
 }
 
 function tabTo(view) {
@@ -112,8 +149,11 @@ function renderPreview() {
 		</style>
 	</head>
 	<body>
-${state.snippet}
+${state.snippetHtml}
 		<script type="module" src="./bareframe/dist/index.js"></script>
+		<script>
+${state.snippetJs}
+		</script>
 	</body>
 </html>`;
 	el.previewFrame.srcdoc = html;
@@ -177,10 +217,12 @@ function renderGroups() {
 			btn.classList.toggle('is-active', state.selected === component);
 			btn.addEventListener('click', async () => {
 				state.selected = component;
-				state.snippet = defaultSnippet(component);
+				state.snippetHtml = defaultSnippet(component);
+				state.snippetJs = defaultSnippetJs(component);
 				el.editorTitle.textContent = `${titleize(component)} Editor`;
 				el.selectedTag.textContent = `bf-${component}`;
-				setEditorValue(el.snippetEditor, state.snippet);
+				setEditorValue(el.snippetHtmlEditor, state.snippetHtml);
+				setEditorValue(el.snippetJsEditor, state.snippetJs);
 				renderGroups();
 				await loadTestHtml(component);
 				renderPreview();
@@ -211,11 +253,13 @@ async function boot() {
 	state.components = (manifest.components || []).slice().sort();
 	state.filtered = [...state.components];
 	state.selected = state.components.includes('button') ? 'button' : state.components[0] || '';
-	state.snippet = defaultSnippet(state.selected);
+	state.snippetHtml = defaultSnippet(state.selected);
+	state.snippetJs = defaultSnippetJs(state.selected);
 
 	el.editorTitle.textContent = `${titleize(state.selected)} Editor`;
 	el.selectedTag.textContent = `bf-${state.selected}`;
-	setEditorValue(el.snippetEditor, state.snippet);
+	setEditorValue(el.snippetHtmlEditor, state.snippetHtml);
+	setEditorValue(el.snippetJsEditor, state.snippetJs);
 	renderGroups();
 	await loadTestHtml(state.selected);
 	renderPreview();
@@ -238,8 +282,17 @@ el.tabs.forEach((tab) => {
 	tab.addEventListener('click', () => tabTo(tab.dataset.tab));
 });
 
-el.snippetEditor.addEventListener('bf-change', (event) => {
-	state.snippet = event.detail.value || '';
+el.editorTabs.forEach((tab) => {
+	tab.addEventListener('click', () => editorTabTo(tab.dataset.editorTab));
+});
+
+el.snippetHtmlEditor.addEventListener('bf-change', (event) => {
+	state.snippetHtml = event.detail.value || '';
+	debouncedPreview();
+});
+
+el.snippetJsEditor.addEventListener('bf-change', (event) => {
+	state.snippetJs = event.detail.value || '';
 	debouncedPreview();
 });
 

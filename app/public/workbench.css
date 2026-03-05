@@ -183,6 +183,18 @@ body {
 	height: calc(100vh - 210px);
 }
 
+.editor-tabs {
+	margin-bottom: 0.55rem;
+}
+
+.editor-pane {
+	height: calc(100vh - 248px);
+}
+
+.editor-pane bf-editor {
+	height: 100%;
+}
+
 #selectedTag {
 	color: var(--muted);
 	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -252,7 +264,8 @@ body {
 	}
 	.editor-panel bf-editor,
 	#testHtmlEditor,
-	.pane {
+	.pane,
+	.editor-pane {
 		height: 52vh;
 	}
 	.groups {
