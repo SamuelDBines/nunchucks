@@ -5,7 +5,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"sort"
+	"strings"
+	"syscall"
+	"time"
 
 	nunchucks "github.com/SamuelDBines/nunjucks/go"
 )
@@ -44,6 +49,7 @@ func printRootUsage() {
 	fmt.Fprintln(os.Stderr, "Examples:")
 	fmt.Fprintf(os.Stderr, "  %s render -views ./views -template index.njk -data '{\"title\":\"Hello\"}'\n", name)
 	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public\n", name)
+	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public --watch\n", name)
 	fmt.Fprintf(os.Stderr, "  %s help render\n", name)
 	fmt.Fprintf(os.Stderr, "  %s version\n", name)
 }
@@ -73,6 +79,8 @@ func printPrecompileUsage() {
 	fmt.Fprintln(os.Stderr, "Options:")
 	fmt.Fprintln(os.Stderr, "  -views string        templates directory (default \"views\")")
 	fmt.Fprintln(os.Stderr, "  -out string          output directory (default \"public\")")
+	fmt.Fprintln(os.Stderr, "  -watch               rerender when template files change")
+	fmt.Fprintln(os.Stderr, "  -interval duration   polling interval for watch mode (default 1s)")
 	fmt.Fprintln(os.Stderr, "  -data string         JSON context object (default \"{}\")")
 	fmt.Fprintln(os.Stderr, "  -global value        global template, repeatable")
 	fmt.Fprintln(os.Stderr, "  -global-head value   global head template, repeatable")
@@ -80,6 +88,7 @@ func printPrecompileUsage() {
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
 	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public -data '{\"title\":\"Hello\"}'\n", name)
+	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public --watch -interval 750ms\n", name)
 }
 
 func printVersionUsage() {
@@ -118,6 +127,132 @@ func parseData(raw string) (map[string]any, error) {
 		return nil, err
 	}
 	return out, nil
+}
+
+type fileState struct {
+	modTime time.Time
+	size    int64
+}
+
+func scanTemplateState(views string) (map[string]fileState, error) {
+	state := map[string]fileState{}
+	err := filepath.WalkDir(views, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		if !nunchucks.IsTemplateFile(d.Name()) {
+			return nil
+		}
+
+		info, err := d.Info()
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(views, path)
+		if err != nil {
+			return err
+		}
+		state[filepath.ToSlash(rel)] = fileState{
+			modTime: info.ModTime().UTC(),
+			size:    info.Size(),
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return state, nil
+}
+
+func diffTemplateState(previous, current map[string]fileState) []string {
+	changed := make([]string, 0)
+	seen := make(map[string]struct{}, len(previous)+len(current))
+
+	for name, prev := range previous {
+		seen[name] = struct{}{}
+		next, ok := current[name]
+		if !ok || !prev.modTime.Equal(next.modTime) || prev.size != next.size {
+			changed = append(changed, name)
+		}
+	}
+	for name := range current {
+		if _, ok := seen[name]; !ok {
+			changed = append(changed, name)
+		}
+	}
+
+	sort.Strings(changed)
+	return changed
+}
+
+func removeDeletedOutputs(outDir string, previous, current map[string]fileState) error {
+	for name := range previous {
+		if _, ok := current[name]; ok {
+			continue
+		}
+		if err := os.Remove(filepath.Join(outDir, filepath.FromSlash(name))); err != nil && !os.IsNotExist(err) {
+			return err
+		}
+	}
+	return nil
+}
+
+func precompileOnce(env *nunchucks.Env, outDir string, ctx map[string]any) error {
+	return env.PrecompileDir(outDir, ctx)
+}
+
+func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]any, interval time.Duration) error {
+	if interval <= 0 {
+		return fmt.Errorf("-interval must be greater than 0")
+	}
+	if err := precompileOnce(env, outDir, ctx); err != nil {
+		return err
+	}
+
+	current, err := scanTemplateState(views)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stderr, "watching %s and writing to %s every %s\n", views, outDir, interval)
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	defer signal.Stop(signals)
+
+	for {
+		select {
+		case <-signals:
+			fmt.Fprintln(os.Stderr, "watch stopped")
+			return nil
+		case <-ticker.C:
+			next, err := scanTemplateState(views)
+			if err != nil {
+				return err
+			}
+
+			changed := diffTemplateState(current, next)
+			if len(changed) == 0 {
+				continue
+			}
+
+			if err := precompileOnce(env, outDir, ctx); err != nil {
+				return err
+			}
+			if err := removeDeletedOutputs(outDir, current, next); err != nil {
+				return err
+			}
+
+			fmt.Fprintf(os.Stderr, "recompiled %d changed file(s): %s\n", len(changed), strings.Join(changed, ", "))
+			current = next
+		}
+	}
 }
 
 func runRender(args []string) error {
@@ -165,6 +300,8 @@ func runPrecompile(args []string) error {
 
 	views := fs.String("views", "views", "templates directory")
 	outDir := fs.String("out", "public", "output directory")
+	watch := fs.Bool("watch", false, "rerender when template files change")
+	interval := fs.Duration("interval", time.Second, "polling interval for watch mode")
 	data := fs.String("data", "{}", "JSON context object")
 	var globalTemplates stringListFlag
 	var globalHeadTemplates stringListFlag
@@ -185,6 +322,9 @@ func runPrecompile(args []string) error {
 		GlobalHeadTemplates: []string(globalHeadTemplates),
 		GlobalFootTemplates: []string(globalFootTemplates),
 	})
+	if *watch {
+		return watchPrecompile(env, *views, *outDir, ctx, *interval)
+	}
 	return env.PrecompileDir(*outDir, ctx)
 }
 

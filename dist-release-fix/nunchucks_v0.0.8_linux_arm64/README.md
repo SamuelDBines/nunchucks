@@ -93,11 +93,6 @@ go run ./cmd/nunchucks precompile \
   -views ./views \
   -out ./public \
   -data '{"title":"Hello"}'
-
-go run ./cmd/nunchucks precompile \
-  -views ./views \
-  -out ./public \
-  -watch
 ```
 
 ## Go Examples

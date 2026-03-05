@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func isTemplateFile(name string) bool {
+func IsTemplateFile(name string) bool {
 	ext := strings.ToLower(filepath.Ext(name))
 	switch ext {
 	case ".njk", ".html", ".txt", ".yaml", ".yml", ".json", ".xml", ".css", ".js":
@@ -37,7 +37,7 @@ func (e *Env) PrecompileDir(outDir string, ctx map[string]any) error {
 		if d.IsDir() {
 			return nil
 		}
-		if !isTemplateFile(d.Name()) {
+		if !IsTemplateFile(d.Name()) {
 			return nil
 		}
 
