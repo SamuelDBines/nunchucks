@@ -46,7 +46,7 @@ Install the native CLI from GitHub Releases:
 macOS and Linux:
 
 ```bash
-./scripts/install-cli.sh
+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh
 nunchucks version
 nunchucks help
 ```
@@ -54,7 +54,7 @@ nunchucks help
 Windows PowerShell:
 
 ```powershell
-./scripts/install-cli.ps1
+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex
 nunchucks.exe version
 nunchucks.exe help
 ```
@@ -66,6 +66,7 @@ go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest
 ```
 
 Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.
+The install scripts pick a writable bin directory and print PATH instructions when needed.
 
 ### Go usage
 

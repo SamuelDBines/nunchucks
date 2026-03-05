@@ -2,7 +2,58 @@ $ErrorActionPreference = "Stop"
 
 $repo = "SamuelDBines/nunjucks"
 $version = if ($args.Length -gt 0) { $args[0] } else { "latest" }
-$installDir = if ($env:NUNCHUCKS_INSTALL_DIR) { $env:NUNCHUCKS_INSTALL_DIR } else { Join-Path $HOME "bin" }
+
+function Get-InstallDir {
+    if ($env:NUNCHUCKS_INSTALL_DIR) {
+        return $env:NUNCHUCKS_INSTALL_DIR
+    }
+
+    $candidates = @(
+        (Join-Path $HOME "bin"),
+        (Join-Path $HOME ".local\bin")
+    )
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path $candidate) {
+            return $candidate
+        }
+    }
+
+    return $candidates[0]
+}
+
+function Test-DirOnPath {
+    param([string]$Dir)
+
+    $parts = ($env:PATH -split ';') | Where-Object { $_ }
+    foreach ($part in $parts) {
+        if ([System.IO.Path]::GetFullPath($part) -eq [System.IO.Path]::GetFullPath($Dir)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Add-UserPath {
+    param([string]$Dir)
+
+    $current = [Environment]::GetEnvironmentVariable("Path", "User")
+    $parts = @()
+    if ($current) {
+        $parts = $current -split ';' | Where-Object { $_ }
+    }
+
+    if ($parts -contains $Dir) {
+        return
+    }
+
+    $updated = @($parts + $Dir) -join ';'
+    [Environment]::SetEnvironmentVariable("Path", $updated, "User")
+    $env:PATH = if ($env:PATH) { "$env:PATH;$Dir" } else { $Dir }
+}
+
+$installDir = Get-InstallDir
 
 $arch = switch ($env:PROCESSOR_ARCHITECTURE) {
     "AMD64" { "amd64" }
@@ -27,4 +78,14 @@ Invoke-WebRequest -Uri $url -OutFile $archive
 Expand-Archive -Path $archive -DestinationPath $tmpDir -Force
 Copy-Item -Path (Join-Path $tmpDir "nunchucks_${version}_windows_${arch}\nunchucks.exe") -Destination (Join-Path $installDir "nunchucks.exe") -Force
 
-Write-Host "installed nunchucks $version to $(Join-Path $installDir 'nunchucks.exe')"
+$binary = Join-Path $installDir "nunchucks.exe"
+
+if (-not (Test-DirOnPath -Dir $installDir)) {
+    Add-UserPath -Dir $installDir
+    Write-Host "added $installDir to your user PATH"
+}
+
+& $binary version | Out-Null
+
+Write-Host "installed nunchucks $version to $binary"
+Write-Host "run: nunchucks.exe help"
