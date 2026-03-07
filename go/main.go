@@ -6,6 +6,10 @@ import "strings"
 type ConfigOptions struct {
 	Path                string
 	Loader              Loader
+	VariableStart       string
+	VariableEnd         string
+	BlockStart          string
+	BlockEnd            string
 	GlobalTemplates     []string
 	GlobalHeadTemplates []string
 	GlobalFootTemplates []string
@@ -15,10 +19,21 @@ type ConfigOptions struct {
 type Env struct {
 	basePath            string
 	loader              Loader
+	variableStart       string
+	variableEnd         string
+	blockStart          string
+	blockEnd            string
 	globalTemplates     []string
 	globalHeadTemplates []string
 	globalFootTemplates []string
 }
+
+const (
+	defaultVariableStart = "{{"
+	defaultVariableEnd   = "}}"
+	defaultBlockStart    = "{%"
+	defaultBlockEnd      = "%}"
+)
 
 func builtinGlobals() map[string]any {
 	return map[string]any{
@@ -67,6 +82,23 @@ func Configure(opts ConfigOptions) *Env {
 		path = "views"
 	}
 
+	variableStart := strings.TrimSpace(opts.VariableStart)
+	if variableStart == "" {
+		variableStart = defaultVariableStart
+	}
+	variableEnd := strings.TrimSpace(opts.VariableEnd)
+	if variableEnd == "" {
+		variableEnd = defaultVariableEnd
+	}
+	blockStart := strings.TrimSpace(opts.BlockStart)
+	if blockStart == "" {
+		blockStart = defaultBlockStart
+	}
+	blockEnd := strings.TrimSpace(opts.BlockEnd)
+	if blockEnd == "" {
+		blockEnd = defaultBlockEnd
+	}
+
 	ldr := opts.Loader
 	if ldr == nil {
 		ldr = FileSystemLoader(path)
@@ -102,6 +134,10 @@ func Configure(opts ConfigOptions) *Env {
 	return &Env{
 		basePath:            path,
 		loader:              ldr,
+		variableStart:       variableStart,
+		variableEnd:         variableEnd,
+		blockStart:          blockStart,
+		blockEnd:            blockEnd,
 		globalTemplates:     globals,
 		globalHeadTemplates: headGlobals,
 		globalFootTemplates: footGlobals,
@@ -125,4 +161,24 @@ func (e *Env) Compile(name string) (string, error) {
 // RenderString renders a string template with the provided context.
 func (e *Env) RenderString(src string, ctx map[string]any) (string, error) {
 	return e.renderString(src, ctx)
+}
+
+func (e *Env) normalizeTemplateSource(src string) string {
+	replacerArgs := []string{}
+	if e.variableStart != defaultVariableStart {
+		replacerArgs = append(replacerArgs, e.variableStart, defaultVariableStart)
+	}
+	if e.variableEnd != defaultVariableEnd {
+		replacerArgs = append(replacerArgs, e.variableEnd, defaultVariableEnd)
+	}
+	if e.blockStart != defaultBlockStart {
+		replacerArgs = append(replacerArgs, e.blockStart, defaultBlockStart)
+	}
+	if e.blockEnd != defaultBlockEnd {
+		replacerArgs = append(replacerArgs, e.blockEnd, defaultBlockEnd)
+	}
+	if len(replacerArgs) == 0 {
+		return src
+	}
+	return strings.NewReplacer(replacerArgs...).Replace(src)
 }

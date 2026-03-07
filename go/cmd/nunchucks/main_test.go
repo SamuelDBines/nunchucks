@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	nunchucks "github.com/SamuelDBines/nunjucks/go"
 )
 
 func captureStderr(t *testing.T, fn func()) string {
@@ -115,7 +117,30 @@ func TestRemoveDeletedOutputsRemovesMissingTemplates(t *testing.T) {
 	}
 	current := map[string]fileState{}
 
-	if err := removeDeletedOutputs(dir, previous, current); err != nil {
+	if err := removeDeletedOutputs(dir, previous, current, nunchucks.PrecompileOptions{}); err != nil {
+		t.Fatalf("removeDeletedOutputs(): %v", err)
+	}
+	if _, err := os.Stat(outFile); !os.IsNotExist(err) {
+		t.Fatalf("expected %s to be removed, stat err = %v", outFile, err)
+	}
+}
+
+func TestRemoveDeletedOutputsUsesHTMLFormat(t *testing.T) {
+	dir := t.TempDir()
+	outFile := filepath.Join(dir, "pages", "index.html")
+	if err := os.MkdirAll(filepath.Dir(outFile), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(outFile, []byte("stale"), 0o644); err != nil {
+		t.Fatalf("write stale file: %v", err)
+	}
+
+	previous := map[string]fileState{
+		"pages/index.njk": {modTime: time.Unix(100, 0), size: 5},
+	}
+	current := map[string]fileState{}
+
+	if err := removeDeletedOutputs(dir, previous, current, nunchucks.PrecompileOptions{OutputFormat: "html"}); err != nil {
 		t.Fatalf("removeDeletedOutputs(): %v", err)
 	}
 	if _, err := os.Stat(outFile); !os.IsNotExist(err) {

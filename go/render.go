@@ -46,6 +46,7 @@ func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
 	if ctx == nil {
 		ctx = map[string]any{}
 	}
+	src = e.normalizeTemplateSource(src)
 	var err error
 	src, err = e.prependGlobalTemplates(src)
 	if err != nil {

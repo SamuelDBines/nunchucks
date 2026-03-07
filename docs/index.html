@@ -153,6 +153,7 @@ go run ./cmd/nunchucks help render
 go run ./cmd/nunchucks version
 go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
 go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'
+go run ./cmd/nunchucks precompile -views ./views -out ./public -out-format html
 go run ./cmd/nunchucks precompile -views ./views -out ./public -watch
 
 # WASM build

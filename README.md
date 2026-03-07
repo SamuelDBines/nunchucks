@@ -97,6 +97,11 @@ go run ./cmd/nunchucks precompile \
 go run ./cmd/nunchucks precompile \
   -views ./views \
   -out ./public \
+  -out-format html
+
+go run ./cmd/nunchucks precompile \
+  -views ./views \
+  -out ./public \
   -watch
 ```
 

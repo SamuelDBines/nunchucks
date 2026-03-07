@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+type PrecompileOptions struct {
+	OutputFormat string
+}
+
 func IsTemplateFile(name string) bool {
 	ext := strings.ToLower(filepath.Ext(name))
 	switch ext {
@@ -17,13 +21,28 @@ func IsTemplateFile(name string) bool {
 	}
 }
 
+func outputPathFor(rel string, opts PrecompileOptions) string {
+	if strings.EqualFold(strings.TrimSpace(opts.OutputFormat), "html") && strings.EqualFold(filepath.Ext(rel), ".njk") {
+		return strings.TrimSuffix(rel, filepath.Ext(rel)) + ".html"
+	}
+	return rel
+}
+
 // PrecompileDir renders templates from the configured views path into outDir.
 func (e *Env) PrecompileDir(outDir string, ctx map[string]any) error {
+	return e.PrecompileDirWithOptions(outDir, ctx, PrecompileOptions{})
+}
+
+// PrecompileDirWithOptions renders templates from the configured views path into outDir.
+func (e *Env) PrecompileDirWithOptions(outDir string, ctx map[string]any, opts PrecompileOptions) error {
 	if strings.TrimSpace(outDir) == "" {
 		return fmt.Errorf("outDir is required")
 	}
 	if strings.TrimSpace(e.basePath) == "" {
 		return fmt.Errorf("env base path is empty")
+	}
+	if format := strings.TrimSpace(opts.OutputFormat); format != "" && !strings.EqualFold(format, "preserve") && !strings.EqualFold(format, "html") {
+		return fmt.Errorf("unsupported output format: %s", format)
 	}
 
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
@@ -52,7 +71,7 @@ func (e *Env) PrecompileDir(outDir string, ctx map[string]any) error {
 			return fmt.Errorf("render %s: %w", rel, err)
 		}
 
-		dst := filepath.Join(outDir, rel)
+		dst := filepath.Join(outDir, filepath.FromSlash(outputPathFor(rel, opts)))
 		if strings.TrimSpace(rendered) == "" {
 			_ = os.Remove(dst)
 			return nil

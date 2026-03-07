@@ -1,6 +1,8 @@
 package nunchucks
 
 import (
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -419,5 +421,78 @@ func TestGlobalHeadAndFootTemplateInjection(t *testing.T) {
 	footIdxB := strings.Index(out, footNeedleB)
 	if footIdxA < 0 || footIdxB < 0 || bodyCloseIdx < 0 || footIdxA > bodyCloseIdx || footIdxB > bodyCloseIdx {
 		t.Fatalf("expected global scripts before </body>, got %q", out)
+	}
+}
+
+func TestCustomDelimitersRenderString(t *testing.T) {
+	env := Configure(ConfigOptions{
+		Loader:        &testLoader{files: map[string]string{}},
+		VariableStart: "[[",
+		VariableEnd:   "]]",
+		BlockStart:    "[%",
+		BlockEnd:      "%]",
+	})
+
+	src := `[% set title = "Hello" %][[ title | upper ]]`
+	out, err := env.RenderString(src, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if compactWhitespace(out) != "HELLO" {
+		t.Fatalf("expected custom delimiter render, got %q", out)
+	}
+}
+
+func TestCustomDelimitersRenderTemplates(t *testing.T) {
+	files := map[string]string{
+		"base.njk":  `<h1>[% block title %]Base[% endblock %]</h1><main>[% block body %]x[% endblock %]</main>`,
+		"child.njk": `[% extends "base.njk" %][% block title %][[ pageTitle ]][% endblock %][% block body %]Hello [[ user.name ]][% endblock %]`,
+	}
+	env := Configure(ConfigOptions{
+		Loader:        &testLoader{files: files},
+		VariableStart: "[[",
+		VariableEnd:   "]]",
+		BlockStart:    "[%",
+		BlockEnd:      "%]",
+	})
+
+	out, err := env.Render("child.njk", map[string]any{
+		"pageTitle": "Docs",
+		"user":      map[string]any{"name": "sam"},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	got := compactWhitespace(out)
+	want := `<h1>Docs</h1><main>Hello sam</main>`
+	if got != want {
+		t.Fatalf("expected %q, got %q", want, got)
+	}
+}
+
+func TestPrecompileDirWithHTMLFormat(t *testing.T) {
+	viewsDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(viewsDir, "index.njk"), []byte(`<h1>{{ title }}</h1>`), 0o644); err != nil {
+		t.Fatalf("write index.njk: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(viewsDir, "feed.json"), []byte(`{"title":"{{ title }}"}`), 0o644); err != nil {
+		t.Fatalf("write feed.json: %v", err)
+	}
+	env := Configure(ConfigOptions{Path: viewsDir})
+	outDir := t.TempDir()
+	if err := env.PrecompileDirWithOptions(outDir, map[string]any{"title": "Hello"}, PrecompileOptions{OutputFormat: "html"}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	htmlPath := filepath.Join(outDir, "index.html")
+	if _, err := os.Stat(htmlPath); err != nil {
+		t.Fatalf("expected html output at %s: %v", htmlPath, err)
+	}
+	if _, err := os.Stat(filepath.Join(outDir, "index.njk")); !os.IsNotExist(err) {
+		t.Fatalf("expected .njk output to be omitted, stat err = %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(outDir, "feed.json")); err != nil {
+		t.Fatalf("expected non-njk output to keep extension: %v", err)
 	}
 }

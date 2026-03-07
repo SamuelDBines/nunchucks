@@ -79,6 +79,7 @@ func printPrecompileUsage() {
 	fmt.Fprintln(os.Stderr, "Options:")
 	fmt.Fprintln(os.Stderr, "  -views string        templates directory (default \"views\")")
 	fmt.Fprintln(os.Stderr, "  -out string          output directory (default \"public\")")
+	fmt.Fprintln(os.Stderr, "  -out-format string   output naming: preserve or html (default \"preserve\")")
 	fmt.Fprintln(os.Stderr, "  -watch               rerender when template files change")
 	fmt.Fprintln(os.Stderr, "  -interval duration   polling interval for watch mode (default 1s)")
 	fmt.Fprintln(os.Stderr, "  -data string         JSON context object (default \"{}\")")
@@ -88,6 +89,7 @@ func printPrecompileUsage() {
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
 	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public -data '{\"title\":\"Hello\"}'\n", name)
+	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public -out-format html\n", name)
 	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public --watch -interval 750ms\n", name)
 }
 
@@ -188,27 +190,35 @@ func diffTemplateState(previous, current map[string]fileState) []string {
 	return changed
 }
 
-func removeDeletedOutputs(outDir string, previous, current map[string]fileState) error {
+func removeDeletedOutputs(outDir string, previous, current map[string]fileState, opts nunchucks.PrecompileOptions) error {
 	for name := range previous {
 		if _, ok := current[name]; ok {
 			continue
 		}
-		if err := os.Remove(filepath.Join(outDir, filepath.FromSlash(name))); err != nil && !os.IsNotExist(err) {
+		target := nunchucksOutputPath(name, opts)
+		if err := os.Remove(filepath.Join(outDir, filepath.FromSlash(target))); err != nil && !os.IsNotExist(err) {
 			return err
 		}
 	}
 	return nil
 }
 
-func precompileOnce(env *nunchucks.Env, outDir string, ctx map[string]any) error {
-	return env.PrecompileDir(outDir, ctx)
+func nunchucksOutputPath(rel string, opts nunchucks.PrecompileOptions) string {
+	if strings.EqualFold(strings.TrimSpace(opts.OutputFormat), "html") && strings.EqualFold(filepath.Ext(rel), ".njk") {
+		return strings.TrimSuffix(rel, filepath.Ext(rel)) + ".html"
+	}
+	return rel
 }
 
-func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]any, interval time.Duration) error {
+func precompileOnce(env *nunchucks.Env, outDir string, ctx map[string]any, opts nunchucks.PrecompileOptions) error {
+	return env.PrecompileDirWithOptions(outDir, ctx, opts)
+}
+
+func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]any, interval time.Duration, opts nunchucks.PrecompileOptions) error {
 	if interval <= 0 {
 		return fmt.Errorf("-interval must be greater than 0")
 	}
-	if err := precompileOnce(env, outDir, ctx); err != nil {
+	if err := precompileOnce(env, outDir, ctx, opts); err != nil {
 		return err
 	}
 
@@ -242,10 +252,10 @@ func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]an
 				continue
 			}
 
-			if err := precompileOnce(env, outDir, ctx); err != nil {
+			if err := precompileOnce(env, outDir, ctx, opts); err != nil {
 				return err
 			}
-			if err := removeDeletedOutputs(outDir, current, next); err != nil {
+			if err := removeDeletedOutputs(outDir, current, next, opts); err != nil {
 				return err
 			}
 
@@ -300,6 +310,7 @@ func runPrecompile(args []string) error {
 
 	views := fs.String("views", "views", "templates directory")
 	outDir := fs.String("out", "public", "output directory")
+	outFormat := fs.String("out-format", "preserve", "output naming: preserve or html")
 	watch := fs.Bool("watch", false, "rerender when template files change")
 	interval := fs.Duration("interval", time.Second, "polling interval for watch mode")
 	data := fs.String("data", "{}", "JSON context object")
@@ -322,10 +333,13 @@ func runPrecompile(args []string) error {
 		GlobalHeadTemplates: []string(globalHeadTemplates),
 		GlobalFootTemplates: []string(globalFootTemplates),
 	})
-	if *watch {
-		return watchPrecompile(env, *views, *outDir, ctx, *interval)
+	precompileOpts := nunchucks.PrecompileOptions{
+		OutputFormat: *outFormat,
 	}
-	return env.PrecompileDir(*outDir, ctx)
+	if *watch {
+		return watchPrecompile(env, *views, *outDir, ctx, *interval, precompileOpts)
+	}
+	return env.PrecompileDirWithOptions(*outDir, ctx, precompileOpts)
 }
 
 func main() {
