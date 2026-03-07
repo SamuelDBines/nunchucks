@@ -1,5 +1,5 @@
 {
-  "author": "Samuel Bines \u003csamuelbines@gmail.com\u003e",
+  "author": "Samuel Bines <samuelbines@gmail.com>",
   "bugs": {
     "url": "https://github.com/SamuelDBines/nunchucks/issues"
   },
@@ -8,8 +8,8 @@
   },
   "description": "A powerful templating engine with inheritance, asynchronous control, and more (jinja2 inspired)",
   "devDependencies": {
-    "@types/node": "^25.0.3",
-    "nodemon": "^3.1.11",
+    "@types/node": "^25.3.5",
+    "nodemon": "^3.1.14",
     "ts-node": "^10.9.2"
   },
   "exports": {
@@ -46,15 +46,16 @@
   "scripts": {
     "app": "node ./app/server.mjs",
     "build": "node ./scripts/build-wasm.cjs",
-    "build:cli": "cd go \u0026\u0026 go build -o ../bin/nunchucks ./cmd/nunchucks",
+    "build:cli": "cd go && go build -o ../bin/nunchucks ./cmd/nunchucks",
     "demo:build": "pnpm run build",
     "demo:dev": "nodemon",
     "prepare": "pnpm run build",
+    "update-nunchucks": "curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh",
     "prepare:input": "echo \"prepare input removed; runtime is go wasm\"",
-    "push": "node ./scripts/push.cjs \u0026\u0026 pnpm publish --access=public",
-    "test": "cd go \u0026\u0026 go test ./...",
-    "test:verbose": "cd go \u0026\u0026 go test -v ./...",
-    "update-package": "pnpm build \u0026\u0026 pnpm pack \u0026\u0026 pnpm version patch \u0026\u0026 pnpm publish --access public",
+    "push": "node ./scripts/push.cjs && pnpm publish --access=public",
+    "test": "cd go && go test ./...",
+    "test:verbose": "cd go && go test -v ./...",
+    "update-package": "pnpm build && pnpm pack && pnpm version patch && pnpm publish --access public",
     "vitest:browser": "echo \"vitest browser removed; use go wasm runtime\""
   },
   "type": "module",
