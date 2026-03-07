@@ -1,0 +1,2380 @@
+diff --git a/.kitsune/tmp/20260305T192828Z-3gh674/diff.html b/.kitsune/tmp/20260305T192828Z-3gh674/diff.html
+deleted file mode 100644
+index 48a59d0..0000000
+--- a/.kitsune/tmp/20260305T192828Z-3gh674/diff.html
++++ /dev/null
+@@ -1,1195 +0,0 @@
+-<!doctype html>
+-<html lang="en">
+-<head>
+-  <meta charset="utf-8">
+-  <meta name="viewport" content="width=device-width, initial-scale=1">
+-  <title>Kitsune Commit Review</title>
+-  <style>
+-    :root{--bg:#0b1220;--fg:#e6edf3;--muted:#9aa4b2;--card:#0f1a2e;--border:#20314d;--add:#183a2a;--del:#3a1c1c;--hl:#f5d90a;}
+-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto; background:linear-gradient(180deg,#070b14,#0b1220 35%,#070b14); color:var(--fg);}
+-    .wrap{max-width:1180px;margin:0 auto;padding:28px 18px;}
+-    h1{margin:0 0 8px;font-size:22px;letter-spacing:.2px;}
+-    .muted{color:var(--muted);}
+-    .grid{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start;}
+-    @media (max-width: 980px){.grid{grid-template-columns:1fr;}}
+-    .card{background:rgba(15,26,46,.72); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:0 10px 30px rgba(0,0,0,.35);}
+-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;}
+-    a{color:#7bdcff;text-decoration:none;}
+-    a:hover{text-decoration:underline;}
+-    .files{list-style:none;margin:10px 0 0;padding:0;}
+-    .files li{margin:6px 0;}
+-    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(123,220,255,.12);border:1px solid rgba(123,220,255,.18); color:#bfefff; font-size:12px;}
+-    pre{margin:0;white-space:pre;overflow:auto;line-height:1.35;font-size:12.5px;border-radius:12px;border:1px solid var(--border);background:#050812;}
+-    .diffline{display:block;padding:0 12px;}
+-    .diffline.add{background:rgba(24,58,42,.45);}
+-    .diffline.del{background:rgba(58,28,28,.45);}
+-    .diffline.hdr{background:rgba(32,49,77,.35);color:#d0d7de;}
+-    .diffline.hunk{background:rgba(32,49,77,.20);color:#c9d1d9;}
+-    .filehdr{display:flex;gap:10px;align-items:center; justify-content:space-between; margin:0 0 10px;}
+-    .filehdr h2{margin:0;font-size:14px;font-weight:700;}
+-    .msg{white-space:pre-wrap;}
+-  </style>
+-</head>
+-<body>
+-  <div class="wrap">
+-    <h1>Kitsune Commit Review</h1>
+-    <p class="muted">Staged changes preview. Open this file locally; links jump to each file diff.</p>
+-    <div class="grid">
+-      <div class="card">
+-        <div class="filehdr"><h2>Commit Message</h2><span class="pill">generated</span></div>
+-        <div class="mono msg">chore: update README.md, dist-release-fix, docs, go</div>
+-        <hr style="border:0;border-top:1px solid var(--border);margin:14px 0;"/>
+-        <div class="filehdr"><h2>Diff Stat</h2><span class="pill">git</span></div>
+-        <pre class="mono"><span class="diffline hdr">README.md                                          |   5 +
+- .../nunchucks_v0.0.8_darwin_arm64.tar.gz           | Bin 0 -&gt; 1022470 bytes
+- .../nunchucks_v0.0.8_darwin_arm64/LICENSE          |  26 +++
+- .../nunchucks_v0.0.8_darwin_arm64/README.md        | 192 +++++++++++++++++++++
+- .../nunchucks_v0.0.8_darwin_arm64/nunchucks        | Bin 0 -&gt; 2488002 bytes
+- .../nunchucks_v0.0.8_linux_arm64.tar.gz            | Bin 0 -&gt; 948790 bytes
+- .../nunchucks_v0.0.8_linux_arm64/LICENSE           |  26 +++
+- .../nunchucks_v0.0.8_linux_arm64/README.md         | 192 +++++++++++++++++++++
+- .../nunchucks_v0.0.8_linux_arm64/nunchucks         | Bin 0 -&gt; 2359296 bytes
+- .../nunchucks_v0.0.8_windows_arm64.zip             | Bin 0 -&gt; 982957 bytes
+- .../nunchucks_v0.0.8_windows_arm64/LICENSE         |  26 +++
+- .../nunchucks_v0.0.8_windows_arm64/README.md       | 192 +++++++++++++++++++++
+- .../nunchucks_v0.0.8_windows_arm64/nunchucks.exe   | Bin 0 -&gt; 2356224 bytes
+- docs/index.html                                    |   1 +
+- go/cmd/nunchucks/main.go                           | 140 +++++++++++++++
+- go/cmd/nunchucks/main_test.go                      |  44 +++++
+- go/precompile.go                                   |   4 +-
+- 17 files changed, 846 insertions(+), 2 deletions(-)</span></pre>
+-        <hr style="border:0;border-top:1px solid var(--border);margin:14px 0;"/>
+-        <div class="filehdr"><h2>Files</h2><span class="pill">links</span></div>
+-        <ul class="files mono">
+-          <li><a href="#file-README-md">README.md</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-tar-gz">dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-LICENSE">dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-README-md">dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-nunchucks">dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-tar-gz">dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-LICENSE">dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-README-md">dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-nunchucks">dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-zip">dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-LICENSE">dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-README-md">dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md</a></li>
+-          <li><a href="#file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-nunchucks-exe">dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe</a></li>
+-          <li><a href="#file-docs-index-html">docs/index.html</a></li>
+-          <li><a href="#file-go-cmd-nunchucks-main-go">go/cmd/nunchucks/main.go</a></li>
+-          <li><a href="#file-go-cmd-nunchucks-main_test-go">go/cmd/nunchucks/main_test.go</a></li>
+-          <li><a href="#file-go-precompile-go">go/precompile.go</a></li>
+-        </ul>
+-      </div>
+-      <div class="card">
+-        <div class="filehdr"><h2>Diff</h2><span class="pill">staged</span></div>
+-        <div id="file-README-md" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">README.md</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/README.md b/README.md</span>
+-<span class="diffline hdr">index 2499516..c81e278 100644</span>
+-<span class="diffline hdr">--- a/README.md</span>
+-<span class="diffline hdr">+++ b/README.md</span>
+-<span class="diffline hunk">@@ -93,6 +93,11 @@ go run ./cmd/nunchucks precompile \</span>
+-<span class="diffline">   -views ./views \</span>
+-<span class="diffline">   -out ./public \</span>
+-<span class="diffline">   -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+go run ./cmd/nunchucks precompile \</span>
+-<span class="diffline add">+  -views ./views \</span>
+-<span class="diffline add">+  -out ./public \</span>
+-<span class="diffline add">+  -watch</span>
+-<span class="diffline"> ```</span>
+-<span class="diffline"> </span>
+-<span class="diffline"> ## Go Examples</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-tar-gz" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..bd98f12</span>
+-<span class="diffline">Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz differ</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-LICENSE" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..8f89e4d</span>
+-<span class="diffline hdr">--- /dev/null</span>
+-<span class="diffline hdr">+++ b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE</span>
+-<span class="diffline hunk">@@ -0,0 +1,26 @@</span>
+-<span class="diffline add">+Copyright (c) 2025-2027, Samuel Bines</span>
+-<span class="diffline add">+All rights reserved.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Redistribution and use in source and binary forms, with or without</span>
+-<span class="diffline add">+modification, are permitted provided that the following conditions are</span>
+-<span class="diffline add">+met:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+    Redistributions of source code must retain the above copyright</span>
+-<span class="diffline add">+    notice, this list of conditions and the following disclaimer.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+    Redistributions in binary form must reproduce the above copyright</span>
+-<span class="diffline add">+    notice, this list of conditions and the following disclaimer in</span>
+-<span class="diffline add">+    the documentation and/or other materials provided with the</span>
+-<span class="diffline add">+    distribution.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</span>
+-<span class="diffline add">+&quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</span>
+-<span class="diffline add">+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</span>
+-<span class="diffline add">+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</span>
+-<span class="diffline add">+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+-<span class="diffline add">+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</span>
+-<span class="diffline add">+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+-<span class="diffline add">+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</span>
+-<span class="diffline add">+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+-<span class="diffline add">+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+-<span class="diffline add">+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+-<span class="diffline">\ No newline at end of file</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-README-md" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..2499516</span>
+-<span class="diffline hdr">--- /dev/null</span>
+-<span class="diffline hdr">+++ b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md</span>
+-<span class="diffline hunk">@@ -0,0 +1,192 @@</span>
+-<span class="diffline add">+# Nunchucks</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- JavaScript/TypeScript package backed by Go WASM (`@samuelbines/nunchucks`)</span>
+-<span class="diffline add">+- Go runtime + CLI</span>
+-<span class="diffline add">+- WASM target from Go</span>
+-<span class="diffline add">+- Docs site in `docs/` (GitHub Pages)</span>
+-<span class="diffline add">+- Playground editor demo with live preview</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Repository: `https://github.com/SamuelDBines/nunchucks`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Current Focus</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+This project is actively evolving toward strong syntax parity plus a multi-language workflow.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Installation</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### JS/TS package (Go WASM runtime)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+npm install @samuelbines/nunchucks</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```ts</span>
+-<span class="diffline add">+import { loadNunchucksWasm } from &quot;@samuelbines/nunchucks&quot;;</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+const nc = await loadNunchucksWasm({</span>
+-<span class="diffline add">+  wasmURL: &quot;/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm&quot;,</span>
+-<span class="diffline add">+  goURL: &quot;/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js&quot;,</span>
+-<span class="diffline add">+});</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+const html = nc.renderFromMap({</span>
+-<span class="diffline add">+  template: &quot;index.njk&quot;,</span>
+-<span class="diffline add">+  files: { &quot;index.njk&quot;: &quot;Hello {{ name }}&quot; },</span>
+-<span class="diffline add">+  context: { name: &quot;world&quot; },</span>
+-<span class="diffline add">+});</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### CLI</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Install the native CLI from GitHub Releases:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+macOS and Linux:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh</span>
+-<span class="diffline add">+nunchucks version</span>
+-<span class="diffline add">+nunchucks help</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Windows PowerShell:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```powershell</span>
+-<span class="diffline add">+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex</span>
+-<span class="diffline add">+nunchucks.exe version</span>
+-<span class="diffline add">+nunchucks.exe help</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Go users can also install from source:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.</span>
+-<span class="diffline add">+The install scripts pick a writable bin directory and print PATH instructions when needed.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### Go usage</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+cd go</span>
+-<span class="diffline add">+go test ./...</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Go CLI</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/` or from an installed release binary:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./cmd/nunchucks help</span>
+-<span class="diffline add">+go run ./cmd/nunchucks help render</span>
+-<span class="diffline add">+go run ./cmd/nunchucks version</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+go run ./cmd/nunchucks render \</span>
+-<span class="diffline add">+  -views ./views \</span>
+-<span class="diffline add">+  -template index.njk \</span>
+-<span class="diffline add">+  -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+go run ./cmd/nunchucks precompile \</span>
+-<span class="diffline add">+  -views ./views \</span>
+-<span class="diffline add">+  -out ./public \</span>
+-<span class="diffline add">+  -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Go Examples</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./examples/basic</span>
+-<span class="diffline add">+go run ./examples/advanced</span>
+-<span class="diffline add">+go run ./examples/client</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Also see sample templates under `samples/go`.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## WASM Build (Go)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm</span>
+-<span class="diffline add">+cp &quot;$(go env GOROOT)/lib/wasm/wasm_exec.js&quot; wasm/wasm_exec.js</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Stateless Playground Render Server (Go)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+A stateless memory-render API is available under `go/server`.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./server</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Default endpoint:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `POST /api/playground/render`</span>
+-<span class="diffline add">+- `GET /healthz`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+See `go/server/README.md` for request/response format.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Docs</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Docs source is in `docs/` and is intended for GitHub Pages.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Architecture docs:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `SSR.md` (server-side rendering behavior)</span>
+-<span class="diffline add">+- `CLIENT_RENDERING.md` (client-side behavior and roadmap)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Key pages:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `docs/index.html` (main docs)</span>
+-<span class="diffline add">+- `docs/templating.html` (templating reference)</span>
+-<span class="diffline add">+- `docs/playground.html` (mini editor + preview)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Local App Builder (Live Reload + Playground)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+A local builder is available in `app/` to edit template files, add files, and preview output in one page with file watching.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Run:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+pnpm app</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Open:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `http://localhost:5177`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Notes:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `app/views` is the file workspace.</span>
+-<span class="diffline add">+- Saving from the UI writes to `app/views`.</span>
+-<span class="diffline add">+- File changes in `app/views` trigger live refresh.</span>
+-<span class="diffline add">+- Rendering uses the Go playground server API (started automatically by `app/server.mjs`).</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Tests</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### Go</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+cd go</span>
+-<span class="diffline add">+go test ./...</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Status</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+This repo is under active development. Some advanced parity edge cases and async behavior are still being iterated.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Contributing</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Open an issue or PR on GitHub.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## License</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- App/repo: BSD-2-Clause (`LICENSE`)</span>
+-<span class="diffline add">+- VS Code extension: BSD-2-Clause (`vscode-nunchucks/LICENSE`)</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_darwin_arm64-nunchucks" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks</span>
+-<span class="diffline">new file mode 100755</span>
+-<span class="diffline hdr">index 0000000..fcb5a82</span>
+-<span class="diffline">Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks differ</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-tar-gz" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz b/dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..b015d74</span>
+-<span class="diffline">Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz differ</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-LICENSE" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..8f89e4d</span>
+-<span class="diffline hdr">--- /dev/null</span>
+-<span class="diffline hdr">+++ b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE</span>
+-<span class="diffline hunk">@@ -0,0 +1,26 @@</span>
+-<span class="diffline add">+Copyright (c) 2025-2027, Samuel Bines</span>
+-<span class="diffline add">+All rights reserved.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Redistribution and use in source and binary forms, with or without</span>
+-<span class="diffline add">+modification, are permitted provided that the following conditions are</span>
+-<span class="diffline add">+met:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+    Redistributions of source code must retain the above copyright</span>
+-<span class="diffline add">+    notice, this list of conditions and the following disclaimer.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+    Redistributions in binary form must reproduce the above copyright</span>
+-<span class="diffline add">+    notice, this list of conditions and the following disclaimer in</span>
+-<span class="diffline add">+    the documentation and/or other materials provided with the</span>
+-<span class="diffline add">+    distribution.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</span>
+-<span class="diffline add">+&quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</span>
+-<span class="diffline add">+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</span>
+-<span class="diffline add">+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</span>
+-<span class="diffline add">+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+-<span class="diffline add">+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</span>
+-<span class="diffline add">+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+-<span class="diffline add">+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</span>
+-<span class="diffline add">+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+-<span class="diffline add">+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+-<span class="diffline add">+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+-<span class="diffline">\ No newline at end of file</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-README-md" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..2499516</span>
+-<span class="diffline hdr">--- /dev/null</span>
+-<span class="diffline hdr">+++ b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md</span>
+-<span class="diffline hunk">@@ -0,0 +1,192 @@</span>
+-<span class="diffline add">+# Nunchucks</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- JavaScript/TypeScript package backed by Go WASM (`@samuelbines/nunchucks`)</span>
+-<span class="diffline add">+- Go runtime + CLI</span>
+-<span class="diffline add">+- WASM target from Go</span>
+-<span class="diffline add">+- Docs site in `docs/` (GitHub Pages)</span>
+-<span class="diffline add">+- Playground editor demo with live preview</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Repository: `https://github.com/SamuelDBines/nunchucks`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Current Focus</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+This project is actively evolving toward strong syntax parity plus a multi-language workflow.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Installation</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### JS/TS package (Go WASM runtime)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+npm install @samuelbines/nunchucks</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```ts</span>
+-<span class="diffline add">+import { loadNunchucksWasm } from &quot;@samuelbines/nunchucks&quot;;</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+const nc = await loadNunchucksWasm({</span>
+-<span class="diffline add">+  wasmURL: &quot;/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm&quot;,</span>
+-<span class="diffline add">+  goURL: &quot;/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js&quot;,</span>
+-<span class="diffline add">+});</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+const html = nc.renderFromMap({</span>
+-<span class="diffline add">+  template: &quot;index.njk&quot;,</span>
+-<span class="diffline add">+  files: { &quot;index.njk&quot;: &quot;Hello {{ name }}&quot; },</span>
+-<span class="diffline add">+  context: { name: &quot;world&quot; },</span>
+-<span class="diffline add">+});</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### CLI</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Install the native CLI from GitHub Releases:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+macOS and Linux:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh</span>
+-<span class="diffline add">+nunchucks version</span>
+-<span class="diffline add">+nunchucks help</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Windows PowerShell:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```powershell</span>
+-<span class="diffline add">+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex</span>
+-<span class="diffline add">+nunchucks.exe version</span>
+-<span class="diffline add">+nunchucks.exe help</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Go users can also install from source:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.</span>
+-<span class="diffline add">+The install scripts pick a writable bin directory and print PATH instructions when needed.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### Go usage</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+cd go</span>
+-<span class="diffline add">+go test ./...</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Go CLI</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/` or from an installed release binary:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./cmd/nunchucks help</span>
+-<span class="diffline add">+go run ./cmd/nunchucks help render</span>
+-<span class="diffline add">+go run ./cmd/nunchucks version</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+go run ./cmd/nunchucks render \</span>
+-<span class="diffline add">+  -views ./views \</span>
+-<span class="diffline add">+  -template index.njk \</span>
+-<span class="diffline add">+  -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+go run ./cmd/nunchucks precompile \</span>
+-<span class="diffline add">+  -views ./views \</span>
+-<span class="diffline add">+  -out ./public \</span>
+-<span class="diffline add">+  -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Go Examples</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./examples/basic</span>
+-<span class="diffline add">+go run ./examples/advanced</span>
+-<span class="diffline add">+go run ./examples/client</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Also see sample templates under `samples/go`.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## WASM Build (Go)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm</span>
+-<span class="diffline add">+cp &quot;$(go env GOROOT)/lib/wasm/wasm_exec.js&quot; wasm/wasm_exec.js</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Stateless Playground Render Server (Go)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+A stateless memory-render API is available under `go/server`.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./server</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Default endpoint:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `POST /api/playground/render`</span>
+-<span class="diffline add">+- `GET /healthz`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+See `go/server/README.md` for request/response format.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Docs</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Docs source is in `docs/` and is intended for GitHub Pages.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Architecture docs:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `SSR.md` (server-side rendering behavior)</span>
+-<span class="diffline add">+- `CLIENT_RENDERING.md` (client-side behavior and roadmap)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Key pages:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `docs/index.html` (main docs)</span>
+-<span class="diffline add">+- `docs/templating.html` (templating reference)</span>
+-<span class="diffline add">+- `docs/playground.html` (mini editor + preview)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Local App Builder (Live Reload + Playground)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+A local builder is available in `app/` to edit template files, add files, and preview output in one page with file watching.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Run:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+pnpm app</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Open:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `http://localhost:5177`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Notes:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `app/views` is the file workspace.</span>
+-<span class="diffline add">+- Saving from the UI writes to `app/views`.</span>
+-<span class="diffline add">+- File changes in `app/views` trigger live refresh.</span>
+-<span class="diffline add">+- Rendering uses the Go playground server API (started automatically by `app/server.mjs`).</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Tests</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### Go</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+cd go</span>
+-<span class="diffline add">+go test ./...</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Status</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+This repo is under active development. Some advanced parity edge cases and async behavior are still being iterated.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Contributing</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Open an issue or PR on GitHub.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## License</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- App/repo: BSD-2-Clause (`LICENSE`)</span>
+-<span class="diffline add">+- VS Code extension: BSD-2-Clause (`vscode-nunchucks/LICENSE`)</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_linux_arm64-nunchucks" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks</span>
+-<span class="diffline">new file mode 100755</span>
+-<span class="diffline hdr">index 0000000..47f4712</span>
+-<span class="diffline">Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks differ</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-zip" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip b/dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..b2e03d9</span>
+-<span class="diffline">Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip differ</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-LICENSE" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..8f89e4d</span>
+-<span class="diffline hdr">--- /dev/null</span>
+-<span class="diffline hdr">+++ b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE</span>
+-<span class="diffline hunk">@@ -0,0 +1,26 @@</span>
+-<span class="diffline add">+Copyright (c) 2025-2027, Samuel Bines</span>
+-<span class="diffline add">+All rights reserved.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Redistribution and use in source and binary forms, with or without</span>
+-<span class="diffline add">+modification, are permitted provided that the following conditions are</span>
+-<span class="diffline add">+met:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+    Redistributions of source code must retain the above copyright</span>
+-<span class="diffline add">+    notice, this list of conditions and the following disclaimer.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+    Redistributions in binary form must reproduce the above copyright</span>
+-<span class="diffline add">+    notice, this list of conditions and the following disclaimer in</span>
+-<span class="diffline add">+    the documentation and/or other materials provided with the</span>
+-<span class="diffline add">+    distribution.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</span>
+-<span class="diffline add">+&quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</span>
+-<span class="diffline add">+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</span>
+-<span class="diffline add">+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</span>
+-<span class="diffline add">+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+-<span class="diffline add">+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</span>
+-<span class="diffline add">+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+-<span class="diffline add">+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</span>
+-<span class="diffline add">+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+-<span class="diffline add">+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+-<span class="diffline add">+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+-<span class="diffline">\ No newline at end of file</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-README-md" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md</span>
+-<span class="diffline">new file mode 100644</span>
+-<span class="diffline hdr">index 0000000..2499516</span>
+-<span class="diffline hdr">--- /dev/null</span>
+-<span class="diffline hdr">+++ b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md</span>
+-<span class="diffline hunk">@@ -0,0 +1,192 @@</span>
+-<span class="diffline add">+# Nunchucks</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- JavaScript/TypeScript package backed by Go WASM (`@samuelbines/nunchucks`)</span>
+-<span class="diffline add">+- Go runtime + CLI</span>
+-<span class="diffline add">+- WASM target from Go</span>
+-<span class="diffline add">+- Docs site in `docs/` (GitHub Pages)</span>
+-<span class="diffline add">+- Playground editor demo with live preview</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Repository: `https://github.com/SamuelDBines/nunchucks`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Current Focus</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+This project is actively evolving toward strong syntax parity plus a multi-language workflow.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Installation</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### JS/TS package (Go WASM runtime)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+npm install @samuelbines/nunchucks</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```ts</span>
+-<span class="diffline add">+import { loadNunchucksWasm } from &quot;@samuelbines/nunchucks&quot;;</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+const nc = await loadNunchucksWasm({</span>
+-<span class="diffline add">+  wasmURL: &quot;/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm&quot;,</span>
+-<span class="diffline add">+  goURL: &quot;/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js&quot;,</span>
+-<span class="diffline add">+});</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+const html = nc.renderFromMap({</span>
+-<span class="diffline add">+  template: &quot;index.njk&quot;,</span>
+-<span class="diffline add">+  files: { &quot;index.njk&quot;: &quot;Hello {{ name }}&quot; },</span>
+-<span class="diffline add">+  context: { name: &quot;world&quot; },</span>
+-<span class="diffline add">+});</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### CLI</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Install the native CLI from GitHub Releases:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+macOS and Linux:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh</span>
+-<span class="diffline add">+nunchucks version</span>
+-<span class="diffline add">+nunchucks help</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Windows PowerShell:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```powershell</span>
+-<span class="diffline add">+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex</span>
+-<span class="diffline add">+nunchucks.exe version</span>
+-<span class="diffline add">+nunchucks.exe help</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Go users can also install from source:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.</span>
+-<span class="diffline add">+The install scripts pick a writable bin directory and print PATH instructions when needed.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### Go usage</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+cd go</span>
+-<span class="diffline add">+go test ./...</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Go CLI</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/` or from an installed release binary:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./cmd/nunchucks help</span>
+-<span class="diffline add">+go run ./cmd/nunchucks help render</span>
+-<span class="diffline add">+go run ./cmd/nunchucks version</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+go run ./cmd/nunchucks render \</span>
+-<span class="diffline add">+  -views ./views \</span>
+-<span class="diffline add">+  -template index.njk \</span>
+-<span class="diffline add">+  -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+go run ./cmd/nunchucks precompile \</span>
+-<span class="diffline add">+  -views ./views \</span>
+-<span class="diffline add">+  -out ./public \</span>
+-<span class="diffline add">+  -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Go Examples</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./examples/basic</span>
+-<span class="diffline add">+go run ./examples/advanced</span>
+-<span class="diffline add">+go run ./examples/client</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Also see sample templates under `samples/go`.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## WASM Build (Go)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm</span>
+-<span class="diffline add">+cp &quot;$(go env GOROOT)/lib/wasm/wasm_exec.js&quot; wasm/wasm_exec.js</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Stateless Playground Render Server (Go)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+A stateless memory-render API is available under `go/server`.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+From `go/`:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+go run ./server</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Default endpoint:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `POST /api/playground/render`</span>
+-<span class="diffline add">+- `GET /healthz`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+See `go/server/README.md` for request/response format.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Docs</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Docs source is in `docs/` and is intended for GitHub Pages.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Architecture docs:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `SSR.md` (server-side rendering behavior)</span>
+-<span class="diffline add">+- `CLIENT_RENDERING.md` (client-side behavior and roadmap)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Key pages:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `docs/index.html` (main docs)</span>
+-<span class="diffline add">+- `docs/templating.html` (templating reference)</span>
+-<span class="diffline add">+- `docs/playground.html` (mini editor + preview)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Local App Builder (Live Reload + Playground)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+A local builder is available in `app/` to edit template files, add files, and preview output in one page with file watching.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Run:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+pnpm app</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Open:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `http://localhost:5177`</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Notes:</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- `app/views` is the file workspace.</span>
+-<span class="diffline add">+- Saving from the UI writes to `app/views`.</span>
+-<span class="diffline add">+- File changes in `app/views` trigger live refresh.</span>
+-<span class="diffline add">+- Rendering uses the Go playground server API (started automatically by `app/server.mjs`).</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Tests</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+### Go</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+```bash</span>
+-<span class="diffline add">+cd go</span>
+-<span class="diffline add">+go test ./...</span>
+-<span class="diffline add">+```</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Status</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+This repo is under active development. Some advanced parity edge cases and async behavior are still being iterated.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## Contributing</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+Open an issue or PR on GitHub.</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+## License</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+- App/repo: BSD-2-Clause (`LICENSE`)</span>
+-<span class="diffline add">+- VS Code extension: BSD-2-Clause (`vscode-nunchucks/LICENSE`)</span>
+-</pre>
+-        <div id="file-dist-release-fix-nunchucks_v0-0-8_windows_arm64-nunchucks-exe" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe</span>
+-<span class="diffline">new file mode 100755</span>
+-<span class="diffline hdr">index 0000000..5b305d8</span>
+-<span class="diffline">Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe differ</span>
+-</pre>
+-        <div id="file-docs-index-html" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">docs/index.html</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/docs/index.html b/docs/index.html</span>
+-<span class="diffline hdr">index e265124..35ca1c0 100644</span>
+-<span class="diffline hdr">--- a/docs/index.html</span>
+-<span class="diffline hdr">+++ b/docs/index.html</span>
+-<span class="diffline hunk">@@ -153,6 +153,7 @@ go run ./cmd/nunchucks help render</span>
+-<span class="diffline"> go run ./cmd/nunchucks version</span>
+-<span class="diffline"> go run ./cmd/nunchucks render -views ./views -template index.njk -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline"> go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{&quot;title&quot;:&quot;Hello&quot;}'</span>
+-<span class="diffline add">+go run ./cmd/nunchucks precompile -views ./views -out ./public -watch</span>
+-<span class="diffline"> </span>
+-<span class="diffline"> # WASM build</span>
+-<span class="diffline"> cd go</span>
+-</pre>
+-        <div id="file-go-cmd-nunchucks-main-go" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">go/cmd/nunchucks/main.go</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/go/cmd/nunchucks/main.go b/go/cmd/nunchucks/main.go</span>
+-<span class="diffline hdr">index 860e66c..8234b45 100644</span>
+-<span class="diffline hdr">--- a/go/cmd/nunchucks/main.go</span>
+-<span class="diffline hdr">+++ b/go/cmd/nunchucks/main.go</span>
+-<span class="diffline hunk">@@ -5,7 +5,12 @@ import (</span>
+-<span class="diffline"> 	&quot;flag&quot;</span>
+-<span class="diffline"> 	&quot;fmt&quot;</span>
+-<span class="diffline"> 	&quot;os&quot;</span>
+-<span class="diffline add">+	&quot;os/signal&quot;</span>
+-<span class="diffline"> 	&quot;path/filepath&quot;</span>
+-<span class="diffline add">+	&quot;sort&quot;</span>
+-<span class="diffline add">+	&quot;strings&quot;</span>
+-<span class="diffline add">+	&quot;syscall&quot;</span>
+-<span class="diffline add">+	&quot;time&quot;</span>
+-<span class="diffline"> </span>
+-<span class="diffline"> 	nunchucks &quot;github.com/SamuelDBines/nunjucks/go&quot;</span>
+-<span class="diffline"> )</span>
+-<span class="diffline hunk">@@ -44,6 +49,7 @@ func printRootUsage() {</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;Examples:&quot;)</span>
+-<span class="diffline"> 	fmt.Fprintf(os.Stderr, &quot;  %s render -views ./views -template index.njk -data '{\&quot;title\&quot;:\&quot;Hello\&quot;}'\n&quot;, name)</span>
+-<span class="diffline"> 	fmt.Fprintf(os.Stderr, &quot;  %s precompile -views ./views -out ./public\n&quot;, name)</span>
+-<span class="diffline add">+	fmt.Fprintf(os.Stderr, &quot;  %s precompile -views ./views -out ./public --watch\n&quot;, name)</span>
+-<span class="diffline"> 	fmt.Fprintf(os.Stderr, &quot;  %s help render\n&quot;, name)</span>
+-<span class="diffline"> 	fmt.Fprintf(os.Stderr, &quot;  %s version\n&quot;, name)</span>
+-<span class="diffline"> }</span>
+-<span class="diffline hunk">@@ -73,6 +79,8 @@ func printPrecompileUsage() {</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;Options:&quot;)</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;  -views string        templates directory (default \&quot;views\&quot;)&quot;)</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;  -out string          output directory (default \&quot;public\&quot;)&quot;)</span>
+-<span class="diffline add">+	fmt.Fprintln(os.Stderr, &quot;  -watch               rerender when template files change&quot;)</span>
+-<span class="diffline add">+	fmt.Fprintln(os.Stderr, &quot;  -interval duration   polling interval for watch mode (default 1s)&quot;)</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;  -data string         JSON context object (default \&quot;{}\&quot;)&quot;)</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;  -global value        global template, repeatable&quot;)</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;  -global-head value   global head template, repeatable&quot;)</span>
+-<span class="diffline hunk">@@ -80,6 +88,7 @@ func printPrecompileUsage() {</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr)</span>
+-<span class="diffline"> 	fmt.Fprintln(os.Stderr, &quot;Example:&quot;)</span>
+-<span class="diffline"> 	fmt.Fprintf(os.Stderr, &quot;  %s precompile -views ./views -out ./public -data '{\&quot;title\&quot;:\&quot;Hello\&quot;}'\n&quot;, name)</span>
+-<span class="diffline add">+	fmt.Fprintf(os.Stderr, &quot;  %s precompile -views ./views -out ./public --watch -interval 750ms\n&quot;, name)</span>
+-<span class="diffline"> }</span>
+-<span class="diffline"> </span>
+-<span class="diffline"> func printVersionUsage() {</span>
+-<span class="diffline hunk">@@ -120,6 +129,132 @@ func parseData(raw string) (map[string]any, error) {</span>
+-<span class="diffline"> 	return out, nil</span>
+-<span class="diffline"> }</span>
+-<span class="diffline"> </span>
+-<span class="diffline add">+type fileState struct {</span>
+-<span class="diffline add">+	modTime time.Time</span>
+-<span class="diffline add">+	size    int64</span>
+-<span class="diffline add">+}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+func scanTemplateState(views string) (map[string]fileState, error) {</span>
+-<span class="diffline add">+	state := map[string]fileState{}</span>
+-<span class="diffline add">+	err := filepath.WalkDir(views, func(path string, d os.DirEntry, err error) error {</span>
+-<span class="diffline add">+		if err != nil {</span>
+-<span class="diffline add">+			return err</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+		if d.IsDir() {</span>
+-<span class="diffline add">+			return nil</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+		if !nunchucks.IsTemplateFile(d.Name()) {</span>
+-<span class="diffline add">+			return nil</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+		info, err := d.Info()</span>
+-<span class="diffline add">+		if err != nil {</span>
+-<span class="diffline add">+			return err</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+		rel, err := filepath.Rel(views, path)</span>
+-<span class="diffline add">+		if err != nil {</span>
+-<span class="diffline add">+			return err</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+		state[filepath.ToSlash(rel)] = fileState{</span>
+-<span class="diffline add">+			modTime: info.ModTime().UTC(),</span>
+-<span class="diffline add">+			size:    info.Size(),</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+		return nil</span>
+-<span class="diffline add">+	})</span>
+-<span class="diffline add">+	if err != nil {</span>
+-<span class="diffline add">+		return nil, err</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	return state, nil</span>
+-<span class="diffline add">+}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+func diffTemplateState(previous, current map[string]fileState) []string {</span>
+-<span class="diffline add">+	changed := make([]string, 0)</span>
+-<span class="diffline add">+	seen := make(map[string]struct{}, len(previous)+len(current))</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	for name, prev := range previous {</span>
+-<span class="diffline add">+		seen[name] = struct{}{}</span>
+-<span class="diffline add">+		next, ok := current[name]</span>
+-<span class="diffline add">+		if !ok || !prev.modTime.Equal(next.modTime) || prev.size != next.size {</span>
+-<span class="diffline add">+			changed = append(changed, name)</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	for name := range current {</span>
+-<span class="diffline add">+		if _, ok := seen[name]; !ok {</span>
+-<span class="diffline add">+			changed = append(changed, name)</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	sort.Strings(changed)</span>
+-<span class="diffline add">+	return changed</span>
+-<span class="diffline add">+}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+func removeDeletedOutputs(outDir string, previous, current map[string]fileState) error {</span>
+-<span class="diffline add">+	for name := range previous {</span>
+-<span class="diffline add">+		if _, ok := current[name]; ok {</span>
+-<span class="diffline add">+			continue</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+		if err := os.Remove(filepath.Join(outDir, filepath.FromSlash(name))); err != nil &amp;&amp; !os.IsNotExist(err) {</span>
+-<span class="diffline add">+			return err</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	return nil</span>
+-<span class="diffline add">+}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+func precompileOnce(env *nunchucks.Env, outDir string, ctx map[string]any) error {</span>
+-<span class="diffline add">+	return env.PrecompileDir(outDir, ctx)</span>
+-<span class="diffline add">+}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]any, interval time.Duration) error {</span>
+-<span class="diffline add">+	if interval &lt;= 0 {</span>
+-<span class="diffline add">+		return fmt.Errorf(&quot;-interval must be greater than 0&quot;)</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	if err := precompileOnce(env, outDir, ctx); err != nil {</span>
+-<span class="diffline add">+		return err</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	current, err := scanTemplateState(views)</span>
+-<span class="diffline add">+	if err != nil {</span>
+-<span class="diffline add">+		return err</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	fmt.Fprintf(os.Stderr, &quot;watching %s and writing to %s every %s\n&quot;, views, outDir, interval)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	ticker := time.NewTicker(interval)</span>
+-<span class="diffline add">+	defer ticker.Stop()</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	signals := make(chan os.Signal, 1)</span>
+-<span class="diffline add">+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)</span>
+-<span class="diffline add">+	defer signal.Stop(signals)</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	for {</span>
+-<span class="diffline add">+		select {</span>
+-<span class="diffline add">+		case &lt;-signals:</span>
+-<span class="diffline add">+			fmt.Fprintln(os.Stderr, &quot;watch stopped&quot;)</span>
+-<span class="diffline add">+			return nil</span>
+-<span class="diffline add">+		case &lt;-ticker.C:</span>
+-<span class="diffline add">+			next, err := scanTemplateState(views)</span>
+-<span class="diffline add">+			if err != nil {</span>
+-<span class="diffline add">+				return err</span>
+-<span class="diffline add">+			}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+			changed := diffTemplateState(current, next)</span>
+-<span class="diffline add">+			if len(changed) == 0 {</span>
+-<span class="diffline add">+				continue</span>
+-<span class="diffline add">+			}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+			if err := precompileOnce(env, outDir, ctx); err != nil {</span>
+-<span class="diffline add">+				return err</span>
+-<span class="diffline add">+			}</span>
+-<span class="diffline add">+			if err := removeDeletedOutputs(outDir, current, next); err != nil {</span>
+-<span class="diffline add">+				return err</span>
+-<span class="diffline add">+			}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+			fmt.Fprintf(os.Stderr, &quot;recompiled %d changed file(s): %s\n&quot;, len(changed), strings.Join(changed, &quot;, &quot;))</span>
+-<span class="diffline add">+			current = next</span>
+-<span class="diffline add">+		}</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline"> func runRender(args []string) error {</span>
+-<span class="diffline"> 	fs := flag.NewFlagSet(&quot;render&quot;, flag.ContinueOnError)</span>
+-<span class="diffline"> 	fs.SetOutput(os.Stderr)</span>
+-<span class="diffline hunk">@@ -165,6 +300,8 @@ func runPrecompile(args []string) error {</span>
+-<span class="diffline"> </span>
+-<span class="diffline"> 	views := fs.String(&quot;views&quot;, &quot;views&quot;, &quot;templates directory&quot;)</span>
+-<span class="diffline"> 	outDir := fs.String(&quot;out&quot;, &quot;public&quot;, &quot;output directory&quot;)</span>
+-<span class="diffline add">+	watch := fs.Bool(&quot;watch&quot;, false, &quot;rerender when template files change&quot;)</span>
+-<span class="diffline add">+	interval := fs.Duration(&quot;interval&quot;, time.Second, &quot;polling interval for watch mode&quot;)</span>
+-<span class="diffline"> 	data := fs.String(&quot;data&quot;, &quot;{}&quot;, &quot;JSON context object&quot;)</span>
+-<span class="diffline"> 	var globalTemplates stringListFlag</span>
+-<span class="diffline"> 	var globalHeadTemplates stringListFlag</span>
+-<span class="diffline hunk">@@ -185,6 +322,9 @@ func runPrecompile(args []string) error {</span>
+-<span class="diffline"> 		GlobalHeadTemplates: []string(globalHeadTemplates),</span>
+-<span class="diffline"> 		GlobalFootTemplates: []string(globalFootTemplates),</span>
+-<span class="diffline"> 	})</span>
+-<span class="diffline add">+	if *watch {</span>
+-<span class="diffline add">+		return watchPrecompile(env, *views, *outDir, ctx, *interval)</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline"> 	return env.PrecompileDir(*outDir, ctx)</span>
+-<span class="diffline"> }</span>
+-<span class="diffline"> </span>
+-</pre>
+-        <div id="file-go-cmd-nunchucks-main_test-go" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">go/cmd/nunchucks/main_test.go</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/go/cmd/nunchucks/main_test.go b/go/cmd/nunchucks/main_test.go</span>
+-<span class="diffline hdr">index f09e418..7c88abf 100644</span>
+-<span class="diffline hdr">--- a/go/cmd/nunchucks/main_test.go</span>
+-<span class="diffline hdr">+++ b/go/cmd/nunchucks/main_test.go</span>
+-<span class="diffline hunk">@@ -3,8 +3,11 @@ package main</span>
+-<span class="diffline"> import (</span>
+-<span class="diffline"> 	&quot;bytes&quot;</span>
+-<span class="diffline"> 	&quot;os&quot;</span>
+-<span class="diffline add">+	&quot;path/filepath&quot;</span>
+-<span class="diffline add">+	&quot;reflect&quot;</span>
+-<span class="diffline"> 	&quot;strings&quot;</span>
+-<span class="diffline"> 	&quot;testing&quot;</span>
+-<span class="diffline add">+	&quot;time&quot;</span>
+-<span class="diffline"> )</span>
+-<span class="diffline"> </span>
+-<span class="diffline"> func captureStderr(t *testing.T, fn func()) string {</span>
+-<span class="diffline hunk">@@ -78,3 +81,44 @@ func TestParseDataInvalidJSON(t *testing.T) {</span>
+-<span class="diffline"> 		t.Fatal(&quot;expected invalid JSON error&quot;)</span>
+-<span class="diffline"> 	}</span>
+-<span class="diffline"> }</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+func TestDiffTemplateStateDetectsAddsChangesAndDeletes(t *testing.T) {</span>
+-<span class="diffline add">+	now := time.Unix(100, 0)</span>
+-<span class="diffline add">+	before := map[string]fileState{</span>
+-<span class="diffline add">+		&quot;changed.njk&quot;: {modTime: now, size: 10},</span>
+-<span class="diffline add">+		&quot;removed.njk&quot;: {modTime: now, size: 20},</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	after := map[string]fileState{</span>
+-<span class="diffline add">+		&quot;added.njk&quot;:   {modTime: now, size: 30},</span>
+-<span class="diffline add">+		&quot;changed.njk&quot;: {modTime: now.Add(time.Second), size: 10},</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	got := diffTemplateState(before, after)</span>
+-<span class="diffline add">+	want := []string{&quot;added.njk&quot;, &quot;changed.njk&quot;, &quot;removed.njk&quot;}</span>
+-<span class="diffline add">+	if !reflect.DeepEqual(got, want) {</span>
+-<span class="diffline add">+		t.Fatalf(&quot;diffTemplateState() = %v, want %v&quot;, got, want)</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+func TestRemoveDeletedOutputsRemovesMissingTemplates(t *testing.T) {</span>
+-<span class="diffline add">+	dir := t.TempDir()</span>
+-<span class="diffline add">+	outFile := filepath.Join(dir, &quot;pages&quot;, &quot;index.njk&quot;)</span>
+-<span class="diffline add">+	if err := os.MkdirAll(filepath.Dir(outFile), 0o755); err != nil {</span>
+-<span class="diffline add">+		t.Fatalf(&quot;mkdir: %v&quot;, err)</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	if err := os.WriteFile(outFile, []byte(&quot;stale&quot;), 0o644); err != nil {</span>
+-<span class="diffline add">+		t.Fatalf(&quot;write stale file: %v&quot;, err)</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	previous := map[string]fileState{</span>
+-<span class="diffline add">+		&quot;pages/index.njk&quot;: {modTime: time.Unix(100, 0), size: 5},</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	current := map[string]fileState{}</span>
+-<span class="diffline add">+</span>
+-<span class="diffline add">+	if err := removeDeletedOutputs(dir, previous, current); err != nil {</span>
+-<span class="diffline add">+		t.Fatalf(&quot;removeDeletedOutputs(): %v&quot;, err)</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+	if _, err := os.Stat(outFile); !os.IsNotExist(err) {</span>
+-<span class="diffline add">+		t.Fatalf(&quot;expected %s to be removed, stat err = %v&quot;, outFile, err)</span>
+-<span class="diffline add">+	}</span>
+-<span class="diffline add">+}</span>
+-</pre>
+-        <div id="file-go-precompile-go" class="filehdr" style="margin-top:18px;">
+-          <h2 class="mono">go/precompile.go</h2>
+-          <a class="mono muted" href="#top" style="font-size:12px;">back to top</a>
+-        </div>
+-        <pre class="mono"><span class="diffline hdr">diff --git a/go/precompile.go b/go/precompile.go</span>
+-<span class="diffline hdr">index ff37f53..a56a7a0 100644</span>
+-<span class="diffline hdr">--- a/go/precompile.go</span>
+-<span class="diffline hdr">+++ b/go/precompile.go</span>
+-<span class="diffline hunk">@@ -7,7 +7,7 @@ import (</span>
+-<span class="diffline"> 	&quot;strings&quot;</span>
+-<span class="diffline"> )</span>
+-<span class="diffline"> </span>
+-<span class="diffline del">-func isTemplateFile(name string) bool {</span>
+-<span class="diffline add">+func IsTemplateFile(name string) bool {</span>
+-<span class="diffline"> 	ext := strings.ToLower(filepath.Ext(name))</span>
+-<span class="diffline"> 	switch ext {</span>
+-<span class="diffline"> 	case &quot;.njk&quot;, &quot;.html&quot;, &quot;.txt&quot;, &quot;.yaml&quot;, &quot;.yml&quot;, &quot;.json&quot;, &quot;.xml&quot;, &quot;.css&quot;, &quot;.js&quot;:</span>
+-<span class="diffline hunk">@@ -37,7 +37,7 @@ func (e *Env) PrecompileDir(outDir string, ctx map[string]any) error {</span>
+-<span class="diffline"> 		if d.IsDir() {</span>
+-<span class="diffline"> 			return nil</span>
+-<span class="diffline"> 		}</span>
+-<span class="diffline del">-		if !isTemplateFile(d.Name()) {</span>
+-<span class="diffline add">+		if !IsTemplateFile(d.Name()) {</span>
+-<span class="diffline"> 			return nil</span>
+-<span class="diffline"> 		}</span>
+-</pre>
+-      </div>
+-    </div>
+-  </div>
+-</body>
+-</html>
+diff --git a/.kitsune/tmp/20260305T192828Z-3gh674/diff.patch b/.kitsune/tmp/20260305T192828Z-3gh674/diff.patch
+deleted file mode 100644
+index 62e8b74..0000000
+--- a/.kitsune/tmp/20260305T192828Z-3gh674/diff.patch
++++ /dev/null
+@@ -1,1021 +0,0 @@
+-diff --git a/README.md b/README.md
+-index 2499516..c81e278 100644
+---- a/README.md
+-+++ b/README.md
+-@@ -93,6 +93,11 @@ go run ./cmd/nunchucks precompile \
+-   -views ./views \
+-   -out ./public \
+-   -data '{"title":"Hello"}'
+-+
+-+go run ./cmd/nunchucks precompile \
+-+  -views ./views \
+-+  -out ./public \
+-+  -watch
+- ```
+- 
+- ## Go Examples
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz
+-new file mode 100644
+-index 0000000..bd98f12
+-Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64.tar.gz differ
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE
+-new file mode 100644
+-index 0000000..8f89e4d
+---- /dev/null
+-+++ b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/LICENSE
+-@@ -0,0 +1,26 @@
+-+Copyright (c) 2025-2027, Samuel Bines
+-+All rights reserved.
+-+
+-+Redistribution and use in source and binary forms, with or without
+-+modification, are permitted provided that the following conditions are
+-+met:
+-+
+-+    Redistributions of source code must retain the above copyright
+-+    notice, this list of conditions and the following disclaimer.
+-+
+-+    Redistributions in binary form must reproduce the above copyright
+-+    notice, this list of conditions and the following disclaimer in
+-+    the documentation and/or other materials provided with the
+-+    distribution.
+-+
+-+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+-+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+-+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+-+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+-+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+-+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+-+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+-+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+-+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+-+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+-+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-\ No newline at end of file
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md
+-new file mode 100644
+-index 0000000..2499516
+---- /dev/null
+-+++ b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/README.md
+-@@ -0,0 +1,192 @@
+-+# Nunchucks
+-+
+-+Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:
+-+
+-+- JavaScript/TypeScript package backed by Go WASM (`@samuelbines/nunchucks`)
+-+- Go runtime + CLI
+-+- WASM target from Go
+-+- Docs site in `docs/` (GitHub Pages)
+-+- Playground editor demo with live preview
+-+
+-+Repository: `https://github.com/SamuelDBines/nunchucks`
+-+
+-+## Current Focus
+-+
+-+This project is actively evolving toward strong syntax parity plus a multi-language workflow.
+-+
+-+Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.
+-+
+-+## Installation
+-+
+-+### JS/TS package (Go WASM runtime)
+-+
+-+```bash
+-+npm install @samuelbines/nunchucks
+-+```
+-+
+-+```ts
+-+import { loadNunchucksWasm } from "@samuelbines/nunchucks";
+-+
+-+const nc = await loadNunchucksWasm({
+-+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+-+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
+-+});
+-+
+-+const html = nc.renderFromMap({
+-+  template: "index.njk",
+-+  files: { "index.njk": "Hello {{ name }}" },
+-+  context: { name: "world" },
+-+});
+-+```
+-+
+-+### CLI
+-+
+-+Install the native CLI from GitHub Releases:
+-+
+-+macOS and Linux:
+-+
+-+```bash
+-+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh
+-+nunchucks version
+-+nunchucks help
+-+```
+-+
+-+Windows PowerShell:
+-+
+-+```powershell
+-+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex
+-+nunchucks.exe version
+-+nunchucks.exe help
+-+```
+-+
+-+Go users can also install from source:
+-+
+-+```bash
+-+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest
+-+```
+-+
+-+Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.
+-+The install scripts pick a writable bin directory and print PATH instructions when needed.
+-+
+-+### Go usage
+-+
+-+```bash
+-+cd go
+-+go test ./...
+-+```
+-+
+-+## Go CLI
+-+
+-+From `go/` or from an installed release binary:
+-+
+-+```bash
+-+go run ./cmd/nunchucks help
+-+go run ./cmd/nunchucks help render
+-+go run ./cmd/nunchucks version
+-+
+-+go run ./cmd/nunchucks render \
+-+  -views ./views \
+-+  -template index.njk \
+-+  -data '{"title":"Hello"}'
+-+
+-+go run ./cmd/nunchucks precompile \
+-+  -views ./views \
+-+  -out ./public \
+-+  -data '{"title":"Hello"}'
+-+```
+-+
+-+## Go Examples
+-+
+-+From `go/`:
+-+
+-+```bash
+-+go run ./examples/basic
+-+go run ./examples/advanced
+-+go run ./examples/client
+-+```
+-+
+-+Also see sample templates under `samples/go`.
+-+
+-+## WASM Build (Go)
+-+
+-+From `go/`:
+-+
+-+```bash
+-+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm
+-+cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js
+-+```
+-+
+-+## Stateless Playground Render Server (Go)
+-+
+-+A stateless memory-render API is available under `go/server`.
+-+
+-+From `go/`:
+-+
+-+```bash
+-+go run ./server
+-+```
+-+
+-+Default endpoint:
+-+
+-+- `POST /api/playground/render`
+-+- `GET /healthz`
+-+
+-+See `go/server/README.md` for request/response format.
+-+
+-+## Docs
+-+
+-+Docs source is in `docs/` and is intended for GitHub Pages.
+-+
+-+Architecture docs:
+-+
+-+- `SSR.md` (server-side rendering behavior)
+-+- `CLIENT_RENDERING.md` (client-side behavior and roadmap)
+-+
+-+Key pages:
+-+
+-+- `docs/index.html` (main docs)
+-+- `docs/templating.html` (templating reference)
+-+- `docs/playground.html` (mini editor + preview)
+-+
+-+## Local App Builder (Live Reload + Playground)
+-+
+-+A local builder is available in `app/` to edit template files, add files, and preview output in one page with file watching.
+-+
+-+Run:
+-+
+-+```bash
+-+pnpm app
+-+```
+-+
+-+Open:
+-+
+-+- `http://localhost:5177`
+-+
+-+Notes:
+-+
+-+- `app/views` is the file workspace.
+-+- Saving from the UI writes to `app/views`.
+-+- File changes in `app/views` trigger live refresh.
+-+- Rendering uses the Go playground server API (started automatically by `app/server.mjs`).
+-+
+-+## Tests
+-+
+-+### Go
+-+
+-+```bash
+-+cd go
+-+go test ./...
+-+```
+-+
+-+## Status
+-+
+-+This repo is under active development. Some advanced parity edge cases and async behavior are still being iterated.
+-+
+-+## Contributing
+-+
+-+Open an issue or PR on GitHub.
+-+
+-+## License
+-+
+-+- App/repo: BSD-2-Clause (`LICENSE`)
+-+- VS Code extension: BSD-2-Clause (`vscode-nunchucks/LICENSE`)
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks
+-new file mode 100755
+-index 0000000..fcb5a82
+-Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_darwin_arm64/nunchucks differ
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz b/dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz
+-new file mode 100644
+-index 0000000..b015d74
+-Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_linux_arm64.tar.gz differ
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE
+-new file mode 100644
+-index 0000000..8f89e4d
+---- /dev/null
+-+++ b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/LICENSE
+-@@ -0,0 +1,26 @@
+-+Copyright (c) 2025-2027, Samuel Bines
+-+All rights reserved.
+-+
+-+Redistribution and use in source and binary forms, with or without
+-+modification, are permitted provided that the following conditions are
+-+met:
+-+
+-+    Redistributions of source code must retain the above copyright
+-+    notice, this list of conditions and the following disclaimer.
+-+
+-+    Redistributions in binary form must reproduce the above copyright
+-+    notice, this list of conditions and the following disclaimer in
+-+    the documentation and/or other materials provided with the
+-+    distribution.
+-+
+-+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+-+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+-+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+-+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+-+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+-+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+-+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+-+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+-+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+-+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+-+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-\ No newline at end of file
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md
+-new file mode 100644
+-index 0000000..2499516
+---- /dev/null
+-+++ b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/README.md
+-@@ -0,0 +1,192 @@
+-+# Nunchucks
+-+
+-+Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:
+-+
+-+- JavaScript/TypeScript package backed by Go WASM (`@samuelbines/nunchucks`)
+-+- Go runtime + CLI
+-+- WASM target from Go
+-+- Docs site in `docs/` (GitHub Pages)
+-+- Playground editor demo with live preview
+-+
+-+Repository: `https://github.com/SamuelDBines/nunchucks`
+-+
+-+## Current Focus
+-+
+-+This project is actively evolving toward strong syntax parity plus a multi-language workflow.
+-+
+-+Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.
+-+
+-+## Installation
+-+
+-+### JS/TS package (Go WASM runtime)
+-+
+-+```bash
+-+npm install @samuelbines/nunchucks
+-+```
+-+
+-+```ts
+-+import { loadNunchucksWasm } from "@samuelbines/nunchucks";
+-+
+-+const nc = await loadNunchucksWasm({
+-+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+-+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
+-+});
+-+
+-+const html = nc.renderFromMap({
+-+  template: "index.njk",
+-+  files: { "index.njk": "Hello {{ name }}" },
+-+  context: { name: "world" },
+-+});
+-+```
+-+
+-+### CLI
+-+
+-+Install the native CLI from GitHub Releases:
+-+
+-+macOS and Linux:
+-+
+-+```bash
+-+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh
+-+nunchucks version
+-+nunchucks help
+-+```
+-+
+-+Windows PowerShell:
+-+
+-+```powershell
+-+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex
+-+nunchucks.exe version
+-+nunchucks.exe help
+-+```
+-+
+-+Go users can also install from source:
+-+
+-+```bash
+-+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest
+-+```
+-+
+-+Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.
+-+The install scripts pick a writable bin directory and print PATH instructions when needed.
+-+
+-+### Go usage
+-+
+-+```bash
+-+cd go
+-+go test ./...
+-+```
+-+
+-+## Go CLI
+-+
+-+From `go/` or from an installed release binary:
+-+
+-+```bash
+-+go run ./cmd/nunchucks help
+-+go run ./cmd/nunchucks help render
+-+go run ./cmd/nunchucks version
+-+
+-+go run ./cmd/nunchucks render \
+-+  -views ./views \
+-+  -template index.njk \
+-+  -data '{"title":"Hello"}'
+-+
+-+go run ./cmd/nunchucks precompile \
+-+  -views ./views \
+-+  -out ./public \
+-+  -data '{"title":"Hello"}'
+-+```
+-+
+-+## Go Examples
+-+
+-+From `go/`:
+-+
+-+```bash
+-+go run ./examples/basic
+-+go run ./examples/advanced
+-+go run ./examples/client
+-+```
+-+
+-+Also see sample templates under `samples/go`.
+-+
+-+## WASM Build (Go)
+-+
+-+From `go/`:
+-+
+-+```bash
+-+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm
+-+cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js
+-+```
+-+
+-+## Stateless Playground Render Server (Go)
+-+
+-+A stateless memory-render API is available under `go/server`.
+-+
+-+From `go/`:
+-+
+-+```bash
+-+go run ./server
+-+```
+-+
+-+Default endpoint:
+-+
+-+- `POST /api/playground/render`
+-+- `GET /healthz`
+-+
+-+See `go/server/README.md` for request/response format.
+-+
+-+## Docs
+-+
+-+Docs source is in `docs/` and is intended for GitHub Pages.
+-+
+-+Architecture docs:
+-+
+-+- `SSR.md` (server-side rendering behavior)
+-+- `CLIENT_RENDERING.md` (client-side behavior and roadmap)
+-+
+-+Key pages:
+-+
+-+- `docs/index.html` (main docs)
+-+- `docs/templating.html` (templating reference)
+-+- `docs/playground.html` (mini editor + preview)
+-+
+-+## Local App Builder (Live Reload + Playground)
+-+
+-+A local builder is available in `app/` to edit template files, add files, and preview output in one page with file watching.
+-+
+-+Run:
+-+
+-+```bash
+-+pnpm app
+-+```
+-+
+-+Open:
+-+
+-+- `http://localhost:5177`
+-+
+-+Notes:
+-+
+-+- `app/views` is the file workspace.
+-+- Saving from the UI writes to `app/views`.
+-+- File changes in `app/views` trigger live refresh.
+-+- Rendering uses the Go playground server API (started automatically by `app/server.mjs`).
+-+
+-+## Tests
+-+
+-+### Go
+-+
+-+```bash
+-+cd go
+-+go test ./...
+-+```
+-+
+-+## Status
+-+
+-+This repo is under active development. Some advanced parity edge cases and async behavior are still being iterated.
+-+
+-+## Contributing
+-+
+-+Open an issue or PR on GitHub.
+-+
+-+## License
+-+
+-+- App/repo: BSD-2-Clause (`LICENSE`)
+-+- VS Code extension: BSD-2-Clause (`vscode-nunchucks/LICENSE`)
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks
+-new file mode 100755
+-index 0000000..47f4712
+-Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_linux_arm64/nunchucks differ
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip b/dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip
+-new file mode 100644
+-index 0000000..b2e03d9
+-Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_windows_arm64.zip differ
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE
+-new file mode 100644
+-index 0000000..8f89e4d
+---- /dev/null
+-+++ b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/LICENSE
+-@@ -0,0 +1,26 @@
+-+Copyright (c) 2025-2027, Samuel Bines
+-+All rights reserved.
+-+
+-+Redistribution and use in source and binary forms, with or without
+-+modification, are permitted provided that the following conditions are
+-+met:
+-+
+-+    Redistributions of source code must retain the above copyright
+-+    notice, this list of conditions and the following disclaimer.
+-+
+-+    Redistributions in binary form must reproduce the above copyright
+-+    notice, this list of conditions and the following disclaimer in
+-+    the documentation and/or other materials provided with the
+-+    distribution.
+-+
+-+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+-+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+-+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+-+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+-+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+-+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+-+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+-+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+-+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+-+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+-+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-\ No newline at end of file
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md
+-new file mode 100644
+-index 0000000..2499516
+---- /dev/null
+-+++ b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/README.md
+-@@ -0,0 +1,192 @@
+-+# Nunchucks
+-+
+-+Nunchucks is a templating project with Nunchucks-first syntax and Jinja-style concepts:
+-+
+-+- JavaScript/TypeScript package backed by Go WASM (`@samuelbines/nunchucks`)
+-+- Go runtime + CLI
+-+- WASM target from Go
+-+- Docs site in `docs/` (GitHub Pages)
+-+- Playground editor demo with live preview
+-+
+-+Repository: `https://github.com/SamuelDBines/nunchucks`
+-+
+-+## Current Focus
+-+
+-+This project is actively evolving toward strong syntax parity plus a multi-language workflow.
+-+
+-+Implemented in Go today includes core tags (`if`, `for`, `set`, `extends`, `block`, `include`, `macro`, `import`, `call`, `raw`, `verbatim`, `filter`), expression engine improvements, and a broad set of built-in filters.
+-+
+-+## Installation
+-+
+-+### JS/TS package (Go WASM runtime)
+-+
+-+```bash
+-+npm install @samuelbines/nunchucks
+-+```
+-+
+-+```ts
+-+import { loadNunchucksWasm } from "@samuelbines/nunchucks";
+-+
+-+const nc = await loadNunchucksWasm({
+-+  wasmURL: "/node_modules/@samuelbines/nunchucks/go/wasm/nunchucks.wasm",
+-+  goURL: "/node_modules/@samuelbines/nunchucks/go/wasm/wasm_exec.js",
+-+});
+-+
+-+const html = nc.renderFromMap({
+-+  template: "index.njk",
+-+  files: { "index.njk": "Hello {{ name }}" },
+-+  context: { name: "world" },
+-+});
+-+```
+-+
+-+### CLI
+-+
+-+Install the native CLI from GitHub Releases:
+-+
+-+macOS and Linux:
+-+
+-+```bash
+-+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh
+-+nunchucks version
+-+nunchucks help
+-+```
+-+
+-+Windows PowerShell:
+-+
+-+```powershell
+-+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex
+-+nunchucks.exe version
+-+nunchucks.exe help
+-+```
+-+
+-+Go users can also install from source:
+-+
+-+```bash
+-+go install github.com/SamuelDBines/nunjucks/go/cmd/nunchucks@latest
+-+```
+-+
+-+Release binaries are published at `https://github.com/SamuelDBines/nunchucks/releases`.
+-+The install scripts pick a writable bin directory and print PATH instructions when needed.
+-+
+-+### Go usage
+-+
+-+```bash
+-+cd go
+-+go test ./...
+-+```
+-+
+-+## Go CLI
+-+
+-+From `go/` or from an installed release binary:
+-+
+-+```bash
+-+go run ./cmd/nunchucks help
+-+go run ./cmd/nunchucks help render
+-+go run ./cmd/nunchucks version
+-+
+-+go run ./cmd/nunchucks render \
+-+  -views ./views \
+-+  -template index.njk \
+-+  -data '{"title":"Hello"}'
+-+
+-+go run ./cmd/nunchucks precompile \
+-+  -views ./views \
+-+  -out ./public \
+-+  -data '{"title":"Hello"}'
+-+```
+-+
+-+## Go Examples
+-+
+-+From `go/`:
+-+
+-+```bash
+-+go run ./examples/basic
+-+go run ./examples/advanced
+-+go run ./examples/client
+-+```
+-+
+-+Also see sample templates under `samples/go`.
+-+
+-+## WASM Build (Go)
+-+
+-+From `go/`:
+-+
+-+```bash
+-+GOOS=js GOARCH=wasm go build -o wasm/nunchucks.wasm ./cmd/nunchucks-wasm
+-+cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/wasm_exec.js
+-+```
+-+
+-+## Stateless Playground Render Server (Go)
+-+
+-+A stateless memory-render API is available under `go/server`.
+-+
+-+From `go/`:
+-+
+-+```bash
+-+go run ./server
+-+```
+-+
+-+Default endpoint:
+-+
+-+- `POST /api/playground/render`
+-+- `GET /healthz`
+-+
+-+See `go/server/README.md` for request/response format.
+-+
+-+## Docs
+-+
+-+Docs source is in `docs/` and is intended for GitHub Pages.
+-+
+-+Architecture docs:
+-+
+-+- `SSR.md` (server-side rendering behavior)
+-+- `CLIENT_RENDERING.md` (client-side behavior and roadmap)
+-+
+-+Key pages:
+-+
+-+- `docs/index.html` (main docs)
+-+- `docs/templating.html` (templating reference)
+-+- `docs/playground.html` (mini editor + preview)
+-+
+-+## Local App Builder (Live Reload + Playground)
+-+
+-+A local builder is available in `app/` to edit template files, add files, and preview output in one page with file watching.
+-+
+-+Run:
+-+
+-+```bash
+-+pnpm app
+-+```
+-+
+-+Open:
+-+
+-+- `http://localhost:5177`
+-+
+-+Notes:
+-+
+-+- `app/views` is the file workspace.
+-+- Saving from the UI writes to `app/views`.
+-+- File changes in `app/views` trigger live refresh.
+-+- Rendering uses the Go playground server API (started automatically by `app/server.mjs`).
+-+
+-+## Tests
+-+
+-+### Go
+-+
+-+```bash
+-+cd go
+-+go test ./...
+-+```
+-+
+-+## Status
+-+
+-+This repo is under active development. Some advanced parity edge cases and async behavior are still being iterated.
+-+
+-+## Contributing
+-+
+-+Open an issue or PR on GitHub.
+-+
+-+## License
+-+
+-+- App/repo: BSD-2-Clause (`LICENSE`)
+-+- VS Code extension: BSD-2-Clause (`vscode-nunchucks/LICENSE`)
+-diff --git a/dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe
+-new file mode 100755
+-index 0000000..5b305d8
+-Binary files /dev/null and b/dist-release-fix/nunchucks_v0.0.8_windows_arm64/nunchucks.exe differ
+-diff --git a/docs/index.html b/docs/index.html
+-index e265124..35ca1c0 100644
+---- a/docs/index.html
+-+++ b/docs/index.html
+-@@ -153,6 +153,7 @@ go run ./cmd/nunchucks help render
+- go run ./cmd/nunchucks version
+- go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
+- go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'
+-+go run ./cmd/nunchucks precompile -views ./views -out ./public -watch
+- 
+- # WASM build
+- cd go
+-diff --git a/go/cmd/nunchucks/main.go b/go/cmd/nunchucks/main.go
+-index 860e66c..8234b45 100644
+---- a/go/cmd/nunchucks/main.go
+-+++ b/go/cmd/nunchucks/main.go
+-@@ -5,7 +5,12 @@ import (
+- 	"flag"
+- 	"fmt"
+- 	"os"
+-+	"os/signal"
+- 	"path/filepath"
+-+	"sort"
+-+	"strings"
+-+	"syscall"
+-+	"time"
+- 
+- 	nunchucks "github.com/SamuelDBines/nunjucks/go"
+- )
+-@@ -44,6 +49,7 @@ func printRootUsage() {
+- 	fmt.Fprintln(os.Stderr, "Examples:")
+- 	fmt.Fprintf(os.Stderr, "  %s render -views ./views -template index.njk -data '{\"title\":\"Hello\"}'\n", name)
+- 	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public\n", name)
+-+	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public --watch\n", name)
+- 	fmt.Fprintf(os.Stderr, "  %s help render\n", name)
+- 	fmt.Fprintf(os.Stderr, "  %s version\n", name)
+- }
+-@@ -73,6 +79,8 @@ func printPrecompileUsage() {
+- 	fmt.Fprintln(os.Stderr, "Options:")
+- 	fmt.Fprintln(os.Stderr, "  -views string        templates directory (default \"views\")")
+- 	fmt.Fprintln(os.Stderr, "  -out string          output directory (default \"public\")")
+-+	fmt.Fprintln(os.Stderr, "  -watch               rerender when template files change")
+-+	fmt.Fprintln(os.Stderr, "  -interval duration   polling interval for watch mode (default 1s)")
+- 	fmt.Fprintln(os.Stderr, "  -data string         JSON context object (default \"{}\")")
+- 	fmt.Fprintln(os.Stderr, "  -global value        global template, repeatable")
+- 	fmt.Fprintln(os.Stderr, "  -global-head value   global head template, repeatable")
+-@@ -80,6 +88,7 @@ func printPrecompileUsage() {
+- 	fmt.Fprintln(os.Stderr)
+- 	fmt.Fprintln(os.Stderr, "Example:")
+- 	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public -data '{\"title\":\"Hello\"}'\n", name)
+-+	fmt.Fprintf(os.Stderr, "  %s precompile -views ./views -out ./public --watch -interval 750ms\n", name)
+- }
+- 
+- func printVersionUsage() {
+-@@ -120,6 +129,132 @@ func parseData(raw string) (map[string]any, error) {
+- 	return out, nil
+- }
+- 
+-+type fileState struct {
+-+	modTime time.Time
+-+	size    int64
+-+}
+-+
+-+func scanTemplateState(views string) (map[string]fileState, error) {
+-+	state := map[string]fileState{}
+-+	err := filepath.WalkDir(views, func(path string, d os.DirEntry, err error) error {
+-+		if err != nil {
+-+			return err
+-+		}
+-+		if d.IsDir() {
+-+			return nil
+-+		}
+-+		if !nunchucks.IsTemplateFile(d.Name()) {
+-+			return nil
+-+		}
+-+
+-+		info, err := d.Info()
+-+		if err != nil {
+-+			return err
+-+		}
+-+		rel, err := filepath.Rel(views, path)
+-+		if err != nil {
+-+			return err
+-+		}
+-+		state[filepath.ToSlash(rel)] = fileState{
+-+			modTime: info.ModTime().UTC(),
+-+			size:    info.Size(),
+-+		}
+-+		return nil
+-+	})
+-+	if err != nil {
+-+		return nil, err
+-+	}
+-+	return state, nil
+-+}
+-+
+-+func diffTemplateState(previous, current map[string]fileState) []string {
+-+	changed := make([]string, 0)
+-+	seen := make(map[string]struct{}, len(previous)+len(current))
+-+
+-+	for name, prev := range previous {
+-+		seen[name] = struct{}{}
+-+		next, ok := current[name]
+-+		if !ok || !prev.modTime.Equal(next.modTime) || prev.size != next.size {
+-+			changed = append(changed, name)
+-+		}
+-+	}
+-+	for name := range current {
+-+		if _, ok := seen[name]; !ok {
+-+			changed = append(changed, name)
+-+		}
+-+	}
+-+
+-+	sort.Strings(changed)
+-+	return changed
+-+}
+-+
+-+func removeDeletedOutputs(outDir string, previous, current map[string]fileState) error {
+-+	for name := range previous {
+-+		if _, ok := current[name]; ok {
+-+			continue
+-+		}
+-+		if err := os.Remove(filepath.Join(outDir, filepath.FromSlash(name))); err != nil && !os.IsNotExist(err) {
+-+			return err
+-+		}
+-+	}
+-+	return nil
+-+}
+-+
+-+func precompileOnce(env *nunchucks.Env, outDir string, ctx map[string]any) error {
+-+	return env.PrecompileDir(outDir, ctx)
+-+}
+-+
+-+func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]any, interval time.Duration) error {
+-+	if interval <= 0 {
+-+		return fmt.Errorf("-interval must be greater than 0")
+-+	}
+-+	if err := precompileOnce(env, outDir, ctx); err != nil {
+-+		return err
+-+	}
+-+
+-+	current, err := scanTemplateState(views)
+-+	if err != nil {
+-+		return err
+-+	}
+-+
+-+	fmt.Fprintf(os.Stderr, "watching %s and writing to %s every %s\n", views, outDir, interval)
+-+
+-+	ticker := time.NewTicker(interval)
+-+	defer ticker.Stop()
+-+
+-+	signals := make(chan os.Signal, 1)
+-+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+-+	defer signal.Stop(signals)
+-+
+-+	for {
+-+		select {
+-+		case <-signals:
+-+			fmt.Fprintln(os.Stderr, "watch stopped")
+-+			return nil
+-+		case <-ticker.C:
+-+			next, err := scanTemplateState(views)
+-+			if err != nil {
+-+				return err
+-+			}
+-+
+-+			changed := diffTemplateState(current, next)
+-+			if len(changed) == 0 {
+-+				continue
+-+			}
+-+
+-+			if err := precompileOnce(env, outDir, ctx); err != nil {
+-+				return err
+-+			}
+-+			if err := removeDeletedOutputs(outDir, current, next); err != nil {
+-+				return err
+-+			}
+-+
+-+			fmt.Fprintf(os.Stderr, "recompiled %d changed file(s): %s\n", len(changed), strings.Join(changed, ", "))
+-+			current = next
+-+		}
+-+	}
+-+}
+-+
+- func runRender(args []string) error {
+- 	fs := flag.NewFlagSet("render", flag.ContinueOnError)
+- 	fs.SetOutput(os.Stderr)
+-@@ -165,6 +300,8 @@ func runPrecompile(args []string) error {
+- 
+- 	views := fs.String("views", "views", "templates directory")
+- 	outDir := fs.String("out", "public", "output directory")
+-+	watch := fs.Bool("watch", false, "rerender when template files change")
+-+	interval := fs.Duration("interval", time.Second, "polling interval for watch mode")
+- 	data := fs.String("data", "{}", "JSON context object")
+- 	var globalTemplates stringListFlag
+- 	var globalHeadTemplates stringListFlag
+-@@ -185,6 +322,9 @@ func runPrecompile(args []string) error {
+- 		GlobalHeadTemplates: []string(globalHeadTemplates),
+- 		GlobalFootTemplates: []string(globalFootTemplates),
+- 	})
+-+	if *watch {
+-+		return watchPrecompile(env, *views, *outDir, ctx, *interval)
+-+	}
+- 	return env.PrecompileDir(*outDir, ctx)
+- }
+- 
+-diff --git a/go/cmd/nunchucks/main_test.go b/go/cmd/nunchucks/main_test.go
+-index f09e418..7c88abf 100644
+---- a/go/cmd/nunchucks/main_test.go
+-+++ b/go/cmd/nunchucks/main_test.go
+-@@ -3,8 +3,11 @@ package main
+- import (
+- 	"bytes"
+- 	"os"
+-+	"path/filepath"
+-+	"reflect"
+- 	"strings"
+- 	"testing"
+-+	"time"
+- )
+- 
+- func captureStderr(t *testing.T, fn func()) string {
+-@@ -78,3 +81,44 @@ func TestParseDataInvalidJSON(t *testing.T) {
+- 		t.Fatal("expected invalid JSON error")
+- 	}
+- }
+-+
+-+func TestDiffTemplateStateDetectsAddsChangesAndDeletes(t *testing.T) {
+-+	now := time.Unix(100, 0)
+-+	before := map[string]fileState{
+-+		"changed.njk": {modTime: now, size: 10},
+-+		"removed.njk": {modTime: now, size: 20},
+-+	}
+-+	after := map[string]fileState{
+-+		"added.njk":   {modTime: now, size: 30},
+-+		"changed.njk": {modTime: now.Add(time.Second), size: 10},
+-+	}
+-+
+-+	got := diffTemplateState(before, after)
+-+	want := []string{"added.njk", "changed.njk", "removed.njk"}
+-+	if !reflect.DeepEqual(got, want) {
+-+		t.Fatalf("diffTemplateState() = %v, want %v", got, want)
+-+	}
+-+}
+-+
+-+func TestRemoveDeletedOutputsRemovesMissingTemplates(t *testing.T) {
+-+	dir := t.TempDir()
+-+	outFile := filepath.Join(dir, "pages", "index.njk")
+-+	if err := os.MkdirAll(filepath.Dir(outFile), 0o755); err != nil {
+-+		t.Fatalf("mkdir: %v", err)
+-+	}
+-+	if err := os.WriteFile(outFile, []byte("stale"), 0o644); err != nil {
+-+		t.Fatalf("write stale file: %v", err)
+-+	}
+-+
+-+	previous := map[string]fileState{
+-+		"pages/index.njk": {modTime: time.Unix(100, 0), size: 5},
+-+	}
+-+	current := map[string]fileState{}
+-+
+-+	if err := removeDeletedOutputs(dir, previous, current); err != nil {
+-+		t.Fatalf("removeDeletedOutputs(): %v", err)
+-+	}
+-+	if _, err := os.Stat(outFile); !os.IsNotExist(err) {
+-+		t.Fatalf("expected %s to be removed, stat err = %v", outFile, err)
+-+	}
+-+}
+-diff --git a/go/precompile.go b/go/precompile.go
+-index ff37f53..a56a7a0 100644
+---- a/go/precompile.go
+-+++ b/go/precompile.go
+-@@ -7,7 +7,7 @@ import (
+- 	"strings"
+- )
+- 
+--func isTemplateFile(name string) bool {
+-+func IsTemplateFile(name string) bool {
+- 	ext := strings.ToLower(filepath.Ext(name))
+- 	switch ext {
+- 	case ".njk", ".html", ".txt", ".yaml", ".yml", ".json", ".xml", ".css", ".js":
+-@@ -37,7 +37,7 @@ func (e *Env) PrecompileDir(outDir string, ctx map[string]any) error {
+- 		if d.IsDir() {
+- 			return nil
+- 		}
+--		if !isTemplateFile(d.Name()) {
+-+		if !IsTemplateFile(d.Name()) {
+- 			return nil
+- 		}
+diff --git a/.kitsune/tmp/20260305T192828Z-3gh674/diff.stat b/.kitsune/tmp/20260305T192828Z-3gh674/diff.stat
+deleted file mode 100644
+index 0745691..0000000
+--- a/.kitsune/tmp/20260305T192828Z-3gh674/diff.stat
++++ /dev/null
+@@ -1,18 +0,0 @@
+-README.md                                          |   5 +
+- .../nunchucks_v0.0.8_darwin_arm64.tar.gz           | Bin 0 -> 1022470 bytes
+- .../nunchucks_v0.0.8_darwin_arm64/LICENSE          |  26 +++
+- .../nunchucks_v0.0.8_darwin_arm64/README.md        | 192 +++++++++++++++++++++
+- .../nunchucks_v0.0.8_darwin_arm64/nunchucks        | Bin 0 -> 2488002 bytes
+- .../nunchucks_v0.0.8_linux_arm64.tar.gz            | Bin 0 -> 948790 bytes
+- .../nunchucks_v0.0.8_linux_arm64/LICENSE           |  26 +++
+- .../nunchucks_v0.0.8_linux_arm64/README.md         | 192 +++++++++++++++++++++
+- .../nunchucks_v0.0.8_linux_arm64/nunchucks         | Bin 0 -> 2359296 bytes
+- .../nunchucks_v0.0.8_windows_arm64.zip             | Bin 0 -> 982957 bytes
+- .../nunchucks_v0.0.8_windows_arm64/LICENSE         |  26 +++
+- .../nunchucks_v0.0.8_windows_arm64/README.md       | 192 +++++++++++++++++++++
+- .../nunchucks_v0.0.8_windows_arm64/nunchucks.exe   | Bin 0 -> 2356224 bytes
+- docs/index.html                                    |   1 +
+- go/cmd/nunchucks/main.go                           | 140 +++++++++++++++
+- go/cmd/nunchucks/main_test.go                      |  44 +++++
+- go/precompile.go                                   |   4 +-
+- 17 files changed, 846 insertions(+), 2 deletions(-)
+diff --git a/.kitsune/tmp/20260305T192828Z-3gh674/message.txt b/.kitsune/tmp/20260305T192828Z-3gh674/message.txt
+deleted file mode 100644
+index 17b4bac..0000000
+--- a/.kitsune/tmp/20260305T192828Z-3gh674/message.txt
++++ /dev/null
+@@ -1 +0,0 @@
+-chore: update README.md, dist-release-fix, docs, go
+diff --git a/go/cmd/nunchucks/main.go b/go/cmd/nunchucks/main.go
+index 7b00b5a..3f2d107 100644
+--- a/go/cmd/nunchucks/main.go
++++ b/go/cmd/nunchucks/main.go
+@@ -17,6 +17,11 @@ import (
+ 
+ var version = "dev"
+ 
++const (
++	ansiRed   = "\033[31m"
++	ansiReset = "\033[0m"
++)
++
+ type stringListFlag []string
+ 
+ func (s *stringListFlag) String() string {
+@@ -120,6 +125,25 @@ func printVersion() {
+ 	fmt.Fprintf(os.Stdout, "nunchucks %s\n", version)
+ }
+ 
++func colorEnabled() bool {
++	if os.Getenv("NO_COLOR") != "" {
++		return false
++	}
++	term := strings.TrimSpace(os.Getenv("TERM"))
++	return term != "" && term != "dumb"
++}
++
++func errorText(msg string) string {
++	if !colorEnabled() {
++		return msg
++	}
++	return ansiRed + msg + ansiReset
++}
++
++func printError(err error) {
++	fmt.Fprintln(os.Stderr, errorText("error: "+err.Error()))
++}
++
+ func parseData(raw string) (map[string]any, error) {
+ 	if raw == "" {
+ 		return map[string]any{}, nil
+@@ -218,15 +242,15 @@ func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]an
+ 	if interval <= 0 {
+ 		return fmt.Errorf("-interval must be greater than 0")
+ 	}
+-	if err := precompileOnce(env, outDir, ctx, opts); err != nil {
+-		return err
+-	}
+-
+ 	current, err := scanTemplateState(views)
+ 	if err != nil {
+ 		return err
+ 	}
+ 
++	if err := precompileOnce(env, outDir, ctx, opts); err != nil {
++		printError(err)
++	}
++
+ 	fmt.Fprintf(os.Stderr, "watching %s and writing to %s every %s\n", views, outDir, interval)
+ 
+ 	ticker := time.NewTicker(interval)
+@@ -244,7 +268,8 @@ func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]an
+ 		case <-ticker.C:
+ 			next, err := scanTemplateState(views)
+ 			if err != nil {
+-				return err
++				printError(err)
++				continue
+ 			}
+ 
+ 			changed := diffTemplateState(current, next)
+@@ -253,10 +278,14 @@ func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]an
+ 			}
+ 
+ 			if err := precompileOnce(env, outDir, ctx, opts); err != nil {
+-				return err
++				printError(err)
++				current = next
++				continue
+ 			}
+ 			if err := removeDeletedOutputs(outDir, current, next, opts); err != nil {
+-				return err
++				printError(err)
++				current = next
++				continue
+ 			}
+ 
+ 			fmt.Fprintf(os.Stderr, "recompiled %d changed file(s): %s\n", len(changed), strings.Join(changed, ", "))
+@@ -372,7 +401,7 @@ func main() {
+ 	}
+ 
+ 	if err != nil {
+-		fmt.Fprintln(os.Stderr, "error:", err)
++		printError(err)
+ 		os.Exit(1)
+ 	}
+ }
+diff --git a/package.json b/package.json
+index e4ebb8a..4815c8a 100644
+--- a/package.json
++++ b/package.json
+@@ -14,9 +14,9 @@
+   },
+   "exports": {
+     ".": {
+-      "default": "./go/wasm/loader.js",
+       "import": "./go/wasm/loader.js",
+-      "types": "./go/wasm/loader.d.ts"
++      "types": "./go/wasm/loader.d.ts",
++      "default": "./go/wasm/loader.js"
+     }
+   },
+   "files": [
+@@ -60,4 +60,4 @@
+   "type": "module",
+   "types": "./go/wasm/loader.d.ts",
+   "version": "0.0.9"
+-}
++}
+\ No newline at end of file
