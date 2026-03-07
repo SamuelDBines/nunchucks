@@ -14,9 +14,9 @@
   },
   "exports": {
     ".": {
-      "default": "./go/wasm/loader.js",
       "import": "./go/wasm/loader.js",
-      "types": "./go/wasm/loader.d.ts"
+      "types": "./go/wasm/loader.d.ts",
+      "default": "./go/wasm/loader.js"
     }
   },
   "files": [

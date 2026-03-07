@@ -17,6 +17,11 @@ import (
 
 var version = "dev"
 
+const (
+	ansiRed   = "\033[31m"
+	ansiReset = "\033[0m"
+)
+
 type stringListFlag []string
 
 func (s *stringListFlag) String() string {
@@ -120,6 +125,25 @@ func printVersion() {
 	fmt.Fprintf(os.Stdout, "nunchucks %s\n", version)
 }
 
+func colorEnabled() bool {
+	if os.Getenv("NO_COLOR") != "" {
+		return false
+	}
+	term := strings.TrimSpace(os.Getenv("TERM"))
+	return term != "" && term != "dumb"
+}
+
+func errorText(msg string) string {
+	if !colorEnabled() {
+		return msg
+	}
+	return ansiRed + msg + ansiReset
+}
+
+func printError(err error) {
+	fmt.Fprintln(os.Stderr, errorText("error: "+err.Error()))
+}
+
 func parseData(raw string) (map[string]any, error) {
 	if raw == "" {
 		return map[string]any{}, nil
@@ -218,13 +242,13 @@ func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]an
 	if interval <= 0 {
 		return fmt.Errorf("-interval must be greater than 0")
 	}
-	if err := precompileOnce(env, outDir, ctx, opts); err != nil {
-		return err
-	}
-
 	current, err := scanTemplateState(views)
 	if err != nil {
 		return err
+	}
+
+	if err := precompileOnce(env, outDir, ctx, opts); err != nil {
+		printError(err)
 	}
 
 	fmt.Fprintf(os.Stderr, "watching %s and writing to %s every %s\n", views, outDir, interval)
@@ -244,7 +268,8 @@ func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]an
 		case <-ticker.C:
 			next, err := scanTemplateState(views)
 			if err != nil {
-				return err
+				printError(err)
+				continue
 			}
 
 			changed := diffTemplateState(current, next)
@@ -253,10 +278,14 @@ func watchPrecompile(env *nunchucks.Env, views, outDir string, ctx map[string]an
 			}
 
 			if err := precompileOnce(env, outDir, ctx, opts); err != nil {
-				return err
+				printError(err)
+				current = next
+				continue
 			}
 			if err := removeDeletedOutputs(outDir, current, next, opts); err != nil {
-				return err
+				printError(err)
+				current = next
+				continue
 			}
 
 			fmt.Fprintf(os.Stderr, "recompiled %d changed file(s): %s\n", len(changed), strings.Join(changed, ", "))
@@ -372,7 +401,7 @@ func main() {
 	}
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "error:", err)
+		printError(err)
 		os.Exit(1)
 	}
 }
