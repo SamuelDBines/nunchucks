@@ -496,3 +496,18 @@ func TestPrecompileDirWithHTMLFormat(t *testing.T) {
 		t.Fatalf("expected non-njk output to keep extension: %v", err)
 	}
 }
+
+func TestCommentsPreventIncludeResolution(t *testing.T) {
+	files := map[string]string{
+		"base.njk": `{# <header>{% include "partials/header.njk" %}</header> #}<main>ok</main>`,
+	}
+	env := Configure(ConfigOptions{Loader: &testLoader{files: files}})
+
+	out, err := env.Render("base.njk", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if compactWhitespace(out) != `<main>ok</main>` {
+		t.Fatalf("expected commented include to be ignored, got %q", out)
+	}
+}

@@ -9,6 +9,7 @@ import (
 
 var exprRe = regexp.MustCompile(`\{\{\s*([\s\S]*?)\s*\}\}`)
 var stmtRe = regexp.MustCompile(`\{%\s*([A-Za-z_][A-Za-z0-9_]*)\b([\s\S]*?)%\}`)
+var commentRe = regexp.MustCompile(`\{#([\s\S]*?)#\}`)
 var clientOpenRe = regexp.MustCompile(`\{%\s*client\s*%\}`)
 var clientCloseRe = regexp.MustCompile(`\{%\s*endclient\s*%\}`)
 var fetchStmtRe = regexp.MustCompile(`\{%\s*fetch\s+([\s\S]*?)%\}`)
@@ -42,11 +43,16 @@ func cloneMacros(in map[string]MacroDef) map[string]MacroDef {
 	return out
 }
 
+func stripComments(src string) string {
+	return commentRe.ReplaceAllString(src, "")
+}
+
 func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
 	if ctx == nil {
 		ctx = map[string]any{}
 	}
 	src = e.normalizeTemplateSource(src)
+	src = stripComments(src)
 	var err error
 	src, err = e.prependGlobalTemplates(src)
 	if err != nil {

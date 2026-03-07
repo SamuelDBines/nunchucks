@@ -25,7 +25,7 @@ func (e *Env) readTemplate(name string) (string, error) {
 	if res.Err != "" {
 		return "", fmt.Errorf(res.Err)
 	}
-	return e.normalizeTemplateSource(res.Res), nil
+	return stripComments(e.normalizeTemplateSource(res.Res)), nil
 }
 
 func (e *Env) resolveIncludes(src string, seen map[string]bool) (string, error) {

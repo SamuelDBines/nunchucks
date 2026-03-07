@@ -54,7 +54,7 @@
     "push": "node ./scripts/push.cjs \u0026\u0026 pnpm publish --access=public",
     "test": "cd go \u0026\u0026 go test ./...",
     "test:verbose": "cd go \u0026\u0026 go test -v ./...",
-    "update-nunchucks": "curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh",
+    "update-nunchucks": "curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh -s v0.0.12",
     "update-package": "pnpm build \u0026\u0026 pnpm pack \u0026\u0026 pnpm version patch \u0026\u0026 pnpm publish --access public",
     "vitest:browser": "echo \"vitest browser removed; use go wasm runtime\""
   },
