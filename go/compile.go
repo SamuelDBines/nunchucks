@@ -9,6 +9,7 @@ import (
 
 var includeRe = regexp.MustCompile(`\{%\s*include\s+(["'][^"']+["'])\s*%\}`)
 var extendsRe = regexp.MustCompile(`\{%\s*extends\s+(["'][^"']+["'])\s*%\}`)
+var compileStmtRe = regexp.MustCompile(`\{%\s*([A-Za-z_][A-Za-z0-9_]*)\b([^%]*)%\}`)
 
 func unquote(s string) string {
 	t := strings.TrimSpace(s)
@@ -20,12 +21,20 @@ func unquote(s string) string {
 	return t
 }
 
-func (e *Env) readTemplate(name string) (string, error) {
+func (e *Env) readRawTemplate(name string) (string, error) {
 	res := e.loader.Read(name)
 	if res.Err != "" {
 		return "", fmt.Errorf(res.Err)
 	}
-	return stripComments(e.normalizeTemplateSource(res.Res)), nil
+	return e.normalizeTemplateSource(res.Res), nil
+}
+
+func (e *Env) readTemplate(name string) (string, error) {
+	raw, err := e.readRawTemplate(name)
+	if err != nil {
+		return "", err
+	}
+	return stripComments(raw), nil
 }
 
 func (e *Env) resolveIncludes(src string, seen map[string]bool) (string, error) {
@@ -158,6 +167,40 @@ func removeExtendsTag(src string) string {
 	return extendsRe.ReplaceAllString(src, "")
 }
 
+func extractExtendsPrelude(src string) string {
+	type frame struct{ kind string }
+	var out strings.Builder
+	stack := []frame{}
+	tags := compileStmtRe.FindAllStringSubmatchIndex(src, -1)
+
+	for _, m := range tags {
+		kw := strings.TrimSpace(src[m[2]:m[3]])
+		raw := src[m[0]:m[1]]
+
+		switch kw {
+		case "block", "if", "for", "macro", "call", "filter", "raw", "verbatim", "client":
+			stack = append(stack, frame{kind: kw})
+			continue
+		case "endblock", "endif", "endfor", "endmacro", "endcall", "endfilter", "endraw", "endverbatim", "endclient":
+			if len(stack) > 0 {
+				stack = stack[:len(stack)-1]
+			}
+			continue
+		case "extends":
+			continue
+		case "set":
+			if len(stack) == 0 {
+				out.WriteString(raw)
+				if !strings.HasSuffix(raw, "\n") {
+					out.WriteString("\n")
+				}
+			}
+		}
+	}
+
+	return out.String()
+}
+
 func (e *Env) compileTemplate(name string) (string, error) {
 	entry, err := e.readTemplate(name)
 	if err != nil {
@@ -185,7 +228,8 @@ func (e *Env) compileTemplate(name string) (string, error) {
 		}
 		base := baseRaw
 
-		child = mergeExtends(base, child)
+		prelude := extractExtendsPrelude(child)
+		child = prelude + mergeExtends(base, child)
 		child = removeExtendsTag(child)
 	}
 }

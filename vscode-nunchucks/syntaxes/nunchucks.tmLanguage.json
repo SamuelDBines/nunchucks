@@ -3,6 +3,9 @@
   "scopeName": "text.nunchucks",
   "patterns": [
     {
+      "include": "#contractComment"
+    },
+    {
       "include": "#comment"
     },
     {
@@ -16,6 +19,69 @@
     }
   ],
   "repository": {
+    "contractComment": {
+      "name": "comment.block.documentation.nunchucks",
+      "begin": "\\{#\\s*(?=@(?:props|params)\\b)",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.begin.nunchucks"
+        }
+      },
+      "end": "#\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.end.nunchucks"
+        }
+      },
+      "patterns": [
+        {
+          "name": "storage.type.annotation.nunchucks",
+          "match": "@(?:props|params)\\b"
+        },
+        {
+          "name": "entity.name.type.nunchucks",
+          "match": "(?<=@params\\s)[A-Za-z_][A-Za-z0-9_]*\\b"
+        },
+        {
+          "name": "variable.parameter.nunchucks",
+          "match": "^[ \\t]*[A-Za-z_][A-Za-z0-9_]*(?=\\??\\s*:)"
+        },
+        {
+          "name": "keyword.operator.optional.nunchucks",
+          "match": "\\?"
+        },
+        {
+          "name": "keyword.operator.assignment.nunchucks",
+          "match": "="
+        },
+        {
+          "name": "support.type.primitive.nunchucks",
+          "match": "\\b(string|number|int|float|bool|object|list|array)\\b"
+        },
+        {
+          "name": "entity.name.type.nunchucks",
+          "match": "(?<=:\\s)[A-Za-z_][A-Za-z0-9_]*(?=\\b)"
+        },
+        {
+          "name": "support.function.default.nunchucks",
+          "match": "\\bdefault(?=\\s*\\()"
+        },
+        {
+          "name": "constant.numeric.nunchucks",
+          "match": "\\b\\d+(?:\\.\\d+)?\\b"
+        },
+        {
+          "name": "string.quoted.double.nunchucks",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.nunchucks",
+          "begin": "'",
+          "end": "'"
+        }
+      ]
+    },
     "comment": {
       "name": "comment.block.nunchucks",
       "begin": "\\{#",

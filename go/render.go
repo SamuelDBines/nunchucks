@@ -48,17 +48,20 @@ func stripComments(src string) string {
 }
 
 func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
-	if ctx == nil {
-		ctx = map[string]any{}
-	}
 	src = e.normalizeTemplateSource(src)
+	ctx = e.buildRenderContext(ctx)
+	if err := ApplyTemplateContractDefaults(src, ctx); err != nil {
+		return "", err
+	}
+	if err := ValidateTemplateContract(src, ctx); err != nil {
+		return "", err
+	}
 	src = stripComments(src)
 	var err error
 	src, err = e.prependGlobalTemplates(src)
 	if err != nil {
 		return "", err
 	}
-	ctx = cloneMap(ctx)
 	for k, v := range builtinGlobals() {
 		if _, ok := ctx[k]; !ok {
 			ctx[k] = v
@@ -73,6 +76,17 @@ func (e *Env) renderString(src string, ctx map[string]any) (string, error) {
 		return "", err
 	}
 	return out, nil
+}
+
+func (e *Env) buildRenderContext(ctx map[string]any) map[string]any {
+	base := cloneMap(e.globals)
+	if base == nil {
+		base = map[string]any{}
+	}
+	for k, v := range ctx {
+		base[k] = v
+	}
+	return base
 }
 
 func (e *Env) prependGlobalTemplates(src string) (string, error) {
@@ -156,11 +170,6 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 		return "", err
 	}
 
-	out, err = e.applyIncludes(out, ctx, vars, macros)
-	if err != nil {
-		return "", err
-	}
-
 	out, err = e.applyFromImports(out, ctx, vars, macros)
 	if err != nil {
 		return "", err
@@ -177,6 +186,11 @@ func (e *Env) renderWithState(src string, ctx, vars map[string]any, macros map[s
 	}
 
 	out, err = applySets(out, vars, ctx)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = e.applyIncludes(out, ctx, vars, macros)
 	if err != nil {
 		return "", err
 	}
@@ -543,7 +557,7 @@ func (e *Env) applyIncludes(src string, ctx, vars map[string]any, macros map[str
 			return "", fmt.Errorf("invalid include statement: %s", raw)
 		}
 
-		includeSrc, err := e.readTemplate(spec.Name)
+		rawIncludeSrc, err := e.readRawTemplate(spec.Name)
 		if err != nil {
 			if spec.IgnoreMissing {
 				out = out[:m[0]] + out[m[1]:]
@@ -551,6 +565,7 @@ func (e *Env) applyIncludes(src string, ctx, vars map[string]any, macros map[str
 			}
 			return "", err
 		}
+		includeSrc := stripComments(rawIncludeSrc)
 
 		var incCtx map[string]any
 		var incVars map[string]any
@@ -561,6 +576,14 @@ func (e *Env) applyIncludes(src string, ctx, vars map[string]any, macros map[str
 			incCtx = map[string]any{}
 			incVars = map[string]any{}
 		}
+		scope := mergeScope(incVars, incCtx)
+		if err := ApplyTemplateContractDefaults(rawIncludeSrc, scope); err != nil {
+			return "", err
+		}
+		incCtx, incVars = splitScope(scope, incCtx, incVars)
+		if err := ValidateTemplateContract(rawIncludeSrc, scope); err != nil {
+			return "", err
+		}
 
 		rendered, err := e.renderWithState(includeSrc, incCtx, incVars, cloneMacros(macros))
 		if err != nil {
@@ -568,6 +591,27 @@ func (e *Env) applyIncludes(src string, ctx, vars map[string]any, macros map[str
 		}
 		out = out[:m[0]] + rendered + out[m[1]:]
 	}
+}
+
+func mergeScope(vars, ctx map[string]any) map[string]any {
+	out := cloneMap(ctx)
+	for k, v := range vars {
+		out[k] = v
+	}
+	return out
+}
+
+func splitScope(scope, ctx, vars map[string]any) (map[string]any, map[string]any) {
+	nextCtx := cloneMap(ctx)
+	nextVars := cloneMap(vars)
+	for k, v := range scope {
+		if _, ok := nextVars[k]; ok {
+			nextVars[k] = v
+			continue
+		}
+		nextCtx[k] = v
+	}
+	return nextCtx, nextVars
 }
 
 func extractRawBlocks(src string) (string, map[string]string, error) {

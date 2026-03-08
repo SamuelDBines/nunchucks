@@ -18,6 +18,7 @@
 					<span>Nunchucks</span>
 				</a>
 				<a href="./index.html">Overview</a>
+				<a href="./cli-options.html">CLI Options</a>
 				<a href="./templating.html">Reference</a>
 				<a href="./playground.html">Playground</a>
 			</nav>
@@ -254,9 +255,12 @@ fmt.Println(out)</code></pre>
 
 			<section class="card" style="margin-top: 1rem">
 				<h2>CLI</h2>
-				<pre><code class="language-bash">go run ./cmd/nunchucks help
-go run ./cmd/nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
-go run ./cmd/nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'</code></pre>
+				<p>The CLI is the main integration path for local rendering, static builds, and watch mode.</p>
+				<pre><code class="language-bash">nunchucks help
+nunchucks help render
+nunchucks help precompile
+nunchucks version</code></pre>
+				<p><a href="./cli-options.html">Open the CLI options page</a> for command help, flag reference, install commands, and ready-to-copy examples.</p>
 			</section>
 
 			<section class="card" style="margin-top: 1rem">

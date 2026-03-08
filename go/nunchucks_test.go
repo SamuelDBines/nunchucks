@@ -68,6 +68,51 @@ func TestRenderExtendsAndInclude(t *testing.T) {
 	}
 }
 
+func TestRenderExtendsSeesChildTopLevelSet(t *testing.T) {
+	files := map[string]string{
+		"base.njk":  `<title>{{ title | default("Base") }}</title><main>{% block body %}Body{% endblock %}</main>`,
+		"child.njk": `{% set title = "Home" %}{% extends "base.njk" %}{% block body %}<h1>{{ title }}</h1>{% endblock %}`,
+	}
+	env := Configure(ConfigOptions{Loader: &testLoader{files: files}})
+	out, err := env.Render("child.njk", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	want := `<title>Home</title><main><h1>Home</h1></main>`
+	if compactWhitespace(out) != compactWhitespace(want) {
+		t.Fatalf("unexpected output\nwant: %q\n got: %q", want, out)
+	}
+}
+
+func TestRenderUsesConfiguredGlobals(t *testing.T) {
+	env := Configure(ConfigOptions{
+		Loader: &testLoader{files: map[string]string{
+			"page.njk": `<title>{{ title | default(siteName) | default("Base") }}</title>`,
+		}},
+		Globals: map[string]any{
+			"siteName": "Bareframe",
+			"title":    "GlobalTitle",
+		},
+	})
+
+	out, err := env.Render("page.njk", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if out != `<title>GlobalTitle</title>` {
+		t.Fatalf("unexpected global output: %q", out)
+	}
+
+	out, err = env.Render("page.njk", map[string]any{"title": "RenderTitle"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if out != `<title>RenderTitle</title>` {
+		t.Fatalf("render context should override configured globals, got %q", out)
+	}
+}
+
 func compactWhitespace(s string) string {
 	re := regexp.MustCompile(`\s+`)
 	return strings.TrimSpace(re.ReplaceAllString(s, " "))

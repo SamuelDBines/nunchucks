@@ -155,6 +155,7 @@ Architecture docs:
 Key pages:
 
 - `docs/index.html` (main docs)
+- `docs/cli-options.html` (CLI install, help, and examples)
 - `docs/templating.html` (templating reference)
 - `docs/playground.html` (mini editor + preview)
 

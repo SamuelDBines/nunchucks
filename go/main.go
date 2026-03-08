@@ -10,6 +10,7 @@ type ConfigOptions struct {
 	VariableEnd         string
 	BlockStart          string
 	BlockEnd            string
+	Globals             map[string]any
 	GlobalTemplates     []string
 	GlobalHeadTemplates []string
 	GlobalFootTemplates []string
@@ -23,6 +24,7 @@ type Env struct {
 	variableEnd         string
 	blockStart          string
 	blockEnd            string
+	globals             map[string]any
 	globalTemplates     []string
 	globalHeadTemplates []string
 	globalFootTemplates []string
@@ -131,6 +133,11 @@ func Configure(opts ConfigOptions) *Env {
 		footGlobals = append(footGlobals, n)
 	}
 
+	configuredGlobals := cloneMap(opts.Globals)
+	if configuredGlobals == nil {
+		configuredGlobals = map[string]any{}
+	}
+
 	return &Env{
 		basePath:            path,
 		loader:              ldr,
@@ -138,6 +145,7 @@ func Configure(opts ConfigOptions) *Env {
 		variableEnd:         variableEnd,
 		blockStart:          blockStart,
 		blockEnd:            blockEnd,
+		globals:             configuredGlobals,
 		globalTemplates:     globals,
 		globalHeadTemplates: headGlobals,
 		globalFootTemplates: footGlobals,
@@ -146,11 +154,22 @@ func Configure(opts ConfigOptions) *Env {
 
 // Render loads and renders a template file with the provided context.
 func (e *Env) Render(name string, ctx map[string]any) (string, error) {
+	raw, err := e.readRawTemplate(name)
+	if err != nil {
+		return "", err
+	}
+	renderCtx := e.buildRenderContext(ctx)
+	if err := ApplyTemplateContractDefaults(e.normalizeTemplateSource(raw), renderCtx); err != nil {
+		return "", err
+	}
+	if err := ValidateTemplateContract(e.normalizeTemplateSource(raw), renderCtx); err != nil {
+		return "", err
+	}
 	src, err := e.compileTemplate(name)
 	if err != nil {
 		return "", err
 	}
-	return e.renderString(src, ctx)
+	return e.renderString(src, renderCtx)
 }
 
 // Compile resolves includes/extends into a compiled template string.

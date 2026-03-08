@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nunchucks CLI Options</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" />
+</head>
+<body>
+  <main class="wrapper">
+    <nav class="top-nav">
+      <a class="brand-mark" href="./index.html">
+        <img src="./assets/nunchucks-logo.svg" alt="Nunchucks logo" />
+        <span>Nunchucks</span>
+      </a>
+      <a href="./index.html">Overview</a>
+      <a href="./cli-options.html">CLI Options</a>
+      <a href="./templating.html">Reference</a>
+      <a href="./playground.html">Playground</a>
+    </nav>
+
+    <section class="hero">
+      <h1>CLI Options</h1>
+      <p>Install the Nunchucks CLI, inspect command help, and use the current command set without guessing flags.</p>
+      <p><strong>Current commands:</strong> <code>render</code>, <code>precompile</code>, <code>version</code>, and <code>help</code>.</p>
+<pre><code class="language-bash">nunchucks help
+nunchucks help render
+nunchucks help precompile
+nunchucks version</code></pre>
+    </section>
+
+    <section class="card" style="margin-top: 1rem">
+      <h2>Install</h2>
+      <p>Use the release binary installer unless you are developing inside this repository.</p>
+<pre><code class="language-bash"># macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh
+
+# install a specific release
+curl -fsSL https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.sh | sh -s v0.0.13
+
+# verify
+nunchucks version
+nunchucks help</code></pre>
+<pre><code class="language-powershell"># Windows PowerShell
+irm https://raw.githubusercontent.com/SamuelDBines/nunchucks/main/scripts/install-cli.ps1 | iex
+
+# verify
+nunchucks.exe version
+nunchucks.exe help</code></pre>
+<pre><code class="language-bash"># local source build from this repository
+cd go
+go build -o ~/.local/bin/nunchucks ./cmd/nunchucks</code></pre>
+      <p><small>Release binaries are published on <a href="https://github.com/SamuelDBines/nunchucks/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.</small></p>
+    </section>
+
+    <section class="card" style="margin-top: 1rem">
+      <h2>CLI Overview</h2>
+      <p>The CLI renders one template to stdout or precompiles a views tree to static output. Watch mode rerenders on template file changes and keeps running after render errors so you can fix files without restarting.</p>
+<pre><code class="language-text">nunchucks renders Nunchucks templates from the command line.
+
+Usage:
+  nunchucks &lt;command&gt; [options]
+
+Commands:
+  render      Render one template to stdout
+  precompile  Render a views directory to static output
+  version     Print CLI version information
+  help        Show general help or help for a command
+
+Examples:
+  nunchucks render -views ./views -template index.njk -data '{"title":"Hello"}'
+  nunchucks precompile -views ./views -out ./public
+  nunchucks precompile -views ./views -out ./public --watch
+  nunchucks help render
+  nunchucks version</code></pre>
+    </section>
+
+    <section class="card" style="margin-top: 1rem">
+      <h2>Help Commands</h2>
+      <p>Use the built-in help output instead of relying on stale examples.</p>
+<pre><code class="language-bash">nunchucks help
+nunchucks help render
+nunchucks help precompile
+nunchucks help version</code></pre>
+    </section>
+
+    <section class="card" style="margin-top: 1rem">
+      <h2>Render Command</h2>
+      <p>Render one template file from the views directory and print the result to stdout.</p>
+<pre><code class="language-text">Usage:
+  nunchucks render [options]
+
+Render a single template and write the result to stdout.
+
+Options:
+  -views string        templates directory (default "views")
+  -template string     template path relative to views (required)
+  -data string         JSON context object (default "{}")
+  -global value        global template, repeatable
+  -global-head value   global head template, repeatable
+  -global-foot value   global foot template, repeatable
+
+Example:
+  nunchucks render -views ./views -template index.njk -data '{"user":{"name":"sam"}}'</code></pre>
+<pre><code class="language-bash">nunchucks render   -views ./views   -template invoice.njk   -data '{"invoice":{"number":"A-102","total":99.5}}'</code></pre>
+    </section>
+
+    <section class="card" style="margin-top: 1rem">
+      <h2>Precompile Command</h2>
+      <p>Render an entire views tree to disk. By default it preserves template filenames. Use <code>-out-format html</code> when you want rendered <code>.html</code> files from <code>.njk</code> templates.</p>
+<pre><code class="language-text">Usage:
+  nunchucks precompile [options]
+
+Render a views directory to static files on disk.
+
+Options:
+  -views string        templates directory (default "views")
+  -out string          output directory (default "public")
+  -out-format string   output naming: preserve or html (default "preserve")
+  -watch               rerender when template files change
+  -interval duration   polling interval for watch mode (default 1s)
+  -data string         JSON context object (default "{}")
+  -global value        global template, repeatable
+  -global-head value   global head template, repeatable
+  -global-foot value   global foot template, repeatable
+
+Example:
+  nunchucks precompile -views ./views -out ./public -data '{"title":"Hello"}'
+  nunchucks precompile -views ./views -out ./public -out-format html
+  nunchucks precompile -views ./views -out ./public --watch -interval 750ms</code></pre>
+<pre><code class="language-bash"># preserve source filenames
+nunchucks precompile -views ./views -out ./public
+
+# convert .njk output targets to .html
+nunchucks precompile -views ./views -out ./public -out-format html
+
+# watch and rerender on change
+nunchucks precompile -views ./views -out ./public --watch
+
+# slower polling interval for larger trees
+nunchucks precompile -views ./views -out ./public --watch -interval 2s</code></pre>
+    </section>
+
+    <section class="card" style="margin-top: 1rem">
+      <h2>Examples</h2>
+<pre><code class="language-bash"># inspect installed version
+nunchucks version
+
+# render one file to stdout
+nunchucks render -views ./views -template page.njk -data '{"title":"Docs"}'
+
+# write a static site build to ./public
+nunchucks precompile -views ./views -out ./public -out-format html
+
+# keep rebuilding while editing partials and layouts
+nunchucks precompile -views ./views -out ./public -out-format html --watch</code></pre>
+      <p><small>For runtime template syntax, filters, tags, comments, and inheritance behavior, see <a href="./templating.html">Reference</a>.</small></p>
+    </section>
+
+    <footer style="margin-top:1.5rem; text-align:center; color: var(--muted); font-size:0.92rem;">
+      <a href="https://samueldbines.github.io/" target="_blank" rel="noopener noreferrer">© 2026 Samuel Bines</a>
+    </footer>
+  </main>
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script defer src="./assets/docs.js"></script>
+</body>
+</html>
