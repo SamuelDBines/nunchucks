@@ -1,0 +1,17 @@
+.kitsune/tmp/20260307T235847Z-r0hen0/diff.html     | 21706 -------------------
+ .kitsune/tmp/20260307T235847Z-r0hen0/diff.patch    | 21623 ------------------
+ .kitsune/tmp/20260307T235847Z-r0hen0/diff.stat     |     5 -
+ .kitsune/tmp/20260307T235847Z-r0hen0/message.txt   |     1 -
+ README.md                                          |     1 +
+ docs/cli-options.html                              |   169 +
+ docs/index.html                                    |    10 +-
+ docs/playground.html                               |     1 +
+ docs/templating.html                               |     1 +
+ go/compile.go                                      |    50 +-
+ go/contracts.go                                    |   586 +
+ go/contracts_test.go                               |   143 +
+ go/main.go                                         |    21 +-
+ go/nunchucks_test.go                               |    45 +
+ go/render.go                                       |    64 +-
+ .../syntaxes/nunchucks.tmLanguage.json             |    66 +
+ 16 files changed, 1140 insertions(+), 43352 deletions(-)
